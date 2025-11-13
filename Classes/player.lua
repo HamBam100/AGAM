@@ -53,6 +53,8 @@ end
 function Player:draw()
     love.graphics.draw(self.sprite,self.x,self.y)
     self.wand:draw()
+
+    printcoords(self.x,self.y,-25,64,1)
 end
 
 

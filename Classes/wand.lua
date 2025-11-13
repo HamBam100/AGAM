@@ -9,6 +9,8 @@ function Wand:new(parent)
     self.x = 64
     self.y = 64
     self.r = 0
+    self.cooldown = {timer = 0, time = 0.1}
+    
     
 end
 
@@ -24,9 +26,18 @@ function Wand:update(dt)
 
 
 
-    if love.mouse.isDown("1") then
+    if love.mouse.isDown("1") and self.cooldown.timer <= 0 then
         self:createProj()
+        self.cooldown.timer = self.cooldown.time
     end
+
+    if self.cooldown.timer > 0 then
+        self.cooldown.timer = self.cooldown.timer - (1 * dt)
+    end
+
+
+
+
 
 
 end

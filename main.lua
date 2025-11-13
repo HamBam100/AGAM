@@ -17,9 +17,11 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 
 
 function love.load()
+
+    
     GameWindow = require "External/gameWindow"
     Object = require "External/classic"
-
+    
     Helper = require "Engine/helper"
     Layer = require "Engine/layers"
     Render = require "Engine/render"
@@ -31,7 +33,10 @@ function love.load()
     Projectile = require "Classes/projectile"
     
     flashShader = love.graphics.newShader(shader_code)
+
+    
     GameWindow.load(1920, 1080)
+    
     -- GameWindow.load(1024, 576)
 
     Render.createLayer("Background") -- 1
@@ -57,7 +62,7 @@ function love.update(dt)
    debugSlime:update(dt)
 
     for i, p in ipairs(projectiles) do
-        p:update(dt)
+        p:update(dt,i)
     end
 
     
@@ -83,4 +88,10 @@ end
 
 function love.resize(w, h)
     GameWindow.resize()
+end
+
+function love.keypressed(k)
+    if k == "f" then
+        love.window.setFullscreen(not love.window.getFullscreen())
+    end
 end

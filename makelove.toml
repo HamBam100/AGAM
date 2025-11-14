@@ -1,5 +1,5 @@
 name = "AGAM"
-default_targets = ["win64"]
+default_targets = ["win64,appimage"]
 build_directory = "build"
 
 love_files = [
@@ -10,6 +10,8 @@ love_files = [
 
 [archive_files]
 "steam_api64.dll" = "steam_api64.dll"
+"libsteam_api.dylib" = "libsteam_api.dylib"
+"libsteam_api.so" = "libsteam_api.so"
 "Steam" = "Steam"
 
 

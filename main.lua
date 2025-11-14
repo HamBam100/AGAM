@@ -25,12 +25,15 @@ function love.load()
     Helper = require "Engine/helper"
     Layer = require "Engine/layers"
     Render = require "Engine/render"
+    Keybinds = require "Engine/keybinds"
+    OS = require "Engine/OSinit"
 
     Player = require "Classes/player"
     Tiles = require "Classes/tiles"
     Slime = require "Classes/slime"
     Wand = require "Classes/wand"
     Projectile = require "Classes/projectile"
+    
     
     flashShader = love.graphics.newShader(shader_code)
 
@@ -53,6 +56,13 @@ function love.load()
     Render.addObjectToLayer("Game", debugSlime)
 
     projectiles = {}
+
+
+    
+    Steam.init()
+    -- ...
+    -- when game is closing
+    Steam.shutdown()
 end
 
 function love.update(dt)

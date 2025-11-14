@@ -26,7 +26,7 @@ function Wand:update(dt)
 
 
 
-    if love.mouse.isDown("1") and self.cooldown.timer <= 0 then
+    if bindPressed(keybinds.shoot) and self.cooldown.timer <= 0 then
         self:createProj()
         self.cooldown.timer = self.cooldown.time
     end

@@ -19,6 +19,7 @@ function Player:new()
 end
 
 function Player:update(dt)
+
     local mousex, mousey = GameWindow.getMousePosition()
    
     
@@ -28,16 +29,16 @@ function Player:update(dt)
     self.yv = 0
 
 
-    if love.keyboard.isDown("w") then
+    if bindPressed(keybinds.up) then
         self.yv = self.yv - (self.speed * dt)
     end
-    if love.keyboard.isDown("s") then
+    if bindPressed(keybinds.down) then
         self.yv = self.yv + (self.speed * dt)
     end
-    if love.keyboard.isDown("a") then
+    if bindPressed(keybinds.left) then
         self.xv = self.xv - (self.speed * dt)
     end
-    if love.keyboard.isDown("d") then
+    if bindPressed(keybinds.right) then
         self.xv = self.xv + (self.speed * dt)
     end
 

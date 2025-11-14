@@ -5,6 +5,7 @@ build_directory = "build"
 love_files = [
     "::git-ls-tree::",
     "-*/.*",
+    "Steam/**",
 ]
 
-icon_file = "sprites/slime.png"
+icon_file = "Sprites/Slime.png"

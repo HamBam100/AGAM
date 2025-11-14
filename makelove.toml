@@ -1,5 +1,5 @@
 name = "AGAM"
-default_targets = ["win32", "win64"]
+default_targets = ["win64"]
 build_directory = "build"
 
 love_files = [
@@ -7,5 +7,10 @@ love_files = [
     "-*/.*",
     "Steam/**",
 ]
+
+[archive_files]
+"steam_api64.dll" = "steam_api64.dll"
+"Steam" = "Steam"
+
 
 icon_file = "Sprites/Slime.png"

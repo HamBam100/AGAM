@@ -1,18 +1,26 @@
 name = "AGAM"
-default_targets = ["win64,appimage"]
+default_targets = ["win64"]
 build_directory = "build"
 
 love_files = [
     "::git-ls-tree::",
     "-*/.*",
     "Steam/**",
+    "steam_api64.dll",
+    "libsteam_api.dylib",
 ]
-
-[archive_files]
-"steam_api64.dll" = "steam_api64.dll"
-"libsteam_api.dylib" = "libsteam_api.dylib"
-"libsteam_api.so" = "libsteam_api.so"
-"Steam" = "Steam"
 
 
 icon_file = "Sprites/Slime.png"
+
+
+[windows]
+[windows.archive_files]
+"steam_api64.dll" = "steam_api64.dll"
+"Steam/Windows/luasteam.dll" = "Steam/Windows/luasteam.dll"
+
+
+[macos]
+[macos.archive_files]
+"libsteam_api.dylib" = "libsteam_api.dylib"
+"Steam/OSX/luasteam.so" = "Steam/Linux/luasteam.so"

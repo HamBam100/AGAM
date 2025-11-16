@@ -35,4 +35,4 @@ git branch -M main
 git push origin main
 
 echo
-echo "Push complete!
+echo "Push complete!"

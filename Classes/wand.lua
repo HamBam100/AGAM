@@ -15,7 +15,6 @@ function Wand:new(parent)
 end
 
 function Wand:update(dt)
-    local mousex, mousey = GameWindow.getMousePosition()
     local p = self.parent
     self.x = p.x
     self.y = p.y
@@ -50,7 +49,7 @@ end
 
 
 function Wand:draw()
-    love.graphics.draw(self.sprite,self.x,self.y,self.r + (math.pi / 2),1,1,64,64)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,64,64)
 
 end
 

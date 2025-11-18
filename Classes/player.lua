@@ -8,7 +8,7 @@ function Player:new()
     self.x = 64
     self.y = 64
     self.r = 0
-
+    self.hitbox = makeHitbox(0,0,64,64)
 
     self.xv = 0
     self.yv = 0
@@ -19,11 +19,6 @@ function Player:new()
 end
 
 function Player:update(dt)
-
-    local mousex, mousey = GameWindow.getMousePosition()
-   
-    
-    self.r = math.atan2(mousey - self.y, mousex - self.x) 
 
     self.xv = 0
     self.yv = 0
@@ -55,7 +50,7 @@ function Player:draw()
     love.graphics.draw(self.sprite,self.x,self.y)
     self.wand:draw()
 
-    printcoords(self.x,self.y,-25,64,1)
+    --printcoords(self.x,self.y,-25,64,1)
 end
 
 

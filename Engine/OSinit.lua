@@ -2,11 +2,6 @@ local OS = love.system.getOS()
 local dir = love.filesystem.getSourceBaseDirectory()
 
 
-
-
-
-
-
 if OS == "Windows" then
     package.loadlib(dir .. "/steam_api64.dll", "*")
 

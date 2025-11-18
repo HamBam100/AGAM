@@ -15,11 +15,13 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 ]]
 
 
-
 function love.load()
 
     
     GameWindow = require "External.gameWindow"
+
+    mousex, mousey = 0,0
+
     Object = require "External.classic"
     
     Helper = require "Engine.helper"
@@ -31,6 +33,7 @@ function love.load()
     Player = require "Classes.player"
     Tiles = require "Classes.tiles"
     Slime = require "Classes.slime"
+    DebugSlime = require "Classes.debug"
     Wand = require "Classes.wand"
     Projectile = require "Classes.projectile"
     
@@ -43,22 +46,33 @@ function love.load()
     -- GameWindow.load(1024, 576)
 
     Render.createLayer("Background") -- 1
-    Render.createLayer("Game") -- 2
+    Render.createLayer("Game", true) -- 2
     Render.createLayer("UI") -- 3
 
 
     tilemap = Tiles()
     player = Player()
-    debugSlime = Slime()
+    
+    
+    
 
-    Render.addObjectToLayer("Game", tilemap)
+    Render.addObjectToLayer("Background", tilemap)
     Render.addObjectToLayer("Game", player)
-    Render.addObjectToLayer("Game", debugSlime)
+    
 
+    enemies = {}
     projectiles = {}
 
-
+    local slime = Slime()
+    table.insert(enemies, slime)
+    Render.addObjectToLayer("Game", slime)
     
+
+    local debugSlime = DebugSlime()
+    table.insert(enemies, debugSlime)
+    Render.addObjectToLayer("Game", debugSlime)
+
+
     Steam.init()
     -- ...
     -- when game is closing
@@ -66,16 +80,19 @@ function love.load()
 end
 
 function love.update(dt)
+    mousex, mousey = GameWindow.getMousePosition()
 
+    player:update(dt)
 
-   player:update(dt)
-   debugSlime:update(dt)
+    for i, e in ipairs(enemies) do
+        e:update(dt,i)
+    end
 
     for i, p in ipairs(projectiles) do
         p:update(dt,i)
     end
 
-    
+    Render.sortitems()
 end
 
 
@@ -85,10 +102,12 @@ end
 function love.draw()
     GameWindow.start()
 
-        Render.drawLayers()
-        for i, p in ipairs(projectiles) do
-            p:draw()
-        end
+    Render.drawLayers()
+    for i, p in ipairs(projectiles) do
+        p:draw()
+    end
+
+
     love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
     love.graphics.print("Proj: "..#projectiles,10,20)
     

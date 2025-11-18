@@ -19,20 +19,20 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 function love.load()
 
     
-    GameWindow = require "External/gameWindow"
-    Object = require "External/classic"
+    GameWindow = require "External.gameWindow"
+    Object = require "External.classic"
     
-    Helper = require "Engine/helper"
-    Layer = require "Engine/layers"
-    Render = require "Engine/render"
-    Keybinds = require "Engine/keybinds"
-    OS = require "Engine/OSinit"
+    Helper = require "Engine.helper"
+    Layer = require "Engine.layers"
+    Render = require "Engine.render"
+    Keybinds = require "Engine.keybinds"
+    OS = require "Engine.OSinit"
 
-    Player = require "Classes/player"
-    Tiles = require "Classes/tiles"
-    Slime = require "Classes/slime"
-    Wand = require "Classes/wand"
-    Projectile = require "Classes/projectile"
+    Player = require "Classes.player"
+    Tiles = require "Classes.tiles"
+    Slime = require "Classes.slime"
+    Wand = require "Classes.wand"
+    Projectile = require "Classes.projectile"
     
     
     flashShader = love.graphics.newShader(shader_code)

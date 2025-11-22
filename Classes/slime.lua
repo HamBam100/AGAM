@@ -71,7 +71,7 @@ end
 function Slime:draw()
 
 
-    if self.inv.i > 0 then
+    if self.inv.i > 0 or e then
         love.graphics.setShader(flashShader)
     end
 

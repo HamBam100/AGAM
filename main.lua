@@ -93,6 +93,28 @@ function love.update(dt)
     end
 
     Render.sortitems()
+
+    polygonAVertices = {
+        xy(110,100), 
+        xy(110,30),
+        xy(40,30),
+        xy(40,100)}
+    local polygonAEdges = edge(polygonAVertices)
+    
+
+
+
+    polygonBVertices = {
+        xy(mousex,mousey),
+        xy(130,130),
+        xy(70,150)}
+    local polygonBEdges = edge(polygonBVertices)
+    local polygonA = polygon(polygonAVertices, polygonAEdges)
+    local polygonB = polygon(polygonBVertices, polygonBEdges)
+
+    e = sat(polygonA,polygonB)
+
+
 end
 
 
@@ -110,6 +132,29 @@ function love.draw()
 
     love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
     love.graphics.print("Proj: "..#projectiles,10,20)
+    love.graphics.print(tostring(e),10,30)
+    
+    for i = 1, #polygonAVertices do 
+        local j = i+1
+        if i == #polygonAVertices then
+            j = 1
+        end
+        
+        love.graphics.line(polygonAVertices[i].x, polygonAVertices[i].y, polygonAVertices[j].x, polygonAVertices[j].y)
+        
+    end
+
+    for i = 1, #polygonBVertices do 
+        local j = i+1
+        if i == #polygonBVertices then
+            j = 1
+        end
+        
+        love.graphics.line(polygonBVertices[i].x, polygonBVertices[i].y, polygonBVertices[j].x, polygonBVertices[j].y)
+        
+    end
+
+
     
     GameWindow.finish()
 end

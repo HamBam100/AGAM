@@ -17,8 +17,11 @@ function Projectile:new(i)
     self.y = i.y
     self.xv = xv
     self.yv = yv
+    self.ox = 0
+    self.oy = 0
+    self.r = 0
     self.radius = 10
-    self.hitbox = makeHitbox(0 - self.radius,0 - self.radius,0 + self.radius,0 + self.radius)
+    self.hitbox = makeHitbox(0 - self.radius,0 - self.radius,0 + self.radius,0 + self.radius,self)
 
 
     self.sprite = love.graphics.newImage("Sprites/Magic Staff.png")
@@ -42,7 +45,11 @@ end
 function Projectile:draw()
     love.graphics.circle("line",math.floor(self.x),math.floor(self.y),self.radius)
 
-    printcoords(self.x,self.y,-10,20,0)
+    
+    if debug then
+        drawHitbox(self)
+        printcoords(self.x,self.y,-10,20,0)
+    end
     
 end
 

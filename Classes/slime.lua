@@ -8,11 +8,15 @@ function Slime:new()
     self.y = 500
     self.xv = 0
     self.yv = 0
-    self.hitbox = makeHitbox(0,0,64,64)
+    self.ox = self.sprite:getWidth() / 2
+    self.oy = self.sprite:getHeight() / 2
+    
     self.speed = 160
-    self.r = 0
+    self.r = degtorad(0)
     self.hp = 1
     self.inv = {i = 0, dur = 0.1}
+
+    self.hitbox = makeHitbox(0,0,64,100,self)
 end
 
 function Slime:update(dt,i)
@@ -23,9 +27,7 @@ function Slime:update(dt,i)
     if self.inv.i > 0 then
         self.inv.i = self.inv.i - (1 * dt)
     end
-    if love.keyboard.isDown("space") then
-        self.inv.i = self.inv.dur
-    end
+    
 
 
     
@@ -42,27 +44,34 @@ function Slime:update(dt,i)
 
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
+    
+    -- if collide(self, player) then
+    --     poof(self, enemies, "Game", i)
+    -- end
 
-
-
-    if love.keyboard.isDown("space") then
-        poof(self, enemies, "Game", i)
-            
-    end
-
-    if collide(self, player) then
-        poof(self, enemies, "Game", i)
+    for j, p in ipairs(projectiles) do
+        if collide(self,p) then
+            -- self.hp = self.hp - 1
+            -- self.inv.i = self.inv.dur
+            poof(self, enemies, "Game", i)
+            return
+        end
     end
 
     -- for j, p in ipairs(projectiles) do
-    --     if collide(self,p) or love.keyboard.isDown("space") then
+    --     if collide(self,p) then
     --         -- self.hp = self.hp - 1
     --         -- self.inv.i = self.inv.dur
-    --         Render.removeObjectFromLayer("Game", self)
-    --         table.remove(enemies, i)
+    --         self.dead = true
+            
             
     --     end
     -- end
+    -- if self.dead == true then
+    --     poof(self, enemies, "Game", i)
+    -- end
+
+
 end
 
 
@@ -71,14 +80,21 @@ end
 function Slime:draw()
 
 
-    if self.inv.i > 0 or e then
+    if self.inv.i > 0 then
         love.graphics.setShader(flashShader)
     end
 
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y))
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1,1,self.ox, self.oy)
     love.graphics.setShader()
     
-    love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
+    
+
+
+
+    if debug then
+        drawHitbox(self)
+        love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
+    end
 end
 
 

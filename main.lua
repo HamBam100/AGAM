@@ -24,7 +24,9 @@ function love.load()
 
     Object = require "External.classic"
     
-    Helper = require "Engine.helper"
+    require "Engine.helper"
+    require "Engine.collision"
+
     Layer = require "Engine.layers"
     Render = require "Engine.render"
     Keybinds = require "Engine.keybinds"
@@ -72,6 +74,8 @@ function love.load()
     table.insert(enemies, debugSlime)
     Render.addObjectToLayer("Game", debugSlime)
 
+    debug = true
+    mode = ""
 
     Steam.init()
     -- ...
@@ -82,38 +86,25 @@ end
 function love.update(dt)
     mousex, mousey = GameWindow.getMousePosition()
 
+    if love.keyboard.isDown("space") then
+        local slime = Slime()
+        table.insert(enemies, slime)
+        Render.addObjectToLayer("Game", slime)
+    end
+            
+    
+
     player:update(dt)
 
-    for i, e in ipairs(enemies) do
-        e:update(dt,i)
+    for i = #enemies, 1, -1 do
+        enemies[i]:update(dt,i)
     end
 
-    for i, p in ipairs(projectiles) do
-        p:update(dt,i)
+    for i = #projectiles, 1, -1 do
+        projectiles[i]:update(dt,i)
     end
 
     Render.sortitems()
-
-    polygonAVertices = {
-        xy(110,100), 
-        xy(110,30),
-        xy(40,30),
-        xy(40,100)}
-    local polygonAEdges = edge(polygonAVertices)
-    
-
-
-
-    polygonBVertices = {
-        xy(mousex,mousey),
-        xy(130,130),
-        xy(70,150)}
-    local polygonBEdges = edge(polygonBVertices)
-    local polygonA = polygon(polygonAVertices, polygonAEdges)
-    local polygonB = polygon(polygonBVertices, polygonBEdges)
-
-    e = sat(polygonA,polygonB)
-
 
 end
 
@@ -132,27 +123,29 @@ function love.draw()
 
     love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
     love.graphics.print("Proj: "..#projectiles,10,20)
-    love.graphics.print(tostring(e),10,30)
+    love.graphics.print(mode,10,30)
     
-    for i = 1, #polygonAVertices do 
-        local j = i+1
-        if i == #polygonAVertices then
-            j = 1
-        end
+    -- for i = 1, #polygonAVertices do 
+    --     local j = i+1
+    --     if i == #polygonAVertices then
+    --         j = 1
+    --     end
         
-        love.graphics.line(polygonAVertices[i].x, polygonAVertices[i].y, polygonAVertices[j].x, polygonAVertices[j].y)
+    --     love.graphics.line(polygonAVertices[i].x, polygonAVertices[i].y, polygonAVertices[j].x, polygonAVertices[j].y)
         
-    end
+    -- end
 
-    for i = 1, #polygonBVertices do 
-        local j = i+1
-        if i == #polygonBVertices then
-            j = 1
-        end
+
+    
+    -- for i = 1, #polygonBVertices do 
+    --     local j = i+1
+    --     if i == #polygonBVertices then
+    --         j = 1
+    --     end
         
-        love.graphics.line(polygonBVertices[i].x, polygonBVertices[i].y, polygonBVertices[j].x, polygonBVertices[j].y)
+    --     love.graphics.line(polygonBVertices[i].x, polygonBVertices[i].y, polygonBVertices[j].x, polygonBVertices[j].y)
         
-    end
+    -- end
 
 
     

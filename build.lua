@@ -14,7 +14,7 @@ return {
     windows = {'Steam/Windows/luasteam.dll', 'steam_api64.dll'},
     linux = {'Steam/Linux/luasteam.so', 'libsteam_api.so'},
     macos = {'Steam/OSX/luasteam.so', 'libsteam_api.dylib'},
-    all = {'README.txt'}
+    all = {'README.txt', 'steam_appid.txt' }
   },
   platforms = {'windows', 'linux'}
 

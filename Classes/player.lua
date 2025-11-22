@@ -4,16 +4,18 @@ local Player = Object:extend()
 
 
 function Player:new()
-    self.sprite = love.graphics.newImage("Sprites/Slime.png")
+    self.sprite = love.graphics.newImage("Sprites/Player.png")
     self.x = 64
     self.y = 64
-    self.r = 0
-    self.hitbox = makeHitbox(0,0,64,64)
-
+    self.r = degtorad(0)
+    
+    self.ox = self.sprite:getWidth() / 2
+    self.oy = self.sprite:getHeight() / 2
     self.xv = 0
     self.yv = 0
     self.speed = 350
 
+    self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
     
     self.wand = Wand(self)
 end
@@ -41,16 +43,24 @@ function Player:update(dt)
     self.y = self.y + self.yv
 
     self.wand:update(dt)
+    if love.keyboard.isDown("space") then
+        self.r = degtorad(radtodeg(self.r) + 1)
+            
+    end
 
 end
 
 
 
 function Player:draw()
-    love.graphics.draw(self.sprite,self.x,self.y)
+    love.graphics.draw(self.sprite,self.x,self.y,self.r,1,1,self.ox,self.oy)
     self.wand:draw()
 
-    --printcoords(self.x,self.y,-25,64,1)
+    
+    if debug then
+        printcoords(self.x,self.y,-25,64,1)
+        drawHitbox(self)
+    end
 end
 
 

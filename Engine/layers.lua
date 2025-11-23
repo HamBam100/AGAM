@@ -2,7 +2,6 @@ Layer = {}
 --sets to check "Layer" if something cannot be found in its children
 Layer.__index = Layer
 
-
 function Layer:new(layerName,sort)
 
     local newLayer = {
@@ -29,7 +28,6 @@ function Layer:remove(obj)
     end
     
 end
-
 
 function Layer:draw()
 

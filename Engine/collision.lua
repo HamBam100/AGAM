@@ -12,8 +12,6 @@ function drawHitbox(obj)
     end
 end
 
-
-
 function xy(x,y)
     local this = {}
     this.x = x
@@ -44,7 +42,6 @@ function makeHitbox(x1,y1,x2,y2,obj)
     return hitbox
 end
 
-
 function updateBox(obj)
     local box = {}
     
@@ -74,16 +71,12 @@ function makeVertices(obj)
     xy(hitbox.x2,hitbox.y2),
     xy(hitbox.x1,hitbox.y2)}
 
-
     if obj.r ~= 0 then
         local pivotX = (obj.x or 0) 
         local pivotY = (obj.y or 0)
         for i=1, #vertices do
             vertices[i].x, vertices[i].y = rotatePoint(vertices[i].x,vertices[i].y,pivotX,pivotY,obj.r)
         end
-        
-
-
     end
 
     return vertices
@@ -103,14 +96,6 @@ function makeEdges(vertices)
     end
     return edges
 end 
-
-
--- function polygon(vertices)
---     local this = {}
---     this.vertex = vertices
---     this.edge = makeEdges(vertices)
---     return this
--- end
 
 function makePolygon(obj)
     local a = {}

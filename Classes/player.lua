@@ -1,8 +1,6 @@
 
 local Player = Object:extend()
 
-
-
 function Player:new()
     self.sprite = love.graphics.newImage("Sprites/Player.png")
     self.x = 64
@@ -24,7 +22,6 @@ function Player:update(dt)
 
     self.xv = 0
     self.yv = 0
-
 
     if bindPressed(keybinds.up) then
         self.yv = self.yv - (self.speed * dt)
@@ -50,8 +47,6 @@ function Player:update(dt)
 
 end
 
-
-
 function Player:draw()
     love.graphics.draw(self.sprite,self.x,self.y,self.r,1,1,self.ox,self.oy)
     self.wand:draw()
@@ -62,8 +57,5 @@ function Player:draw()
         drawHitbox(self)
     end
 end
-
-
-
 
 return Player

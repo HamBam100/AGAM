@@ -75,7 +75,7 @@ function love.load()
     Render.addObjectToLayer("Game", debugSlime)
 
     debug = true
-    mode = ""
+    state = "game"
 
     Steam.init()
     -- ...
@@ -85,27 +85,32 @@ end
 
 function love.update(dt)
     mousex, mousey = GameWindow.getMousePosition()
-
-    if love.keyboard.isDown("space") then
-        local slime = Slime()
-        table.insert(enemies, slime)
-        Render.addObjectToLayer("Game", slime)
-    end
-            
     
+    if state == "game" then
+        if love.keyboard.isDown("space") then
+            local slime = Slime()
+            table.insert(enemies, slime)
+            Render.addObjectToLayer("Game", slime)
+        end
+                
+        
 
-    player:update(dt)
+        player:update(dt)
 
-    for i = #enemies, 1, -1 do
-        enemies[i]:update(dt,i)
+        for i = #enemies, 1, -1 do
+            enemies[i]:update(dt,i)
+        end
+
+        for i = #projectiles, 1, -1 do
+            projectiles[i]:update(dt,i)
+        end
+
+        Render.sortitems()
+    end 
+
+    if state == "tilemap" then
+
     end
-
-    for i = #projectiles, 1, -1 do
-        projectiles[i]:update(dt,i)
-    end
-
-    Render.sortitems()
-
 end
 
 
@@ -113,45 +118,26 @@ end
 
 
 function love.draw()
-    GameWindow.start()
+    if state == "game" then
+        GameWindow.start()
 
-    Render.drawLayers()
-    for i, p in ipairs(projectiles) do
-        p:draw()
+        Render.drawLayers()
+        for i, p in ipairs(projectiles) do
+            p:draw()
+        end
+
+        love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
+        love.graphics.print("Proj: "..#projectiles,10,20)
+        love.graphics.print(state,10,30)
+        
+        GameWindow.finish()
     end
 
+    if state == "tilemap" then
 
-    love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
-    love.graphics.print("Proj: "..#projectiles,10,20)
-    love.graphics.print(mode,10,30)
+    end
     
-    -- for i = 1, #polygonAVertices do 
-    --     local j = i+1
-    --     if i == #polygonAVertices then
-    --         j = 1
-    --     end
-        
-    --     love.graphics.line(polygonAVertices[i].x, polygonAVertices[i].y, polygonAVertices[j].x, polygonAVertices[j].y)
-        
-    -- end
-
-
-    
-    -- for i = 1, #polygonBVertices do 
-    --     local j = i+1
-    --     if i == #polygonBVertices then
-    --         j = 1
-    --     end
-        
-    --     love.graphics.line(polygonBVertices[i].x, polygonBVertices[i].y, polygonBVertices[j].x, polygonBVertices[j].y)
-        
-    -- end
-
-
-    
-    GameWindow.finish()
 end
-
 
 function love.resize(w, h)
     GameWindow.resize()

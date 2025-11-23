@@ -27,11 +27,7 @@ function Slime:update(dt,i)
     if self.inv.i > 0 then
         self.inv.i = self.inv.i - (1 * dt)
     end
-    
-
-
-    
-
+ 
     if getDistance(self,player) > 1 then
         local rotation = math.atan2(player.y - self.y, player.x - self.x) 
     
@@ -45,10 +41,6 @@ function Slime:update(dt,i)
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
     
-    -- if collide(self, player) then
-    --     poof(self, enemies, "Game", i)
-    -- end
-
     for j, p in ipairs(projectiles) do
         if collide(self,p) then
             -- self.hp = self.hp - 1
@@ -58,24 +50,7 @@ function Slime:update(dt,i)
         end
     end
 
-    -- for j, p in ipairs(projectiles) do
-    --     if collide(self,p) then
-    --         -- self.hp = self.hp - 1
-    --         -- self.inv.i = self.inv.dur
-    --         self.dead = true
-            
-            
-    --     end
-    -- end
-    -- if self.dead == true then
-    --     poof(self, enemies, "Game", i)
-    -- end
-
-
 end
-
-
-
 
 function Slime:draw()
 
@@ -86,19 +61,12 @@ function Slime:draw()
 
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1,1,self.ox, self.oy)
     love.graphics.setShader()
-    
-    
-
-
-
+   
     if debug then
         drawHitbox(self)
         love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
     end
 end
-
-
-
 
 
 return Slime

@@ -1,5 +1,5 @@
 
-local shader_code = [[
+local shader_code_1 = [[
 vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 
     vec4 pixel = Texel(image, uvs);
@@ -13,6 +13,33 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 }
 
 ]]
+
+
+local shader_code_2 = [[
+
+uniform vec3 targetColour;
+    
+vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
+
+    vec4 pixel = Texel(image, uvs);
+    
+    vec4 newPixel = pixel;
+
+    if (pixel.g < 0.4)
+    { 
+
+        float luminocity = pixel.r * 0.299 + pixel.g * 0.587 + pixel.b * 0.114;
+        luminocity = luminocity;
+        
+        newPixel = vec4(clamp(targetColour * luminocity * 2.5, 0.0, 1.0), pixel.a);
+    
+    } 
+    
+    return vec4(newPixel.r, newPixel.g, newPixel.b, newPixel.a);
+}
+
+]]
+
 
 
 function love.load()
@@ -40,7 +67,8 @@ function love.load()
     Eyes = require "Classes.Player.eyes"
     Projectile = require "Classes.projectile"
     
-    flashShader = love.graphics.newShader(shader_code)
+    flashShader = love.graphics.newShader(shader_code_1)
+    tintPlayer = love.graphics.newShader(shader_code_2)
 
     GameWindow.load(1920, 1080)
 
@@ -84,9 +112,9 @@ function love.load()
     spawn(Slime(), updateables.enemies, "Game")
     spawn(DebugSlime(), updateables.enemies, "Game")
 
-    debug = true
-    -- state = "game"
-    state = "tilemap"
+    debug = false
+    state = "game"
+    -- state = "tilemap"
 
     tiler.init()
 

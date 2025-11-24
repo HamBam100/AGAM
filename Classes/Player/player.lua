@@ -1,6 +1,11 @@
 
 local Player = Object:extend()
 
+
+
+
+
+
 function Player:new()
     self.sprite = love.graphics.newImage("Sprites/Player.png")
     self.x = 64
@@ -12,7 +17,10 @@ function Player:new()
     self.xv = 0
     self.yv = 0
     self.speed = 350
+    boost = 0.0
+    -- self.colour = {0.258823529,0.0235294118,0.207843137,1.0}
 
+    self.colour = colour.white
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
     self.eyes = Eyes(self)
     self.wand = Wand(self)
@@ -46,7 +54,12 @@ function Player:update(dt)
 end
 
 function Player:draw()
+
+    love.graphics.setShader(tintPlayer)
+    
+    tintPlayer:send("targetColour", self.colour)
     love.graphics.draw(self.sprite,self.x,self.y,self.r,1,1,self.ox,self.oy)
+    love.graphics.setShader()
     self.eyes:draw()
     self.wand:draw()
     

@@ -56,9 +56,13 @@ function spawn(class, array, layer)
     table.insert(array,obj)
 end
 
+function torgb(clr)
+    return clr / 255
+end
 
-
-
+colour = {}
+colour.white = {torgb(255),torgb(255),torgb(255)}
+colour.base = {torgb(151),torgb(44),torgb(62)}
 
 
 

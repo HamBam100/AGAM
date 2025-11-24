@@ -25,6 +25,7 @@ function love.load()
     
     require "Engine.helper"
     require "Engine.collision"
+    require "Engine.tiler"
 
     Layer = require "Engine.layers"
     Render = require "Engine.render"
@@ -84,8 +85,13 @@ function love.load()
     spawn(DebugSlime(), updateables.enemies, "Game")
 
     debug = true
-    state = "game"
+    -- state = "game"
+    state = "tilemap"
 
+    tiler.init()
+
+
+    
     Steam.init()
     
 end
@@ -106,7 +112,7 @@ function love.update(dt)
     end 
 
     if state == "tilemap" then
-
+        tiler.update()
     end
 end
 
@@ -126,9 +132,12 @@ function love.draw()
     end
 
     if state == "tilemap" then
+        GameWindow.start()
+        
+        tiler.draw()
 
+        GameWindow.finish()
     end
-    
 end
 
 function love.resize(w, h)

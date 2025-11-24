@@ -41,11 +41,11 @@ function Slime:update(dt,i)
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
     
-    for j, p in ipairs(projectiles) do
+    for j, p in ipairs(updateables.projectiles) do
         if collide(self,p) then
             -- self.hp = self.hp - 1
             -- self.inv.i = self.inv.dur
-            poof(self, enemies, "Game", i)
+            poof(self, updateables.enemies, "Game", i)
             return
         end
     end

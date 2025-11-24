@@ -42,8 +42,12 @@ function Wand:update(dt)
 end
 
 function Wand:createProj()
-    local p = Projectile(self)
-    table.insert(projectiles,p)
+    
+            
+            
+
+    spawn(Projectile(self), updateables.projectiles, "Projectiles")
+
     
 end
 

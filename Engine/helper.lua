@@ -49,6 +49,15 @@ function poof(obj, array, layer, i)
     table.remove(array, i)
 end
 
+--Adds an object to the Game
+function spawn(class, array, layer)
+    local obj = class
+    Render.addObjectToLayer(layer, obj)
+    table.insert(array,obj)
+end
+
+
+
 
 
 

@@ -49,30 +49,43 @@ function love.load()
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
-    Render.createLayer("UI") -- 3
+    Render.createLayer("Projectiles") -- 3
+    Render.createLayer("UI") -- 4
 
 
     tilemap = Tiles()
     player = Player()
+    oldPlayerSprite = love.graphics.newImage("Sprites/Player.png")
     
-    
-    
-
     Render.addObjectToLayer("Background", tilemap)
     Render.addObjectToLayer("Game", player)
     
-
-    enemies = {}
-    projectiles = {}
-
-    local slime = Slime()
-    table.insert(enemies, slime)
-    Render.addObjectToLayer("Game", slime)
+    updateables = {}
     
+    --enemy container
+    updateables.enemies = {}
+    function updateables.enemies:update(dt) 
+        for i = #self, 1, -1 do
+            self[i]:update(dt,i)
+        end
+    end
 
-    local debugSlime = DebugSlime()
-    table.insert(enemies, debugSlime)
-    Render.addObjectToLayer("Game", debugSlime)
+    --projectile container
+    updateables.projectiles = {}
+    function updateables.projectiles:update(dt)
+        for i = #self, 1, -1 do
+            self[i]:update(dt,i)
+        end
+    end
+
+
+
+    
+    spawn(Slime(), updateables.enemies, "Game")
+    
+    spawn(DebugSlime(), updateables.enemies, "Game")
+
+
 
     debug = true
     state = "game"
@@ -80,7 +93,7 @@ function love.load()
     Steam.init()
     -- ...
     -- when game is closing
-    Steam.shutdown()
+    
 end
 
 function love.update(dt)
@@ -88,22 +101,18 @@ function love.update(dt)
     
     if state == "game" then
         if love.keyboard.isDown("space") then
-            local slime = Slime()
-            table.insert(enemies, slime)
-            Render.addObjectToLayer("Game", slime)
+            spawn(Slime(), updateables.enemies, "Game")
         end
                 
         
 
         player:update(dt)
-
-        for i = #enemies, 1, -1 do
-            enemies[i]:update(dt,i)
+        for i, update in pairs(updateables) do
+            update:update(dt)
         end
+        
 
-        for i = #projectiles, 1, -1 do
-            projectiles[i]:update(dt,i)
-        end
+        
 
         Render.sortitems()
     end 
@@ -122,13 +131,12 @@ function love.draw()
         GameWindow.start()
 
         Render.drawLayers()
-        for i, p in ipairs(projectiles) do
-            p:draw()
-        end
+        
 
         love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
-        love.graphics.print("Proj: "..#projectiles,10,20)
+        love.graphics.print("Slime: "..#updateables.enemies,10,20)
         love.graphics.print(state,10,30)
+
         
         GameWindow.finish()
     end
@@ -147,4 +155,8 @@ function love.keypressed(k)
     if k == "f" then
         love.window.setFullscreen(not love.window.getFullscreen())
     end
+end
+
+function love.quit()
+    Steam.shutdown()
 end

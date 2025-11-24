@@ -35,7 +35,7 @@ function Projectile:update(dt,iteration)
     
 
     if self.x > gameWidth or self.x < 0 or self.y > gameHeight or self.y < 0 then
-            table.remove(projectiles,iteration)
+        poof(self, updateables.projectiles, "Projectiles", iteration)
     end
 
 end

@@ -40,10 +40,7 @@ function Player:update(dt)
     self.y = self.y + self.yv
 
     self.wand:update(dt)
-    if love.keyboard.isDown("space") then
-        self.r = degtorad(radtodeg(self.r) + 1)
-            
-    end
+    
 
 end
 

@@ -5,7 +5,7 @@ function Player:new()
     self.sprite = love.graphics.newImage("Sprites/Player.png")
     self.x = 64
     self.y = 64
-    self.r = degtorad(0)
+    self.r = 0
     
     self.ox = self.sprite:getWidth() / 2
     self.oy = self.sprite:getHeight() / 2
@@ -14,7 +14,7 @@ function Player:new()
     self.speed = 350
 
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
-    
+    self.eyes = Eyes(self)
     self.wand = Wand(self)
 end
 
@@ -40,13 +40,16 @@ function Player:update(dt)
     self.y = self.y + self.yv
 
     self.wand:update(dt)
+    self.eyes:update()
     
 
 end
 
 function Player:draw()
     love.graphics.draw(self.sprite,self.x,self.y,self.r,1,1,self.ox,self.oy)
+    self.eyes:draw()
     self.wand:draw()
+    
 
     
     if debug then

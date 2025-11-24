@@ -2,10 +2,10 @@
 local Slime = Object:extend()
 
 
-function Slime:new()
+function Slime:new(x, y)
     self.sprite = love.graphics.newImage("Sprites/Slime.png")
-    self.x = 256
-    self.y = 500
+    self.x = x or 256
+    self.y = y or 500
     self.xv = 0
     self.yv = 0
     self.ox = self.sprite:getWidth() / 2
@@ -16,7 +16,7 @@ function Slime:new()
     self.hp = 1
     self.inv = {i = 0, dur = 0.1}
 
-    self.hitbox = makeHitbox(0,0,64,100,self)
+    self.hitbox = makeHitbox(0,0,64,64,self)
 end
 
 function Slime:update(dt,i)
@@ -27,9 +27,23 @@ function Slime:update(dt,i)
     if self.inv.i > 0 then
         self.inv.i = self.inv.i - (1 * dt)
     end
- 
-    if getDistance(self,player) > 1 then
-        local rotation = math.atan2(player.y - self.y, player.x - self.x) 
+
+    local closestPlayer =  {x=mousex,y=mousey} --or updateables.players[1]
+    local smallestDistance = getDistance(self, closestPlayer)
+    for i, currentPlayer in ipairs(updateables.players) do
+        
+        if getDistance(self, currentPlayer) < smallestDistance then
+            closestPlayer = currentPlayer
+            smallestDistance = getDistance(self, currentPlayer)
+
+        end
+
+    end
+
+
+
+    if smallestDistance > 1 then
+        local rotation = math.atan2(closestPlayer.y - self.y, closestPlayer.x - self.x) 
     
         local xv = math.cos(rotation)
         local yv = math.sin(rotation)
@@ -37,6 +51,7 @@ function Slime:update(dt,i)
         self.xv = xv
         self.yv = yv
     end
+
 
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)

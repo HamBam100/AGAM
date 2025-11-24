@@ -8,6 +8,8 @@ function Wand:new(parent)
     self.sprite = love.graphics.newImage("Sprites/Magic Staff.png")
     self.x = 64
     self.y = 64
+    self.xv = 0
+    self.yv = 0
     self.r = 0
     self.cooldown = {timer = 0, time = 0.1}
     
@@ -20,7 +22,11 @@ function Wand:update(dt)
     self.y = p.y
     
     self.r = math.atan2(mousey - self.y, mousex - self.x) 
-
+    
+    self.xv = math.floor(math.cos(self.r) * 140)
+    self.yv = math.floor(math.sin(self.r) * 140)
+    self.x = math.floor(self.x + self.xv)
+    self.y = math.floor(self.y + self.yv)
 
 
 
@@ -37,7 +43,9 @@ function Wand:update(dt)
 
 
 
-
+    
+    
+    
 
 end
 

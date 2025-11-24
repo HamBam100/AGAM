@@ -31,7 +31,7 @@ function printcoords(x,y,offsetx,offsety,rounded)
 end
 
 function getDistance(a,b)
-    local horizontal = a.x- b.x
+    local horizontal = a.x - b.x
     local vertical = a.y - b.y
 
     

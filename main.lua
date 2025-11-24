@@ -17,7 +17,6 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 
 function love.load()
 
-    
     GameWindow = require "External.gameWindow"
 
     mousex, mousey = 0,0
@@ -32,36 +31,38 @@ function love.load()
     Keybinds = require "Engine.keybinds"
     OS = require "Engine.OSinit"
 
-    Player = require "Classes.player"
+    Player = require "Classes.Player.player"
     Tiles = require "Classes.tiles"
     Slime = require "Classes.slime"
     DebugSlime = require "Classes.debug"
-    Wand = require "Classes.wand"
+    Wand = require "Classes.Player.wand"
+    Eyes = require "Classes.Player.eyes"
     Projectile = require "Classes.projectile"
-    
     
     flashShader = love.graphics.newShader(shader_code)
 
-    
     GameWindow.load(1920, 1080)
-    
-    -- GameWindow.load(1024, 576)
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
     Render.createLayer("Projectiles") -- 3
     Render.createLayer("UI") -- 4
 
-
     tilemap = Tiles()
-    player = Player()
     oldPlayerSprite = love.graphics.newImage("Sprites/Player.png")
     
     Render.addObjectToLayer("Background", tilemap)
-    Render.addObjectToLayer("Game", player)
     
     updateables = {}
-    
+
+    --player container
+    updateables.players = {}
+    function updateables.players:update(dt)
+        for i = #self, 1, -1 do
+            self[i]:update(dt)
+        end
+    end
+
     --enemy container
     updateables.enemies = {}
     function updateables.enemies:update(dt) 
@@ -78,21 +79,14 @@ function love.load()
         end
     end
 
-
-
-    
+    spawn(Player(), updateables.players, "Game")
     spawn(Slime(), updateables.enemies, "Game")
-    
     spawn(DebugSlime(), updateables.enemies, "Game")
-
-
 
     debug = true
     state = "game"
 
     Steam.init()
-    -- ...
-    -- when game is closing
     
 end
 
@@ -101,19 +95,13 @@ function love.update(dt)
     
     if state == "game" then
         if love.keyboard.isDown("space") then
-            spawn(Slime(), updateables.enemies, "Game")
+            spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
         end
-                
-        
 
-        player:update(dt)
         for i, update in pairs(updateables) do
             update:update(dt)
         end
         
-
-        
-
         Render.sortitems()
     end 
 
@@ -121,10 +109,6 @@ function love.update(dt)
 
     end
 end
-
-
-
-
 
 function love.draw()
     if state == "game" then

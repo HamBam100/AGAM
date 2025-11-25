@@ -31,7 +31,9 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
         float luminocity = pixel.r * 0.299 + pixel.g * 0.587 + pixel.b * 0.114;
         luminocity = luminocity;
         
-        newPixel = vec4(clamp(targetColour * luminocity * 2.5, 0.0, 1.0), pixel.a);
+        vec3 newColour = targetColour / 255;
+
+        newPixel = vec4(clamp(newColour * luminocity * 2.5, 0.0, 1.0), pixel.a);
     
     } 
     
@@ -40,6 +42,32 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 
 ]]
 
+local shader_code_3 = [[
+
+uniform vec3 targetColour;
+    
+vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
+
+    vec4 pixel = Texel(image, uvs);
+    
+    vec4 newPixel = pixel;
+
+    if (pixel.a > 0)
+    { 
+
+        float luminocity = pixel.r * 0.299 + pixel.g * 0.587 + pixel.b * 0.114;
+        luminocity = luminocity;
+
+        vec3 newColour = targetColour / 255;
+
+        newPixel = vec4(clamp(newColour * luminocity * 2.5, 0.0, 1.0), pixel.a);
+    
+    } 
+    
+    return vec4(newPixel.r, newPixel.g, newPixel.b, newPixel.a);
+}
+
+]]
 
 
 function love.load()
@@ -59,6 +87,8 @@ function love.load()
     Keybinds = require "Engine.keybinds"
     OS = require "Engine.OSinit"
 
+    
+
     Player = require "Classes.Player.player"
     Tiles = require "Classes.tiles"
     Slime = require "Classes.slime"
@@ -66,9 +96,12 @@ function love.load()
     Wand = require "Classes.Player.wand"
     Eyes = require "Classes.Player.eyes"
     Projectile = require "Classes.projectile"
+
+    Button = require "Classes.UI.Button"
     
     flashShader = love.graphics.newShader(shader_code_1)
-    tintPlayer = love.graphics.newShader(shader_code_2)
+    tintPlayerShader = love.graphics.newShader(shader_code_2)
+    tintShader = love.graphics.newShader(shader_code_3)
 
     GameWindow.load(1920, 1080)
 
@@ -113,8 +146,13 @@ function love.load()
     spawn(DebugSlime(), updateables.enemies, "Game")
 
     debug = false
-    state = "game"
-    -- state = "tilemap"
+    -- state = "game"
+    state = "tilemap"
+    button = Button(64 * 6, 64 * 6, 192, 128, 
+        function()
+            print("click")
+        end
+    )
 
     tiler.init()
 
@@ -140,7 +178,11 @@ function love.update(dt)
     end 
 
     if state == "tilemap" then
+        if love.keyboard.isDown("space") then
+            spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
+        end
         tiler.update()
+        button:update()
     end
 end
 
@@ -161,8 +203,10 @@ function love.draw()
 
     if state == "tilemap" then
         GameWindow.start()
-        
+
+
         tiler.draw()
+        button:draw()
 
         GameWindow.finish()
     end

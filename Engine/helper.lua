@@ -61,13 +61,14 @@ function torgb(clr)
 end
 
 colour = {}
-colour.white = {torgb(255),torgb(255),torgb(255)}
-colour.base = {torgb(151),torgb(44),torgb(62)}
+colour.white = {255, 255, 255}
+colour.base = {151, 44, 62}
+colour.aqua = {26, 237, 191}
 
 
+colour.purple = {106, 70, 184}
 
-
-
+colour.brown = {184, 118, 83}
 
 
 

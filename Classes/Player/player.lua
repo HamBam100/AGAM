@@ -20,7 +20,7 @@ function Player:new()
     boost = 0.0
     -- self.colour = {0.258823529,0.0235294118,0.207843137,1.0}
 
-    self.colour = colour.white
+    self.colour = colour.purple
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
     self.eyes = Eyes(self)
     self.wand = Wand(self)
@@ -55,9 +55,9 @@ end
 
 function Player:draw()
 
-    love.graphics.setShader(tintPlayer)
+    love.graphics.setShader(tintPlayerShader)
     
-    tintPlayer:send("targetColour", self.colour)
+    tintPlayerShader:send("targetColour", self.colour)
     love.graphics.draw(self.sprite,self.x,self.y,self.r,1,1,self.ox,self.oy)
     love.graphics.setShader()
     self.eyes:draw()

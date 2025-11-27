@@ -4,9 +4,9 @@ UIElement = require "Classes.UI.UIElement"
 local Button = UIElement:extend()
 
 
-function Button:new(x,y,width,height,func)
+function Button:new(x,y,width,height,func,sprite)
     Button.super.new(self, x, y, width, height)
-    self.sprite = love.graphics.newImage("Sprites/Tilemap/WallMiddle.png")
+    self.sprite = sprite
 
     self.hover = false
     self.clicked = false
@@ -36,9 +36,11 @@ function Button:update()
 
     self.clicked = false
     self.hover = false
+    
 
     if mousex > self.x and mousex < self.x + self.width and mousey > self.y and mousey < self.y + self.height then
         self.hover = true
+        globalhover = true
     end
 
     if love.mouse.isDown(1) then 

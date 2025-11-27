@@ -77,10 +77,11 @@ function love.load()
     mousex, mousey = 0,0
 
     Object = require "External.classic"
+    Lume = require "External.lume"
     
     require "Engine.helper"
     require "Engine.collision"
-    require "Engine.tiler"
+    Tiler = require "Engine.tiler"
 
     Layer = require "Engine.layers"
     Render = require "Engine.render"
@@ -105,16 +106,35 @@ function love.load()
 
     GameWindow.load(1920, 1080)
 
+    
+
+    tilemapinit()
+    
+    
+
+
+    Steam.init()
+    
+end
+
+
+function gameinit()
+    Render.reset()
+    local tilesetdir = {"Sprites/Tilemap/WallMiddle.png","Sprites/Tilemap/WallTop.png","Sprites/Tilemap/WallBottom.png", "Sprites/Tilemap/WallCrown.png", "Sprites/Tilemap/FloorBasic.png", "Sprites/Tilemap/FloorLine.png", "Sprites/Tilemap/FloorPlus.png", "Sprites/Tilemap/FloorMinus.png"}
+
+    tileset = {}
+    for i=1, #tilesetdir do
+        tileset[i] = love.graphics.newImage(tilesetdir[i])
+    end
+
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
     Render.createLayer("Projectiles") -- 3
     Render.createLayer("UI") -- 4
 
-    tilemap = Tiles()
-    oldPlayerSprite = love.graphics.newImage("Sprites/Player.png")
-    
-    Render.addObjectToLayer("Background", tilemap)
-    
+    state = "game"
+    debug = false
+
     updateables = {}
 
     --player container
@@ -145,24 +165,46 @@ function love.load()
     spawn(Slime(), updateables.enemies, "Game")
     spawn(DebugSlime(), updateables.enemies, "Game")
 
-    debug = false
-    -- state = "game"
-    state = "tilemap"
-    button = Button(64 * 6, 64 * 6, 192, 128, 
-        function()
-            print("click")
-        end
-    )
 
-    tiler.init()
-
-
+    -- tilemap = Tiles()
+    oldPlayerSprite = love.graphics.newImage("Sprites/Player.png")
     
-    Steam.init()
+    -- Render.addObjectToLayer("Background", tilemap)
+
+    local file = love.filesystem.read("savedata.txt")
+    tilesdraw = Lume.deserialize(file)
     
+    img = love.graphics.newImage("Sprites/Tilemap/WallMiddle.png")
+
 end
 
+function tilemapinit()
+    Render.reset()
+
+    Render.createLayer("Background") -- 1
+    Render.createLayer("Game", true) -- 2
+    Render.createLayer("Projectiles") -- 3
+    Render.createLayer("UI") -- 4
+
+    state = "tilemap"
+    debug = false
+
+    updateables = {}
+
+    updateables.ui = {}
+    function updateables.ui:update(dt)
+        for i = #self, 1, -1 do
+            self[i]:update()
+        end
+    end
+
+    
+
+    spawn(Tiler(), updateables.ui, "UI")
+
+end
 function love.update(dt)
+    
     mousex, mousey = GameWindow.getMousePosition()
     
     if state == "game" then
@@ -181,8 +223,13 @@ function love.update(dt)
         if love.keyboard.isDown("space") then
             spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
         end
-        tiler.update()
-        button:update()
+
+        for i, update in pairs(updateables) do
+            update:update(dt)
+        end
+
+
+        
     end
 end
 
@@ -190,6 +237,13 @@ function love.draw()
     if state == "game" then
         GameWindow.start()
 
+        
+        if tilesdraw.tiles then
+            for i, obj in ipairs(tilesdraw.tiles) do
+            love.graphics.draw(tileset[obj.id], (obj.x * 64) - 64, (obj.y * 64) - 64)
+                
+            end
+        end
         Render.drawLayers()
         
 
@@ -198,15 +252,16 @@ function love.draw()
         love.graphics.print(state,10,30)
 
         
+
         GameWindow.finish()
     end
 
     if state == "tilemap" then
         GameWindow.start()
+        
+        
+        Render.drawLayers()
 
-
-        tiler.draw()
-        button:draw()
 
         GameWindow.finish()
     end
@@ -219,6 +274,14 @@ end
 function love.keypressed(k)
     if k == "f" then
         love.window.setFullscreen(not love.window.getFullscreen())
+    end
+
+    if k == "[" then
+        gameinit()
+    end
+
+    if k == "]" then
+        tilemapinit()
     end
 end
 

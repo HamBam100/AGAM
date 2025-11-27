@@ -7,6 +7,8 @@ keybinds.down = {"s", "down"}
 keybinds.left = {"a", "left"}
 keybinds.right = {"d", "right"}
 keybinds.shoot = {"mouse:1"}
+keybinds.shootalt = {"mouse:2"}
+keybinds.save = {"e"}
 
 function bindPressed(bind)
     keyIsDown = false

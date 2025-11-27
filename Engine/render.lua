@@ -8,6 +8,10 @@ function Render.createLayer(name, sort)
     table.insert(Render.layers, newlayer)
 end
 
+function Render.reset()
+    Render.layers = {}
+end
+
 
 function Render.addObjectToLayer(name, obj)
     --checks through all layers, and if a layer mathces the name requested, inserts the object into that layer

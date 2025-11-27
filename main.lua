@@ -106,7 +106,7 @@ function love.load()
 
     GameWindow.load(1920, 1080)
 
-    
+    virtualMouseStart()
 
     tilemapinit()
     
@@ -207,7 +207,12 @@ function love.update(dt)
     
     mousex, mousey = GameWindow.getMousePosition()
     
+    
+    
+    
+
     if state == "game" then
+        virtualMouseUpdate(updateables.players[1])
         if love.keyboard.isDown("space") then
             spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
         end

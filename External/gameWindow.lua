@@ -7,7 +7,7 @@ function gameWindow.load(w,h)
 
     windowWidth, windowHeight = 1920, 1080
     love.window.setMode(windowWidth, windowHeight, {resizable=true, vsync=0})
-    love.graphics.setDefaultFilter("nearest")
+    love.graphics.setDefaultFilter("nearest", "nearest")
     gameCanvas = love.graphics.newCanvas(gameWidth,gameHeight)
     gameWindow.resize()
 
@@ -15,9 +15,14 @@ end
 
 function gameWindow.resize()
     w, h = love.graphics.getDimensions()
+
     local scalex = w / gameWidth
     local scaley = h / gameHeight
     local scale = math.min(scalex,scaley)
+
+    
+    print(w)
+    print(h)
 
     gameWindow.translateX = (w - (gameWidth * scale)) / 2    
     gameWindow.translateY = (h - (gameHeight * scale)) / 2

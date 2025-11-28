@@ -114,7 +114,7 @@ function love.load()
 
 
     Steam.init()
-    
+
 end
 
 
@@ -172,9 +172,12 @@ function gameinit()
     -- Render.addObjectToLayer("Background", tilemap)
 
     local file = love.filesystem.read("savedata.txt")
-    tilesdraw = Lume.deserialize(file)
-    
-    img = love.graphics.newImage("Sprites/Tilemap/WallMiddle.png")
+
+    tilesdraw = {}
+    if file then 
+        print(#file)
+        tilesdraw = Lume.deserialize(file)
+    end
 
 end
 

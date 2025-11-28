@@ -3,11 +3,11 @@ keybinds = {}
 
 
 keybinds.up = {"key:w", "key:up", "gamepad:dpup", "analog:lefty:up"}
-keybinds.down = {"key:s", "key:down", "gamepad:dpdown"}
-keybinds.left = {"key:a", "key:left", "gamepad:dpleft"}
-keybinds.right = {"key:d", "key:right", "gamepad:dpright"}
-keybinds.shoot = {"mouse:1", "gamepad:x"}
-keybinds.shootalt = {"mouse:2"}
+keybinds.down = {"key:s", "key:down", "gamepad:dpdown", "analog:lefty:down"}
+keybinds.left = {"key:a", "key:left", "gamepad:dpleft", "analog:leftx:left"}
+keybinds.right = {"key:d", "key:right", "gamepad:dpright", "analog:leftx:right"}
+keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
+keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
 keybinds.save = {"key:e"}
 keybinds.space = {"key:space", "gamepad:a"}
 

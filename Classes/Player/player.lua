@@ -20,7 +20,7 @@ function Player:new()
     boost = 0.0
     -- self.colour = {0.258823529,0.0235294118,0.207843137,1.0}
 
-    self.colour = colour.purple
+    self.colour = colour.aqua
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
     self.eyes = Eyes(self)
     self.wand = Wand(self)

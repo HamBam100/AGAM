@@ -6,22 +6,25 @@ keybinds.up = {"key:w", "key:up", "gamepad:dpup", "analog:lefty:up"}
 keybinds.down = {"key:s", "key:down", "gamepad:dpdown"}
 keybinds.left = {"key:a", "key:left", "gamepad:dpleft"}
 keybinds.right = {"key:d", "key:right", "gamepad:dpright"}
-keybinds.shoot = {"mouse:1"}
+keybinds.shoot = {"mouse:1", "gamepad:x"}
 keybinds.shootalt = {"mouse:2"}
 keybinds.save = {"key:e"}
+keybinds.space = {"key:space", "gamepad:a"}
 
-if love.joystick.getJoystickCount() > 0 then
-    joyStick = love.joystick.getJoysticks(1)
-end
+inputMode = "keyboard"
+
+
 
 
 function bindPressed(bind)
     keyIsDown = false
+
     for i=1,#bind,1 do
 
         if string.sub(bind[i], 1, 6) == "mouse:" then
             local button = tonumber(string.sub(bind[i], 7))
             if love.mouse.isDown(button) then
+                inputMode = "keyboard"
                 keyIsDown = true
                 break
             end
@@ -31,6 +34,7 @@ function bindPressed(bind)
             local button = string.sub(bind[i], 5, -1)
             
             if love.keyboard.isDown(button) then
+                inputMode = "keyboard"
                 keyIsDown = true
                 break
             end
@@ -43,7 +47,7 @@ function bindPressed(bind)
                 local button = string.sub(bind[i], 9, -1)
                 
                 if joyStick:isGamepadDown(button) then
-                    
+                    inputMode = "gamepad"
                     keyIsDown = true
                     break
                 end
@@ -59,19 +63,27 @@ function bindPressed(bind)
                 
 
                 axis = joyStick:getGamepadAxis(axis)
-                
 
-                if axis < -0.5 then
+                if dir == "up" and axis < -0.5 then
                     keyIsDown = true
                     break
                 end
-                -- local button = string.sub(bind[i], 8, -1)
-                
-                -- if joyStick:isGamepadDown(button) then
+
+                if dir == "down" and axis > 0.5 then
+                    keyIsDown = true
+                    break
+                end
+
+                if dir == "left" and axis < -0.5 then
+                    keyIsDown = true
+                    break
+                end
+
+                if dir == "right" and axis > 0.5 then
+                    keyIsDown = true
+                    break
+                end
                     
-                --     keyIsDown = true
-                --     break
-                -- end
             end
 
 
@@ -86,23 +98,22 @@ end
 
 function virtualMouseStart()
     previousAxisx = 0
-    previousAxisy = 0
+    previousAxisy = -1
 end
 
 
 function virtualMouseUpdate(obj)
-    
-    if joyStick then
+
+
+
+    if joyStick and inputMode == "gamepad" then
         obj = obj or {x=0,y=0}
         local axisx = joyStick:getGamepadAxis("rightx")
         local axisy = joyStick:getGamepadAxis("righty")
         if (axisx < 0.5 and axisx > -0.5) and (axisy < 0.5 and axisy > -0.5) then
-            print("cool")
             axisx = previousAxisx
             axisy = previousAxisy
 
-        else
-            print("pog")
         end
 
         mousex = obj.x + axisx * 100
@@ -110,11 +121,22 @@ function virtualMouseUpdate(obj)
 
         previousAxisx = axisx
         previousAxisy = axisy
+
+
+
     end
 end
 
-function love.joystickadded(joystick)
-    joyStick = joystick
-    print(joyStick)
+function love.joystickadded(detectedJoyStick)
+    joyStick = detectedJoyStick
+    inputMode = "gamepad"
+    print("added")
 end
+
+function love.joystickremoved(detectedJoyStick)
+    joyStick = nil
+    inputMode = "keyboard"
+    print("removed")
+end
+
 return keybinds

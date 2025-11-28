@@ -108,7 +108,7 @@ function love.load()
 
     virtualMouseStart()
 
-    tilemapinit()
+    gameinit()
     
     
 
@@ -212,8 +212,10 @@ function love.update(dt)
     
 
     if state == "game" then
+        
         virtualMouseUpdate(updateables.players[1])
-        if love.keyboard.isDown("space") then
+
+        if bindPressed(keybinds.space) then
             spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
         end
 
@@ -225,9 +227,7 @@ function love.update(dt)
     end 
 
     if state == "tilemap" then
-        if love.keyboard.isDown("space") then
-            spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
-        end
+
 
         for i, update in pairs(updateables) do
             update:update(dt)
@@ -239,9 +239,8 @@ function love.update(dt)
 end
 
 function love.draw()
+    GameWindow.start()
     if state == "game" then
-        GameWindow.start()
-
         
         if tilesdraw.tiles then
             for i, obj in ipairs(tilesdraw.tiles) do
@@ -251,25 +250,19 @@ function love.draw()
         end
         Render.drawLayers()
         
-
         love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
         love.graphics.print("Slime: "..#updateables.enemies,10,20)
         love.graphics.print(state,10,30)
 
-        
-
-        GameWindow.finish()
     end
 
     if state == "tilemap" then
-        GameWindow.start()
-        
-        
+
         Render.drawLayers()
 
-
-        GameWindow.finish()
     end
+
+    GameWindow.finish()
 end
 
 function love.resize(w, h)

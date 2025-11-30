@@ -78,6 +78,7 @@ function love.load()
 
     Object = require "External.classic"
     Lume = require "External.lume"
+    Sir = require "External.bitser"
     
     require "Engine.helper"
     require "Engine.collision"
@@ -171,12 +172,12 @@ function gameinit()
     
     -- Render.addObjectToLayer("Background", tilemap)
 
-    local file = love.filesystem.read("savedata.txt")
+    local file = love.filesystem.read("savedata.lua")
 
     tilesdraw = {}
     if file then 
-        print(#file)
-        tilesdraw = Lume.deserialize(file)
+        -- tilesdraw = Lume.deserialize(file)
+        tilesdraw = Sir.loads(file)
     end
 
 end

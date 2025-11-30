@@ -224,12 +224,14 @@ function Tiler:save()
     local data = {}
     data.tiles = savedTilemap
 
-    local serialized = Lume.serialize(data)
-
-    love.filesystem.write("savedata.txt", serialized)
+    -- local serialized = Lume.serialize(data)
+    local serialized = Sir.dumps(data)
+    love.filesystem.write("savedata.lua", serialized)
 
     
-    -- gameinit()
+
+    
+
     return serialized
 end
 

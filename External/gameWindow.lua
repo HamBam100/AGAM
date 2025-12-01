@@ -6,9 +6,9 @@ function gameWindow.load(w,h)
     gameWidth, gameHeight = w, h
 
     windowWidth, windowHeight = 1920, 1080
-    love.window.setMode(windowWidth, windowHeight, {resizable=true, vsync=0})
+    love.window.setMode(windowWidth, windowHeight, {resizable=true, vsync=0, msaa = 0})
     love.graphics.setDefaultFilter("nearest", "nearest")
-    gameCanvas = love.graphics.newCanvas(gameWidth,gameHeight)
+    gameCanvas = love.graphics.newCanvas(gameWidth,gameHeight, { dpiscale = 1 })
     gameWindow.resize()
 
 end

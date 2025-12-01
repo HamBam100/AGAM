@@ -4,7 +4,9 @@ local Wand = Object:extend()
 
 
 function Wand:new(parent)
+    -- Provides object with the variables of player
     self.parent = parent
+    
     self.sprite = love.graphics.newImage("Sprites/Magic Staff.png")
     self.x = 64
     self.y = 64
@@ -21,8 +23,8 @@ function Wand:update(dt)
     self.x = p.x
     self.y = p.y
     
+    -- Point and offset wand towards mouse
     self.r = math.atan2(mousey - self.y, mousex - self.x) 
-    
     self.xv = math.floor(math.cos(self.r) * 140)
     self.yv = math.floor(math.sin(self.r) * 140)
     self.x = math.floor(self.x + self.xv)

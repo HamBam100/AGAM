@@ -92,7 +92,6 @@ function love.load()
     
 
     Player = require "Classes.Player.player"
-    Tiles = require "Classes.tiles"
     Slime = require "Classes.slime"
     DebugSlime = require "Classes.debug"
     Wand = require "Classes.Player.wand"
@@ -105,11 +104,38 @@ function love.load()
     tintPlayerShader = love.graphics.newShader(shader_code_2)
     tintShader = love.graphics.newShader(shader_code_3)
 
+
+    local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
+    tilesetimage = love.graphics.newImage(tilesheetdir)
+    tilesetimage:setFilter("nearest", "nearest")
+    tilesetimagewidth = tilesetimage:getWidth()
+    tilesetimageheight = tilesetimage:getHeight()
+    tileset = {}
+
+
+    local tilesetwidth = 12
+    local tilesetheight = 2
+    local tilewidth = 64
+    local tileheight = 64
+    for i=0,tilesetheight - 1 do
+        for j=0,tilesetwidth - 1 do
+            local col = false
+            table.insert(tileset, love.graphics.newQuad(
+                j * (tilewidth),
+                i * (tileheight),
+                tilewidth,
+                tileheight,
+                tilesetimagewidth,
+                tilesetimageheight))
+        end
+    end
+
+
     GameWindow.load(1920, 1080)
 
     virtualMouseStart()
 
-    gameinit()
+    editorinit()
     
     
 
@@ -121,12 +147,7 @@ end
 
 function gameinit()
     Render.reset()
-    local tilesetdir = {"Sprites/Tilemap/WallMiddle.png","Sprites/Tilemap/WallTop.png","Sprites/Tilemap/WallBottom.png", "Sprites/Tilemap/WallCrown.png", "Sprites/Tilemap/FloorBasic.png", "Sprites/Tilemap/FloorLine.png", "Sprites/Tilemap/FloorPlus.png", "Sprites/Tilemap/FloorMinus.png"}
-
-    tileset = {}
-    for i=1, #tilesetdir do
-        tileset[i] = love.graphics.newImage(tilesetdir[i])
-    end
+    
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
@@ -166,23 +187,16 @@ function gameinit()
     spawn(Slime(), updateables.enemies, "Game")
     spawn(DebugSlime(), updateables.enemies, "Game")
 
-
-    -- tilemap = Tiles()
-    oldPlayerSprite = love.graphics.newImage("Sprites/Player.png")
     
-    -- Render.addObjectToLayer("Background", tilemap)
 
-    local file = love.filesystem.read("savedata.lua")
+    tilemap = Tiler("walls.lua")
+    Render.addObjectToLayer("Background", tilemap)
 
-    tilesdraw = {}
-    if file then 
-        -- tilesdraw = Lume.deserialize(file)
-        tilesdraw = Sir.loads(file)
-    end
+    
 
 end
 
-function tilemapinit()
+function editorinit()
     Render.reset()
 
     Render.createLayer("Background") -- 1
@@ -190,7 +204,7 @@ function tilemapinit()
     Render.createLayer("Projectiles") -- 3
     Render.createLayer("UI") -- 4
 
-    state = "tilemap"
+    state = "editor"
     debug = false
 
     updateables = {}
@@ -204,7 +218,7 @@ function tilemapinit()
 
     
 
-    spawn(Tiler(), updateables.ui, "UI")
+    spawn(Editor(), updateables.ui, "UI")
 
 end
 function love.update(dt)
@@ -230,7 +244,7 @@ function love.update(dt)
         Render.sortitems()
     end 
 
-    if state == "tilemap" then
+    if state == "editor" then
 
 
         for i, update in pairs(updateables) do
@@ -246,21 +260,18 @@ function love.draw()
     GameWindow.start()
     if state == "game" then
         
-        if tilesdraw.tiles then
-            for i, obj in ipairs(tilesdraw.tiles) do
-            love.graphics.draw(tileset[obj.id], (obj.x * 64) - 64, (obj.y * 64) - 64)
-                
-            end
-        end
+        tilemap:draw()
         Render.drawLayers()
         
         love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
         love.graphics.print("Slime: "..#updateables.enemies,10,20)
         love.graphics.print(state,10,30)
+        love.graphics.print("DPI Scale: " .. love.window.getDPIScale(), 10, 40)
+        
 
     end
 
-    if state == "tilemap" then
+    if state == "editor" then
 
         Render.drawLayers()
 
@@ -283,7 +294,7 @@ function love.keypressed(k)
     end
 
     if k == "]" then
-        tilemapinit()
+        editorinit()
     end
 end
 

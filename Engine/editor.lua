@@ -3,6 +3,7 @@ local Editor = Object:extend()
 
 Editor.tilesheet = {}
 
+currentfile = "walls.lua"
 function Editor:maketile(tileid)
     local newTile = {}
     newTile.id = tileid
@@ -25,6 +26,18 @@ function Editor:load()
             self.tilemap[y][x] = {}
         end
     end
+
+    local file = love.filesystem.read(currentfile)
+    local loadedtilemap = Sir.loads(file)
+
+    for i, tile in ipairs(loadedtilemap) do
+        tiletype = self.tilesheet[tile.id]
+
+        self:expand(tile.x,tile.y)
+        
+        self:add(tile.x, tile.y)
+    end
+
 end
 
 function Editor:expand(tx,ty)
@@ -226,7 +239,7 @@ function Editor:save()
 
     -- local serialized = Lume.serialize(data)
     local serialized = Sir.dumps(data)
-    love.filesystem.write("savedata.lua", serialized)
+    love.filesystem.write(currentfile, serialized)
 
     
 

@@ -10,11 +10,13 @@ keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
 keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
 keybinds.save = {"key:e"}
 keybinds.space = {"key:space", "gamepad:a"}
+keybinds.scrollup = {"wheel:up"}
+keybinds.scrolldown = {"wheel:down"}
 
 inputMode = "keyboard"
 
 
-
+wheel = {up = false, down = false}
 
 function bindPressed(bind)
     keyIsDown = false
@@ -26,6 +28,18 @@ function bindPressed(bind)
             if love.mouse.isDown(button) then
                 inputMode = "keyboard"
                 keyIsDown = true
+                break
+            end
+        end
+
+        if string.sub(bind[i], 1, 6) == "wheel:" then
+            
+            local direction = string.sub(bind[i], 7)
+
+            if wheel[direction] then
+                inputMode = "keyboard"
+                keyIsDown = true
+                wheel = {up = false, down = false}
                 break
             end
         end
@@ -92,6 +106,7 @@ function bindPressed(bind)
 
         
     end
+    
     return keyIsDown
 end
 
@@ -126,6 +141,20 @@ function virtualMouseUpdate(obj)
 
     end
 end
+
+
+
+function love.wheelmoved(x, y)
+    
+    if y > 0 then
+        wheel.up = true
+    end
+
+    if y < 0 then
+        wheel.down = true
+    end
+end
+
 
 function love.joystickadded(detectedJoyStick)
     joyStick = detectedJoyStick

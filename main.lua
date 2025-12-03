@@ -1,73 +1,5 @@
 
-local shader_code_1 = [[
-vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 
-    vec4 pixel = Texel(image, uvs);
-
-    float av = pixel.r*255 + pixel.g*255 + pixel.b*255 + pixel.a*255;
-    float value = clamp(av,0,1);
-
-    float opacity = pixel.a;
-
-    return vec4(value, value, value, opacity);
-}
-
-]]
-
-
-local shader_code_2 = [[
-
-uniform vec3 targetColour;
-    
-vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
-
-    vec4 pixel = Texel(image, uvs);
-    
-    vec4 newPixel = pixel;
-
-    if (pixel.g < 0.4)
-    { 
-
-        float luminocity = pixel.r * 0.299 + pixel.g * 0.587 + pixel.b * 0.114;
-        luminocity = luminocity;
-        
-        vec3 newColour = targetColour / 255;
-
-        newPixel = vec4(clamp(newColour * luminocity * 2.5, 0.0, 1.0), pixel.a);
-    
-    } 
-    
-    return vec4(newPixel.r, newPixel.g, newPixel.b, newPixel.a);
-}
-
-]]
-
-local shader_code_3 = [[
-
-uniform vec3 targetColour;
-    
-vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
-
-    vec4 pixel = Texel(image, uvs);
-    
-    vec4 newPixel = pixel;
-
-    if (pixel.a > 0)
-    { 
-
-        float luminocity = pixel.r * 0.299 + pixel.g * 0.587 + pixel.b * 0.114;
-        luminocity = luminocity;
-
-        vec3 newColour = targetColour / 255;
-
-        newPixel = vec4(clamp(newColour * luminocity * 2.5, 0.0, 1.0), pixel.a);
-    
-    } 
-    
-    return vec4(newPixel.r, newPixel.g, newPixel.b, newPixel.a);
-}
-
-]]
 
 
 function love.load()
@@ -82,6 +14,7 @@ function love.load()
     
     require "Engine.helper"
     require "Engine.collision"
+    require "Engine.shaders"
     Tiler = require "Engine.tiler"
 
     Layer = require "Engine.layers"
@@ -97,12 +30,11 @@ function love.load()
     Wand = require "Classes.Player.wand"
     Eyes = require "Classes.Player.eyes"
     Projectile = require "Classes.projectile"
+    Mouse = require "Classes.mouse"
+    Scene = require "Classes.scene"
 
     Button = require "Classes.UI.Button"
-    
-    flashShader = love.graphics.newShader(shader_code_1)
-    tintPlayerShader = love.graphics.newShader(shader_code_2)
-    tintShader = love.graphics.newShader(shader_code_3)
+
 
 
     local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
@@ -129,11 +61,32 @@ function love.load()
                 tilesetimageheight))
         end
     end
-
+    love.mouse.setVisible(false)
 
     GameWindow.load(1920, 1080)
 
     virtualMouseStart()
+
+
+
+    
+    updateableContainer = {}
+    updateableContainer.__index = updateableContainer
+
+    function updateableContainer:update(dt)
+        for i = #self, 1, -1 do
+            self[i]:update(dt,i)
+        end
+    end
+
+    function createUpdateableContainer()
+        local container = {}
+        setmetatable(container, updateableContainer)
+        return container
+    end
+
+
+    updateables = {}
 
     editorinit()
     
@@ -157,35 +110,20 @@ function gameinit()
     state = "game"
     debug = false
 
+    
     updateables = {}
+    
+    updateables.players = createUpdateableContainer()
+    updateables.enemies = createUpdateableContainer()
+    updateables.projectiles = createUpdateableContainer()
+    updateables.mouse = createUpdateableContainer()
 
-    --player container
-    updateables.players = {}
-    function updateables.players:update(dt)
-        for i = #self, 1, -1 do
-            self[i]:update(dt)
-        end
-    end
 
-    --enemy container
-    updateables.enemies = {}
-    function updateables.enemies:update(dt) 
-        for i = #self, 1, -1 do
-            self[i]:update(dt,i)
-        end
-    end
-
-    --projectile container
-    updateables.projectiles = {}
-    function updateables.projectiles:update(dt)
-        for i = #self, 1, -1 do
-            self[i]:update(dt,i)
-        end
-    end
 
     spawn(Player(), updateables.players, "Game")
     spawn(Slime(), updateables.enemies, "Game")
     spawn(DebugSlime(), updateables.enemies, "Game")
+    spawn(Mouse(), updateables.mouse, "UI")
 
     
 
@@ -209,26 +147,20 @@ function editorinit()
 
     updateables = {}
 
-    updateables.ui = {}
-    function updateables.ui:update(dt)
-        for i = #self, 1, -1 do
-            self[i]:update()
-        end
-    end
+    updateables.ui = createUpdateableContainer()
+
 
     
 
     spawn(Editor(), updateables.ui, "UI")
 
 end
+
 function love.update(dt)
     
     mousex, mousey = GameWindow.getMousePosition()
-    
-    
-    
-    
 
+    --Scene:update(dt)
     if state == "game" then
         
         virtualMouseUpdate(updateables.players[1])

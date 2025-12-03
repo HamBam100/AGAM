@@ -1,6 +1,6 @@
 
 local Editor = Object:extend()
-
+local numberOfTiles = 20
 Editor.tilesheet = {}
 
 currentfile = "walls.lua"
@@ -70,7 +70,7 @@ end
 
 function Editor:new()
     self.tilesheet = {}
-    for i=1, 19 do
+    for i=1, numberOfTiles do
         self:maketile(i)
     end
     self.origin = {}
@@ -138,8 +138,8 @@ function Editor:update()
 
     local outofbounds = false
     
-    tileSelection.mx = round((truemousex - 32) / 64)*64
-    tileSelection.my = round((truemousey - 32) / 64)*64
+    tileSelection.mx = round((truemousex - self.scale.x / 2) / self.scale.x)*64 * self.scale.x / 64
+    tileSelection.my = round((truemousey - self.scale.y / 2) / self.scale.y)*64 * self.scale.y / 64
 
     tileSelection.x = (tileSelection.mx / self.scale.x) + 1
     tileSelection.y = (tileSelection.my / self.scale.y) + 1
@@ -190,6 +190,18 @@ function Editor:update()
         self:save()
     end
 
+    if bindPressed(keybinds.scrollup) then
+
+        self.scale.x = self.scale.x + 1
+        self.scale.y = self.scale.y + 1
+    end
+
+    if bindPressed(keybinds.scrolldown) then
+
+        self.scale.x = self.scale.x - 1
+        self.scale.y = self.scale.y - 1
+    end
+
     
 end
 
@@ -199,7 +211,7 @@ function Editor:draw()
         for x = 1, #self.tilemap[y] do
             local currentTile = self.tilemap[y][x]
             if currentTile.id then
-                love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
+                love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y, 0, self.scale.x / 64, self.scale.y / 64)
                 --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
             end
         end

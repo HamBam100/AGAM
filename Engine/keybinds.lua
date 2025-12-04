@@ -12,6 +12,9 @@ keybinds.save = {"key:e"}
 keybinds.space = {"key:space", "gamepad:a"}
 keybinds.scrollup = {"wheel:up"}
 keybinds.scrolldown = {"wheel:down"}
+keybinds.minus = {"key:1"}
+keybinds.plus = {"key:2"}
+
 
 inputMode = "keyboard"
 

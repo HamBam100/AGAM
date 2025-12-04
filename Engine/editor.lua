@@ -18,37 +18,51 @@ function Editor:maketile(tileid)
     table.insert(self.tilesheet, newTile)
 end
 
-function Editor:load()
-    self.tilemap = {}
+function Editor:inittilemap(i)
+    self.tilemap[i] = {}    
     for y = 1, 10 do
-        self.tilemap [y]= {}
+        self.tilemap[i] [y]= {}
         for x = 1, 10 do
-            self.tilemap[y][x] = {}
+            self.tilemap[i][y][x] = {}
         end
     end
+end
+
+function Editor:load()
+    self.tilemap = {}
+    
 
     local file = love.filesystem.read(currentfile)
     local loadedtilemap = Sir.loads(file)
 
-    for i, tile in ipairs(loadedtilemap) do
-        tiletype = self.tilesheet[tile.id]
 
-        self:expand(tile.x,tile.y)
-        
-        self:add(tile.x, tile.y)
+    for i=1, #loadedtilemap do
+        self:inittilemap(i)
+        currentLayer = i
+        for j, tile in ipairs(loadedtilemap[i]) do
+            if tile and tile.id then
+                tiletype = self.tilesheet[tile.id]
+                
+                self:expand(tile.x,tile.y)
+                
+                self:add(tile.x, tile.y)
+            end
+        end
     end
 
+    tiletype = self.tilesheet[1]
+    currentLayer = 1
 end
 
 function Editor:expand(tx,ty)
 
     for y = 1, ty  do
-        if not self.tilemap[y] then
-            self.tilemap [y] = {}
+        if not self.tilemap[currentLayer][y] then
+            self.tilemap[currentLayer] [y] = {}
         end
         for x = 1, tx do
-            if not self.tilemap[y][x] then
-                self.tilemap[y][x] = {}
+            if not self.tilemap[currentLayer][y][x] then
+                self.tilemap[currentLayer][y][x] = {}
             end
         end
     end
@@ -58,13 +72,13 @@ end
 
 function Editor:add(tx,ty)
     if tx > 0 and ty > 0 then
-        self.tilemap [ty][tx] = tiletype
+        self.tilemap[currentLayer] [ty][tx] = tiletype
     end
 end
 
 function Editor:remove(tx,ty)
     if tx > 0 and ty > 0 then
-        self.tilemap [ty][tx] = {}
+        self.tilemap[currentLayer] [ty][tx] = {}
     end
 end
 
@@ -84,6 +98,7 @@ function Editor:new()
     tileSelection.mx = 0
     tileSelection.my = 0
     tiletype = self.tilesheet[1]
+    currentLayer = 1
     
     self:load()
     buttons = {}
@@ -143,10 +158,17 @@ function Editor:update()
     tileSelection.x = round((tileSelection.mx) + 0.5)
     tileSelection.y = round((tileSelection.my) + 0.5)
 
-    if tileSelection.y > #self.tilemap or tileSelection.x > #self.tilemap[1] then
+    if tileSelection.y > #self.tilemap[currentLayer] or tileSelection.x > #self.tilemap[currentLayer][1] then
         outofbounds = true
     end
 
+    if bindPressed(keybinds.space) then
+
+        self.scale = 64
+
+        self.origin.x = mousex - tileSelection.mx * self.scale
+        self.origin.y = mousey - tileSelection.my * self.scale
+    end
 
     if globalhover == false then
         if bindPressed(keybinds.shoot) then
@@ -171,6 +193,7 @@ function Editor:update()
 
         self.origin.x = self.origin.x - 1
     end
+
     if bindPressed(keybinds.left) then
 
         self.origin.x = self.origin.x + 1
@@ -179,10 +202,12 @@ function Editor:update()
     if bindPressed(keybinds.down) then
 
         self.origin.y = self.origin.y - 1
+        
     end
     if bindPressed(keybinds.up) then
 
         self.origin.y = self.origin.y + 1
+        
     end
     if bindPressed(keybinds.save) then
 
@@ -191,23 +216,35 @@ function Editor:update()
 
     if bindPressed(keybinds.scrollup) then
 
+        if self.scale < 256 then
+            self.scale = self.scale + 4
 
-        self.scale = self.scale + 5
-
-        self.origin.x = mousex - tileSelection.mx * self.scale
-        self.origin.y = mousey - tileSelection.my * self.scale
+            self.origin.x = mousex - tileSelection.mx * self.scale
+            self.origin.y = mousey - tileSelection.my * self.scale
+        end
     end
 
     if bindPressed(keybinds.scrolldown) then
 
+        if self.scale > 4 then
+            self.scale = self.scale - 4
 
-        self.scale = self.scale - 5
-
-        self.origin.x = mousex - tileSelection.mx * self.scale
-        self.origin.y = mousey - tileSelection.my * self.scale
+            self.origin.x = mousex - tileSelection.mx * self.scale
+            self.origin.y = mousey - tileSelection.my * self.scale
+        end
 
     end
 
+    if bindPressed(keybinds.minus) then
+        currentLayer = 1
+    end
+    if bindPressed(keybinds.plus) then
+        currentLayer = 2
+        if currentLayer > #self.tilemap then
+            self:inittilemap(currentLayer)
+            
+        end
+    end
 
     
     
@@ -215,16 +252,19 @@ end
 
 function Editor:draw()
 
-    for y = 1, #self.tilemap do
-        for x = 1, #self.tilemap[y] do
-            local currentTile = self.tilemap[y][x]
-            if currentTile.id then
-                love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
-                --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
+    for i = 1, #self.tilemap do
+        for y = 1, #self.tilemap[i] do
+            for x = 1, #self.tilemap[i][y] do
+                local currentTile = self.tilemap[i][y][x]
+                if currentTile and currentTile.id then
+                    love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
+                    --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
+                end
             end
         end
     end
 
+    love.graphics.rectangle("line", self.origin.x + 0 * self.scale, self.origin.y + 0 * self.scale, 1, 1)
 
     for i = #buttons, 1, -1 do
         buttons[i]:draw(dt)
@@ -232,30 +272,44 @@ function Editor:draw()
 
 
 
-    love.graphics.print("mx: " .. tileSelection.mx,0,40)
-    love.graphics.print("my: " .. tileSelection.my,0,60)
+    love.graphics.print("mx: " .. tileSelection.mx,0,60)
+    love.graphics.print("my: " .. tileSelection.my,0,80)
 
-    love.graphics.print("x: " .. tileSelection.x,0,80)
-    love.graphics.print("y: " .. tileSelection.y,0,100)
+    love.graphics.print("x: " .. tileSelection.x,0,100)
+    love.graphics.print("y: " .. tileSelection.y,0,120)
 
-    love.graphics.rectangle("line", self.origin.x + (tileSelection.x - 1) * self.scale, self.origin.y + (tileSelection.y - 1) * self.scale, self.scale, self.scale)
+    love.graphics.print("currentLayer: " .. currentLayer,0,140)
+    love.graphics.print("#tilemap: " .. #self.tilemap,0,160)
+
+    love.graphics.print("Scale: "..self.scale,0,180)
+
+    love.graphics.print("FPS: "..love.timer.getFPS(),0,220)
+
+    if not globalhover then
+        love.graphics.rectangle("line", self.origin.x + (tileSelection.x - 1) * self.scale, self.origin.y + (tileSelection.y - 1) * self.scale, self.scale, self.scale)
+    end
 end
 
 
 function Editor:save()
     local savedTilemap = {}
-     for y = 1, #self.tilemap  do
-        for x = 1, #self.tilemap[y] do
-            if self.tilemap[y][x].id then
-                local adding = {}
-                adding.id = self.tilemap[y][x].id
-                adding.x = x
-                adding.y = y
-                table.insert(savedTilemap, adding)
+    for i = 1, #self.tilemap do 
+        table.insert(savedTilemap, {})
+    end
+
+    for i = 1, #self.tilemap  do
+        for y = 1, #self.tilemap[i]  do
+            for x = 1, #self.tilemap[i][y] do
+                if self.tilemap[i][y][x].id then
+                    local adding = {}
+                    adding.id = self.tilemap[i][y][x].id
+                    adding.x = x
+                    adding.y = y
+                    table.insert(savedTilemap[i], adding)
+                end
             end
         end
     end
-    
     local data = savedTilemap
 
     -- local serialized = Lume.serialize(data)

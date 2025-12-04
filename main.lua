@@ -61,7 +61,7 @@ function love.load()
                 tilesetimageheight))
         end
     end
-    love.mouse.setVisible(false)
+    --love.mouse.setVisible(false)
 
     GameWindow.load(1920, 1080)
 

@@ -76,9 +76,8 @@ function Editor:new()
     self.origin = {}
     self.origin.x = 64
     self.origin.y = 64
-    self.scale = {}
-    self.scale.x = 64
-    self.scale.y = 64
+    self.tilesize = 64
+    self.scale = 64
     tileSelection = {}
     tileSelection.x = 0
     tileSelection.y = 0
@@ -138,11 +137,11 @@ function Editor:update()
 
     local outofbounds = false
     
-    tileSelection.mx = round((truemousex - self.scale.x / 2) / self.scale.x)*64 * self.scale.x / 64
-    tileSelection.my = round((truemousey - self.scale.y / 2) / self.scale.y)*64 * self.scale.y / 64
+    tileSelection.mx = (mousex - self.origin.x) / self.scale
+    tileSelection.my = (mousey - self.origin.y) / self.scale
 
-    tileSelection.x = (tileSelection.mx / self.scale.x) + 1
-    tileSelection.y = (tileSelection.my / self.scale.y) + 1
+    tileSelection.x = round((tileSelection.mx) + 0.5)
+    tileSelection.y = round((tileSelection.my) + 0.5)
 
     if tileSelection.y > #self.tilemap or tileSelection.x > #self.tilemap[1] then
         outofbounds = true
@@ -192,16 +191,25 @@ function Editor:update()
 
     if bindPressed(keybinds.scrollup) then
 
-        self.scale.x = self.scale.x + 1
-        self.scale.y = self.scale.y + 1
+
+        self.scale = self.scale + 5
+
+        self.origin.x = mousex - tileSelection.mx * self.scale
+        self.origin.y = mousey - tileSelection.my * self.scale
     end
 
     if bindPressed(keybinds.scrolldown) then
 
-        self.scale.x = self.scale.x - 1
-        self.scale.y = self.scale.y - 1
+
+        self.scale = self.scale - 5
+
+        self.origin.x = mousex - tileSelection.mx * self.scale
+        self.origin.y = mousey - tileSelection.my * self.scale
+
     end
 
+
+    
     
 end
 
@@ -211,7 +219,7 @@ function Editor:draw()
         for x = 1, #self.tilemap[y] do
             local currentTile = self.tilemap[y][x]
             if currentTile.id then
-                love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y, 0, self.scale.x / 64, self.scale.y / 64)
+                love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
                 --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
             end
         end
@@ -222,14 +230,15 @@ function Editor:draw()
         buttons[i]:draw(dt)
     end
 
-    love.graphics.print("x: " .. #self.tilemap[2],0,20)
-    love.graphics.print("y: " .. #self.tilemap,0,0)
 
 
-    love.graphics.print("mx: " .. tileSelection.x,0,40)
-    love.graphics.print("my: " .. tileSelection.y,0,60)
+    love.graphics.print("mx: " .. tileSelection.mx,0,40)
+    love.graphics.print("my: " .. tileSelection.my,0,60)
 
-    love.graphics.rectangle("line", self.origin.x + tileSelection.mx, self.origin.y + tileSelection.my, self.scale.x, self.scale.y)
+    love.graphics.print("x: " .. tileSelection.x,0,80)
+    love.graphics.print("y: " .. tileSelection.y,0,100)
+
+    love.graphics.rectangle("line", self.origin.x + (tileSelection.x - 1) * self.scale, self.origin.y + (tileSelection.y - 1) * self.scale, self.scale, self.scale)
 end
 
 

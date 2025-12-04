@@ -1,7 +1,5 @@
 keybinds = {}
 
-
-
 keybinds.up = {"key:w", "key:up", "gamepad:dpup", "analog:lefty:up"}
 keybinds.down = {"key:s", "key:down", "gamepad:dpdown", "analog:lefty:down"}
 keybinds.left = {"key:a", "key:left", "gamepad:dpleft", "analog:leftx:left"}
@@ -15,9 +13,7 @@ keybinds.scrolldown = {"wheel:down"}
 keybinds.minus = {"key:1"}
 keybinds.plus = {"key:2"}
 
-
 inputMode = "keyboard"
-
 
 wheel = {up = false, down = false}
 
@@ -103,26 +99,19 @@ function bindPressed(bind)
                     
             end
 
-
-
         end
 
-        
     end
     
     return keyIsDown
 end
-
 
 function virtualMouseStart()
     previousAxisx = 0
     previousAxisy = -1
 end
 
-
 function virtualMouseUpdate(obj)
-
-
 
     if joyStick and inputMode == "gamepad" then
         obj = obj or {x=0,y=0}
@@ -140,12 +129,8 @@ function virtualMouseUpdate(obj)
         previousAxisx = axisx
         previousAxisy = axisy
 
-
-
     end
 end
-
-
 
 function love.wheelmoved(x, y)
     
@@ -157,7 +142,6 @@ function love.wheelmoved(x, y)
         wheel.down = true
     end
 end
-
 
 function love.joystickadded(detectedJoyStick)
     joyStick = detectedJoyStick

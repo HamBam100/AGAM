@@ -1,7 +1,5 @@
 
 return {
-
-  
   name = 'AGAM', -- name of the game for your executable
   developer = 'HAMBAM', -- dev name used in metadata of the file
   output = 'dist', -- output location for your game, defaults to $SAVE_DIRECTORY

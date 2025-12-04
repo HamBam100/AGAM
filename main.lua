@@ -1,7 +1,4 @@
 
-
-
-
 function love.load()
 
     GameWindow = require "External.gameWindow"

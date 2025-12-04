@@ -31,27 +31,32 @@ end
 function Editor:load()
     self.tilemap = {}
     
+    if love.filesystem.exists(currentfile) then
+        local file = love.filesystem.read(currentfile)
+        local loadedtilemap = Sir.loads(file)
 
-    local file = love.filesystem.read(currentfile)
-    local loadedtilemap = Sir.loads(file)
 
-
-    for i=1, #loadedtilemap do
-        self:inittilemap(i)
-        currentLayer = i
-        for j, tile in ipairs(loadedtilemap[i]) do
-            if tile and tile.id then
-                tiletype = self.tilesheet[tile.id]
-                
-                self:expand(tile.x,tile.y)
-                
-                self:add(tile.x, tile.y)
+        for i=1, #loadedtilemap do
+            self:inittilemap(i)
+            currentLayer = i
+            for j, tile in ipairs(loadedtilemap[i]) do
+                if tile and tile.id then
+                    tiletype = self.tilesheet[tile.id]
+                    
+                    self:expand(tile.x,tile.y)
+                    
+                    self:add(tile.x, tile.y)
+                end
             end
         end
-    end
 
-    tiletype = self.tilesheet[1]
-    currentLayer = 1
+        tiletype = self.tilesheet[1]
+        currentLayer = 1
+
+    else
+        self:inittilemap(1)
+
+    end
 end
 
 function Editor:expand(tx,ty)

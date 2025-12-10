@@ -31,6 +31,7 @@ end
 
 function makeHitbox(x1,y1,x2,y2,obj)
     local hitbox = {}
+    local obj = obj or {}
     local ox = obj.ox or 0
     local oy = obj.oy or 0
     

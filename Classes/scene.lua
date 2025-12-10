@@ -1,6 +1,7 @@
 local Scene = Object:extend()
 
-function Scene:new()
+function Scene:new(file)
+    self.tilemap = Tiler(file)
 
 end
 
@@ -11,7 +12,7 @@ end
 
 
 function Scene:draw()
-
+    self.tilemap:draw()
 end
 
 

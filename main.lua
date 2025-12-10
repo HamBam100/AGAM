@@ -13,6 +13,7 @@ function love.load()
     require "Engine.collision"
     require "Engine.shaders"
     Tiler = require "Engine.tiler"
+    Scene = require "Engine.tiler"
 
     Layer = require "Engine.layers"
     Render = require "Engine.render"

@@ -7,14 +7,7 @@ currentfile = "walls.lua"
 function Editor:maketile(tileid)
     local newTile = {}
     newTile.id = tileid
-    local col = false
-    local collisionmask = {2,3,8,9,10,11,12,13,14,15,16,17,18,19}
-    for i=1, #collisionmask do
-            if tileid == collisionmask[i] then
-                col = true
-            end
-        end
-    newTile.collision = col
+
     table.insert(self.tilesheet, newTile)
 end
 

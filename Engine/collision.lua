@@ -58,7 +58,7 @@ end
 function collideBasic(a,b)
     local box1 = updateBox(a)
     local box2 = updateBox(b)
-    if box1.x1 > box2.x2 or box1.x2 < box2.x1 or box1.y1 > box2.y2 or box1.y2 < box2.y1 then
+    if box1.x1 >= box2.x2 or box1.x2 <= box2.x1 or box1.y1 >= box2.y2 or box1.y2 <= box2.y1 then
         return false
     end
     return true
@@ -175,4 +175,59 @@ function collide(a,b)
         return collideSAT(a, b)
         
     end
+end
+
+function wasVert(a, b)
+
+    return a.past.x + a.hitbox.x1 < b.x + b.hitbox.x2 and a.past.x + a.hitbox.x2 > b.x + b.hitbox.x1
+end
+
+function wasHori(a, b)
+    return a.past.y + a.hitbox.y1 < b.y + b.hitbox.y2 and a.past.y + a.hitbox.y2 > b.y + b.hitbox.y1
+end
+
+function resolveWall(a)
+    for i=1, #level.colliders do
+        local wall = {}
+        
+        wall.hitbox = level.colliders[i]
+        wall.x = 0
+        wall.y = 0
+        if collideBasic(a, wall) then
+            local wallLength = wall.hitbox.x2 - wall.hitbox.x1
+            local wallHeight = wall.hitbox.y2 - wall.hitbox.y1
+
+            local playerLength = a.hitbox.x2 - a.hitbox.x1
+            local playerHeight = a.hitbox.y2 - a.hitbox.y1
+            if wasVert(a, wall) then
+                local pushback = 0
+
+                if a.y < wall.hitbox.y1 + wallHeight/2 then
+                    pushback = a.y + playerHeight - wall.hitbox.y1
+                    a.y = a.y - pushback + a.oy
+                else
+                    pushback = wall.hitbox.y1 + wallHeight - a.y
+                    a.y = a.y + pushback + a.oy
+                end
+
+            elseif wasHori(a, wall) then
+                local pushback = 0
+
+                if a.x < wall.hitbox.x1 + wallLength/2 then
+                    pushback = a.x + playerLength - wall.hitbox.x1
+                    a.x = a.x - pushback + a.ox
+                else
+                    pushback = wall.hitbox.x1 + wallLength - a.x
+                    a.x = a.x + pushback + a.ox
+                end
+
+            end
+
+            
+            
+        end
+        
+    end
+    
+    return
 end

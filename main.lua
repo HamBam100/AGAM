@@ -13,7 +13,7 @@ function love.load()
     require "Engine.collision"
     require "Engine.shaders"
     Tiler = require "Engine.tiler"
-    Scene = require "Engine.tiler"
+    Scene = require "Engine.scene"
 
     Layer = require "Engine.layers"
     Render = require "Engine.render"
@@ -29,7 +29,6 @@ function love.load()
     Eyes = require "Classes.Player.eyes"
     Projectile = require "Classes.projectile"
     Mouse = require "Classes.mouse"
-    Scene = require "Classes.scene"
 
     Button = require "Classes.UI.Button"
 
@@ -59,7 +58,6 @@ function love.load()
                 tilesetimageheight))
         end
     end
-    --love.mouse.setVisible(false)
 
     GameWindow.load(1920, 1080)
 
@@ -98,7 +96,7 @@ end
 
 function gameinit()
     Render.reset()
-    
+    love.mouse.setVisible(false)
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
@@ -125,8 +123,8 @@ function gameinit()
 
     
 
-    tilemap = Tiler("walls.lua")
-    Render.addObjectToLayer("Background", tilemap)
+    level = Scene("walls.lua")
+    Render.addObjectToLayer("Background", level)
 
     
 
@@ -134,6 +132,8 @@ end
 
 function editorinit()
     Render.reset()
+
+    love.mouse.setVisible(true)
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
@@ -190,7 +190,7 @@ function love.draw()
     GameWindow.start()
     if state == "game" then
         
-        tilemap:draw()
+        level:draw()
         Render.drawLayers()
         
         love.graphics.print("FPS: "..love.timer.getFPS(),10,10)

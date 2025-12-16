@@ -1,8 +1,7 @@
-
 local Slime = Object:extend()
 
-
 function Slime:new(x, y)
+
     self.sprite = love.graphics.newImage("Sprites/Slime.png")
     self.x = x or 256
     self.y = y or 500
@@ -17,6 +16,7 @@ function Slime:new(x, y)
     self.inv = {i = 0, dur = 0.1}
 
     self.hitbox = makeHitbox(0,0,64,64,self)
+
 end
 
 function Slime:update(dt,i)
@@ -40,8 +40,6 @@ function Slime:update(dt,i)
 
     end
 
-
-
     if smallestDistance > 1 then
         local rotation = math.atan2(closestPlayer.y - self.y, closestPlayer.x - self.x) 
     
@@ -52,9 +50,15 @@ function Slime:update(dt,i)
         self.yv = yv
     end
 
+    self.past = {}
+    self.past.x = self.x
+    self.past.y = self.y
 
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
+
+    resolveWall(self)
+    
     
     for j, p in ipairs(updateables.projectiles) do
         if collide(self,p) then
@@ -69,7 +73,6 @@ end
 
 function Slime:draw()
 
-
     if self.inv.i > 0 then
         love.graphics.setShader(flashShader)
     end
@@ -81,7 +84,11 @@ function Slime:draw()
         drawHitbox(self)
         love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
     end
+
 end
 
+function Slime:removed()
+    
+end
 
 return Slime

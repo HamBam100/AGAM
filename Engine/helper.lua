@@ -1,5 +1,3 @@
--- to do https://programmerart.weebly.com/separating-axis-theorem.html
-
 function degtorad(degree)
     local rad = degree * math.pi/180
     return rad
@@ -45,6 +43,9 @@ end
 
 --Removes an object from the Game
 function poof(obj, array, layer, i)
+    if obj.removed then
+        obj:removed()
+    end
     Render.removeObjectFromLayer(layer, obj)
     table.remove(array, i)
 end
@@ -64,10 +65,7 @@ colour = {}
 colour.white = {255, 255, 255}
 colour.base = {151, 44, 62}
 colour.aqua = {26, 237, 191}
-
-
 colour.purple = {106, 70, 184}
-
 colour.brown = {184, 118, 83}
 
 

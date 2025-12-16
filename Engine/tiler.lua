@@ -2,8 +2,12 @@ Editor = require "Engine.editor"
 
 local Tiler = Object:extend()
 
+
 function Tiler:new(mapfile)
     if love.filesystem.exists(mapfile) then
+
+        self.x = 0
+        self.y = 0
             
         local file = love.filesystem.read(mapfile)
         local loadedtilemap = Sir.loads(file)
@@ -23,7 +27,7 @@ function Tiler:new(mapfile)
             end
         end
 
-        self.colliders = {}
+        
         self.colliders = self:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
         
         filemaxwidth = filemaxwidth * 64
@@ -52,9 +56,9 @@ end
 
 
 function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
-    local collisionmask = {1,2,3,8,9,10,11,12,13,14,15,16,17,18,19}
+    local collisionmask = {2,3,8,9,10,11,12,13,14,15,16,17,18,19}
     local tilemap = {} 
-    local colliders = {}
+    local createdcolliders = {}
     for l=1, #loadedtilemap do 
         tilemap[l] = {}    
         for y = 1, filemaxheight do
@@ -128,7 +132,7 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                     end
                     local tilesize = 64
                     local collider = makeHitbox((x - 1)* tilesize, (y - 1)* tilesize, ( x - 1 + width) * tilesize, ( y - 1 + height)* tilesize)
-                    table.insert(colliders, collider)
+                    table.insert(createdcolliders, collider)
 
                 end
                 
@@ -144,7 +148,7 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
 
     
 
-    return colliders
+    return createdcolliders
 end
 
 function Tiler:draw()

@@ -123,7 +123,7 @@ function Editor:new()
                 else
                     random = true
                 end
-            end, 1
+            end, 4
         )
 
     table.insert(buttons, button)

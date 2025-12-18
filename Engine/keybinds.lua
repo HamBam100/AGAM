@@ -10,8 +10,10 @@ keybinds.save = {"key:e"}
 keybinds.space = {"key:space", "gamepad:a"}
 keybinds.scrollup = {"wheel:up"}
 keybinds.scrolldown = {"wheel:down"}
-keybinds.minus = {"key:1"}
-keybinds.plus = {"key:2"}
+keybinds.minus = {"key:-"}
+keybinds.plus = {"key:="}
+keybinds.one = {"key:1"}
+keybinds.two = {"key:2"}
 
 inputMode = "keyboard"
 
@@ -19,8 +21,10 @@ wheel = {up = false, down = false}
 
 function bindPressed(bind)
     keyIsDown = false
-
+    bind.held = false
+    
     for i=1,#bind,1 do
+        
 
         if string.sub(bind[i], 1, 6) == "mouse:" then
             local button = tonumber(string.sub(bind[i], 7))
@@ -102,8 +106,19 @@ function bindPressed(bind)
         end
 
     end
-    
+
+    if bind.last and keyIsDown then
+        bind.held = true
+    end
+
+    bind.last = keyIsDown
+
     return keyIsDown
+    
+end
+
+function bindHeld(bind)
+    return bind.held
 end
 
 function virtualMouseStart()

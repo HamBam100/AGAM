@@ -1,38 +1,7 @@
 
 function love.load()
-
-    GameWindow = require "External.gameWindow"
-
-    mousex, mousey = 0,0
-
-    Object = require "External.classic"
-    Lume = require "External.lume"
-    Sir = require "External.bitser"
     
-    require "Engine.helper"
-    require "Engine.collision"
-    require "Engine.shaders"
-    Tiler = require "Engine.tiler"
-    Scene = require "Engine.scene"
-
-    Layer = require "Engine.layers"
-    Render = require "Engine.render"
-    Keybinds = require "Engine.keybinds"
-    OS = require "Engine.OSinit"
-
-    
-
-    Player = require "Classes.Player.player"
-    Slime = require "Classes.slime"
-    DebugSlime = require "Classes.debug"
-    Wand = require "Classes.Player.wand"
-    Eyes = require "Classes.Player.eyes"
-    Projectile = require "Classes.projectile"
-    Mouse = require "Classes.mouse"
-
-    Button = require "Classes.UI.Button"
-
-
+    require "Engine.requirments"
 
     local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
     tilesetimage = love.graphics.newImage(tilesheetdir)
@@ -66,23 +35,7 @@ function love.load()
 
 
     
-    updateableContainer = {}
-    updateableContainer.__index = updateableContainer
-
-    function updateableContainer:update(dt)
-        for i = #self, 1, -1 do
-            self[i]:update(dt,i)
-        end
-    end
-
-    function createUpdateableContainer()
-        local container = {}
-        setmetatable(container, updateableContainer)
-        return container
-    end
-
-
-    updateables = {}
+    
 
     editorinit()
     

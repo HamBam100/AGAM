@@ -186,6 +186,23 @@ function wasHori(a, b)
     return a.past.y + a.hitbox.y1 < b.y + b.hitbox.y2 and a.past.y + a.hitbox.y2 > b.y + b.hitbox.y1
 end
 
+
+
+function touchingWall(a)
+    for i=1, #level.colliders do
+        local wall = {}
+
+        wall.hitbox = level.colliders[i]
+        wall.x = 0
+        wall.y = 0
+        if collideBasic(a, wall) then
+            return true
+        end
+
+    end
+    return false
+end
+
 function resolveWall(a)
     for i=1, #level.colliders do
         local wall = {}

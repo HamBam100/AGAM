@@ -6,10 +6,10 @@ local Player = Object:extend()
 
 
 
-function Player:new()
+function Player:new(x,y)
     self.sprite = love.graphics.newImage("Sprites/Player.png")
-    self.x = 264
-    self.y = 264
+    self.x = x
+    self.y = y
     self.r = 0
     
     self.ox = self.sprite:getWidth() / 2

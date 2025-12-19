@@ -30,3 +30,4 @@
 
 -- UI components
     Button = require "Classes.UI.Button"
+    PlaceableEntity = require "Classes.UI.PlaceableEntity"

@@ -9,6 +9,8 @@ function Render.createLayer(name, sort)
 end
 
 function Render.reset()
+    Render.layers = nil
+    collectgarbage("collect")
     Render.layers = {}
 end
 

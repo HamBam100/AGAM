@@ -43,7 +43,7 @@ function Button:update()
         globalhover = true
     end
 
-    if love.mouse.isDown(1) then 
+    if bindPressed(keybinds.shoot) then 
         self.clicked = true
     end
 

@@ -59,8 +59,10 @@ function gameinit()
     state = "game"
     debug = false
 
-    
+    updateables = nil
     updateables = {}
+    collectgarbage("collect")
+    collectgarbage("collect")
     
     updateables.players = createUpdateableContainer()
     updateables.enemies = createUpdateableContainer()
@@ -69,7 +71,7 @@ function gameinit()
 
 
 
-    spawn(Player(), updateables.players, "Game")
+    spawn(Player(256,256), updateables.players, "Game")
     spawn(Slime(), updateables.enemies, "Game")
     spawn(DebugSlime(), updateables.enemies, "Game")
     spawn(Mouse(), updateables.mouse, "UI")
@@ -95,8 +97,11 @@ function editorinit()
 
     state = "editor"
     debug = false
-
+    
+    updateables = nil
     updateables = {}
+    collectgarbage("collect")
+    collectgarbage("collect")
 
     updateables.ui = createUpdateableContainer()
 

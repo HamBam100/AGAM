@@ -3,9 +3,9 @@ local Editor = Object:extend()
 local numberOfTiles = 20
 Editor.tilesheet = {}
 
-currentfile = "walls.lua"
+local currentfile = "walls.lua"
 
-
+local count = 0
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
     for y = 1, 10 do
@@ -28,11 +28,11 @@ function Editor:load()
 
         for i=1, #loadedtilemap do
             self:createLayer(i)
-            currentLayer = i
+            self.currentLayer = i
             for j = #loadedtilemap[i], 1, -1 do
                 local tile = loadedtilemap[i][j]
                 if tile and tile.id then
-                    tiletype = self.tilesheet[tile.id]
+                    self.tiletype = self.tilesheet[tile.id]
                     
                     if tile.x > #self.tilemap[i][1] or tile.y > #self.tilemap[i] then
                         self:expand(tile.x,tile.y)
@@ -44,37 +44,43 @@ function Editor:load()
         end
     end
 
-    tiletype = self.tilesheet[1]
-    currentLayer = 1
+    self.tiletype = self.tilesheet[1]
+    self.currentLayer = 1
 
-    editorMode = "tile"
-    -- editorMode = "entity"
+    self.editorMode = "tile"
+    -- self.editorMode = "entity"
 end
 
 function Editor:expand(tx,ty)
-
+    --for x = #self.tilemap[self.currentLayer], tx do
     for y = 1, ty  do
-        if not self.tilemap[currentLayer][y] then
-            self.tilemap[currentLayer] [y] = {}
+        if not self.tilemap[self.currentLayer][y] then
+            self.tilemap[self.currentLayer] [y] = {}
         end
+        --for x = #self.tilemap[self.currentLayer][y], tx do
         for x = 1, tx do
-            if not self.tilemap[currentLayer][y][x] then
-                self.tilemap[currentLayer][y][x] = {}
+            if not self.tilemap[self.currentLayer][y][x] then
+                self.tilemap[self.currentLayer][y][x] = {}
+
+                count = count + 1
+                print("count: "..count)
             end
         end
     end
 end
 
 
+
+
 function Editor:add(tx,ty)
     if tx > 0 and ty > 0 then
-        self.tilemap[currentLayer] [ty][tx] = tiletype
+        self.tilemap[self.currentLayer] [ty][tx] = self.tiletype
     end
 end
 
 function Editor:remove(tx,ty)
     if tx > 0 and ty > 0 then
-        self.tilemap[currentLayer] [ty][tx] = {}
+        self.tilemap[self.currentLayer] [ty][tx] = {}
     end
 end
 
@@ -91,23 +97,27 @@ function Editor:new()
     self.origin.y = 64
     self.tilesize = 64
     self.scale = 64
-    tileSelection = {x = 0, y = 0, mx = 0, my = 0}
-    tiletype = self.tilesheet[1]
-    currentLayer = 1
+    self.tileSelection = {x = 0, y = 0, mx = 0, my = 0}
+    self.tiletype = self.tilesheet[1]
+    self.currentLayer = 1
     
     self:load()
-    buttons = {}
+    self.buttons = {}
+    self.buttons.tilemap = {}
+    self.buttons.entity = {}
+    
+    entitys = {}
 
     for i=1, #self.tilesheet do 
         
         local button = Button(64 * (i - 1), 64 * 0, 64, 64, 
             function()
                 random = false
-                tiletype = self.tilesheet[i]
+                self.tiletype = self.tilesheet[i]
             end, self.tilesheet[i].id
         )
 
-        table.insert(buttons, button)
+        table.insert(self.buttons.tilemap, button)
     end
 
     local button = {}
@@ -118,169 +128,195 @@ function Editor:new()
             end, 4
         )
 
-    table.insert(buttons, button)
+    table.insert(self.buttons.tilemap, button)
+
+
+    local brib = PlaceableEntity(256,256,Player)
+    table.insert(entitys, brib)
 
 end
 
 
 function Editor:update()
     if bindPressed(keybinds.one) then
-        editorMode = "tile"
+        self.editorMode = "tile"
     end
     if bindPressed(keybinds.two) then
-        editorMode = "entity"
+        self.editorMode = "entity"
     end
 
 
-    if editorMode == "tile" then
-        if random then 
-            tiletype = self.tilesheet[love.math.random(4,7)]
+    
+    if random then 
+        self.tiletype = self.tilesheet[love.math.random(4,7)]
+    end
+
+    truemousex = mousex - self.origin.x
+    truemousey = mousey - self.origin.y
+
+    globalhover = false
+    
+
+    local outofbounds = false
+    
+    self.tileSelection.mx = (mousex - self.origin.x) / self.scale
+    self.tileSelection.my = (mousey - self.origin.y) / self.scale
+
+    self.tileSelection.x = round((self.tileSelection.mx) + 0.5)
+    self.tileSelection.y = round((self.tileSelection.my) + 0.5)
+
+    if self.tileSelection.y > #self.tilemap[self.currentLayer] or self.tileSelection.x > #self.tilemap[self.currentLayer][1] then
+        outofbounds = true
+    end
+
+    if bindPressed(keybinds.space) then
+
+        self.scale = 64
+
+        self.origin.x = mousex - self.tileSelection.mx * self.scale
+        self.origin.y = mousey - self.tileSelection.my * self.scale
+    end
+
+    if globalhover == false then
+        if bindPressed(keybinds.shoot) then
+
+            -- if outofbounds then 
+                self:expand(self.tileSelection.x,self.tileSelection.y)
+            -- end
+            self:add(self.tileSelection.x, self.tileSelection.y)
         end
 
-        truemousex = mousex - self.origin.x
-        truemousey = mousey - self.origin.y
+        if bindPressed(keybinds.shootalt) then
 
-        globalhover = false
-        for i = #buttons, 1, -1 do
-            buttons[i]:update(dt)
+            -- if outofbounds then 
+                self:expand(self.tileSelection.x,self.tileSelection.y)
+            -- end
+            self:remove(self.tileSelection.x, self.tileSelection.y)
         end
         
+    end
 
-        local outofbounds = false
+    if bindPressed(keybinds.right) then
+
+        self.origin.x = self.origin.x - 1
+    end
+
+    if bindPressed(keybinds.left) then
+
+        self.origin.x = self.origin.x + 1
+    end
+
+    if bindPressed(keybinds.down) then
+
+        self.origin.y = self.origin.y - 1
         
-        tileSelection.mx = (mousex - self.origin.x) / self.scale
-        tileSelection.my = (mousey - self.origin.y) / self.scale
+    end
+    if bindPressed(keybinds.up) then
 
-        tileSelection.x = round((tileSelection.mx) + 0.5)
-        tileSelection.y = round((tileSelection.my) + 0.5)
+        self.origin.y = self.origin.y + 1
+        
+    end
+    if bindPressed(keybinds.save) then
 
-        if tileSelection.y > #self.tilemap[currentLayer] or tileSelection.x > #self.tilemap[currentLayer][1] then
-            outofbounds = true
+        self:save()
+    end
+
+    if bindPressed(keybinds.scrollup) then
+
+        if self.scale < 256 then
+            self.scale = self.scale + 4
+
+            self.origin.x = mousex - self.tileSelection.mx * self.scale
+            self.origin.y = mousey - self.tileSelection.my * self.scale
+        end
+    end
+
+    if bindPressed(keybinds.scrolldown) then
+
+        if self.scale > 4 then
+            self.scale = self.scale - 4
+
+            self.origin.x = mousex - self.tileSelection.mx * self.scale
+            self.origin.y = mousey - self.tileSelection.my * self.scale
         end
 
-        if bindPressed(keybinds.space) then
+    end
 
-            self.scale = 64
-
-            self.origin.x = mousex - tileSelection.mx * self.scale
-            self.origin.y = mousey - tileSelection.my * self.scale
+    if bindPressed(keybinds.minus) and not bindHeld(keybinds.minus) then
+        if self.currentLayer > 1 then
+            self.currentLayer = self.currentLayer - 1
         end
-
-        if globalhover == false then
-            if bindPressed(keybinds.shoot) then
-
-                -- if outofbounds then 
-                    self:expand(tileSelection.x,tileSelection.y)
-                -- end
-                self:add(tileSelection.x, tileSelection.y)
-            end
-
-            if bindPressed(keybinds.shootalt) then
-
-                -- if outofbounds then 
-                    self:expand(tileSelection.x,tileSelection.y)
-                -- end
-                self:remove(tileSelection.x, tileSelection.y)
-            end
+    end
+    if bindPressed(keybinds.plus) and not bindHeld(keybinds.plus) then
+        self.currentLayer = self.currentLayer + 1
+        if self.currentLayer > #self.tilemap then
+            self:createLayer(self.currentLayer)
             
         end
+    end
+    
 
-        if bindPressed(keybinds.right) then
 
-            self.origin.x = self.origin.x - 1
+    if self.editorMode == "tile" then
+        for i = #self.buttons.tilemap, 1, -1 do
+            self.buttons.tilemap[i]:update(dt)
         end
+    end
 
-        if bindPressed(keybinds.left) then
-
-            self.origin.x = self.origin.x + 1
-        end
-
-        if bindPressed(keybinds.down) then
-
-            self.origin.y = self.origin.y - 1
-            
-        end
-        if bindPressed(keybinds.up) then
-
-            self.origin.y = self.origin.y + 1
-            
-        end
-        if bindPressed(keybinds.save) then
-
-            self:save()
-        end
-
-        if bindPressed(keybinds.scrollup) then
-
-            if self.scale < 256 then
-                self.scale = self.scale + 4
-
-                self.origin.x = mousex - tileSelection.mx * self.scale
-                self.origin.y = mousey - tileSelection.my * self.scale
-            end
-        end
-
-        if bindPressed(keybinds.scrolldown) then
-
-            if self.scale > 4 then
-                self.scale = self.scale - 4
-
-                self.origin.x = mousex - tileSelection.mx * self.scale
-                self.origin.y = mousey - tileSelection.my * self.scale
-            end
-
-        end
-
-        if bindPressed(keybinds.minus) and not bindHeld(keybinds.minus) then
-            if currentLayer > 1 then
-                currentLayer = currentLayer - 1
-            end
-        end
-        if bindPressed(keybinds.plus) and not bindHeld(keybinds.plus) then
-            currentLayer = currentLayer + 1
-            if currentLayer > #self.tilemap then
-                self:createLayer(currentLayer)
-                
-            end
+    if self.editorMode == "entity" then
+        for i = #entitys, 1, -1 do
+            entitys[i]:update(self.origin.x, self.origin.y, self.scale, i)
         end
     end
 end
 
 function Editor:draw()
-    if editorMode == "tile" then
-        for i = 1, #self.tilemap do
-            for y = 1, #self.tilemap[i] do
-                for x = 1, #self.tilemap[i][y] do
-                    local currentTile = self.tilemap[i][y][x]
-                    if currentTile and currentTile.id then
-                        love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
-                        --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
-                    end
+    
+    for i = 1, #self.tilemap do
+        for y = 1, #self.tilemap[i] do
+            for x = 1, #self.tilemap[i][y] do
+                local currentTile = self.tilemap[i][y][x]
+                if currentTile and currentTile.id then
+                    love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
+                    --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
                 end
             end
         end
+    end
 
-        love.graphics.rectangle("line", self.origin.x + 0 * self.scale, self.origin.y + 0 * self.scale, 1, 1)
+    love.graphics.rectangle("line", self.origin.x + 0 * self.scale, self.origin.y + 0 * self.scale, 1, 1)
 
-        for i = #buttons, 1, -1 do
-            buttons[i]:draw(dt)
+    
+
+    for i = #entitys, 1, -1 do
+        entitys[i]:draw(self.origin.x, self.origin.y, self.scale)
+    end
+
+    love.graphics.print("mx: " .. self.tileSelection.mx,0,60)
+    love.graphics.print("my: " .. self.tileSelection.my,0,80)
+
+    love.graphics.print("x: " .. self.tileSelection.x,0,100)
+    love.graphics.print("y: " .. self.tileSelection.y,0,120)
+
+    love.graphics.print("self.currentLayer: " .. self.currentLayer,0,140)
+    love.graphics.print("#tilemap: " .. #self.tilemap,0,160)
+
+    love.graphics.print("Scale: "..self.scale,0,180)
+
+    love.graphics.print("FPS: "..love.timer.getFPS(),0,220)
+
+    if not globalhover then
+        love.graphics.rectangle("line", self.origin.x + (self.tileSelection.x - 1) * self.scale, self.origin.y + (self.tileSelection.y - 1) * self.scale, self.scale, self.scale)
+    end
+
+    if self.editorMode == "tile" then
+        for i = #self.buttons.tilemap, 1, -1 do
+            self.buttons.tilemap[i]:draw()
         end
-
-        love.graphics.print("mx: " .. tileSelection.mx,0,60)
-        love.graphics.print("my: " .. tileSelection.my,0,80)
-
-        love.graphics.print("x: " .. tileSelection.x,0,100)
-        love.graphics.print("y: " .. tileSelection.y,0,120)
-
-        love.graphics.print("currentLayer: " .. currentLayer,0,140)
-        love.graphics.print("#tilemap: " .. #self.tilemap,0,160)
-
-        love.graphics.print("Scale: "..self.scale,0,180)
-
-        love.graphics.print("FPS: "..love.timer.getFPS(),0,220)
-
-        if not globalhover then
-            love.graphics.rectangle("line", self.origin.x + (tileSelection.x - 1) * self.scale, self.origin.y + (tileSelection.y - 1) * self.scale, self.scale, self.scale)
+    end
+    if self.editorMode == "tile" then
+        for i = #self.buttons, 1, -1 do
+            self.buttons[i]:draw()
         end
     end
 end

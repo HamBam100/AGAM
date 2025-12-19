@@ -8,8 +8,8 @@ function Wand:new(parent)
     self.parent = parent
     
     self.sprite = love.graphics.newImage("Sprites/Magic Staff.png")
-    self.x = 64
-    self.y = 64
+    self.x = parent.x
+    self.y = parent.y
     self.xv = 0
     self.yv = 0
     self.r = 0

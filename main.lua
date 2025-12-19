@@ -61,8 +61,13 @@ function gameinit()
 
     updateables = nil
     updateables = {}
+
+    if level then
+        level:removed()
+        level = nil
+    end
     collectgarbage("collect")
-    collectgarbage("collect")
+
     
     updateables.players = createUpdateableContainer()
     updateables.enemies = createUpdateableContainer()
@@ -100,8 +105,13 @@ function editorinit()
     
     updateables = nil
     updateables = {}
+
+    if level then
+        level:removed()
+        level = nil
+    end
     collectgarbage("collect")
-    collectgarbage("collect")
+
 
     updateables.ui = createUpdateableContainer()
 
@@ -164,7 +174,7 @@ function love.draw()
         Render.drawLayers()
 
     end
-
+    love.graphics.print("Memory: " .. math.floor(collectgarbage("count")) .. " KB", 10, 50)
     GameWindow.finish()
 end
 

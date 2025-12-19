@@ -8,12 +8,6 @@ local currentfile = "walls.lua"
 local count = 0
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
-    for y = 1, 10 do
-        self.tilemap[i] [y]= {}
-        for x = 1, 10 do
-            self.tilemap[i][y][x] = {}
-        end
-    end
 end
 
 function Editor:load()
@@ -34,9 +28,7 @@ function Editor:load()
                 if tile and tile.id then
                     self.tiletype = self.tilesheet[tile.id]
                     
-                    if tile.x > #self.tilemap[i][1] or tile.y > #self.tilemap[i] then
-                        self:expand(tile.x,tile.y)
-                    end
+
 
                     self:add(tile.x, tile.y)
                 end
@@ -51,36 +43,23 @@ function Editor:load()
     -- self.editorMode = "entity"
 end
 
-function Editor:expand(tx,ty)
-    --for x = #self.tilemap[self.currentLayer], tx do
-    for y = 1, ty  do
-        if not self.tilemap[self.currentLayer][y] then
-            self.tilemap[self.currentLayer] [y] = {}
-        end
-        --for x = #self.tilemap[self.currentLayer][y], tx do
-        for x = 1, tx do
-            if not self.tilemap[self.currentLayer][y][x] then
-                self.tilemap[self.currentLayer][y][x] = {}
-
-                count = count + 1
-                print("count: "..count)
-            end
-        end
-    end
-end
-
-
-
 
 function Editor:add(tx,ty)
     if tx > 0 and ty > 0 then
-        self.tilemap[self.currentLayer] [ty][tx] = self.tiletype
+
+        if not self.tilemap[self.currentLayer][ty] then
+            self.tilemap[self.currentLayer][ty] = {}
+        end
+        self.tilemap[self.currentLayer] [ty][tx] = {id = self.tiletype.id}
     end
 end
 
 function Editor:remove(tx,ty)
     if tx > 0 and ty > 0 then
-        self.tilemap[self.currentLayer] [ty][tx] = {}
+        if self.tilemap[self.currentLayer][ty] then
+            self.tilemap[self.currentLayer] [ty][tx] = nil
+        end
+        
     end
 end
 
@@ -157,7 +136,7 @@ function Editor:update()
     globalhover = false
     
 
-    local outofbounds = false
+
     
     self.tileSelection.mx = (mousex - self.origin.x) / self.scale
     self.tileSelection.my = (mousey - self.origin.y) / self.scale
@@ -165,9 +144,7 @@ function Editor:update()
     self.tileSelection.x = round((self.tileSelection.mx) + 0.5)
     self.tileSelection.y = round((self.tileSelection.my) + 0.5)
 
-    if self.tileSelection.y > #self.tilemap[self.currentLayer] or self.tileSelection.x > #self.tilemap[self.currentLayer][1] then
-        outofbounds = true
-    end
+
 
     if bindPressed(keybinds.space) then
 
@@ -180,17 +157,13 @@ function Editor:update()
     if globalhover == false then
         if bindPressed(keybinds.shoot) then
 
-            -- if outofbounds then 
-                self:expand(self.tileSelection.x,self.tileSelection.y)
-            -- end
+
             self:add(self.tileSelection.x, self.tileSelection.y)
         end
 
         if bindPressed(keybinds.shootalt) then
 
-            -- if outofbounds then 
-                self:expand(self.tileSelection.x,self.tileSelection.y)
-            -- end
+
             self:remove(self.tileSelection.x, self.tileSelection.y)
         end
         
@@ -273,9 +246,8 @@ end
 function Editor:draw()
     
     for i = 1, #self.tilemap do
-        for y = 1, #self.tilemap[i] do
-            for x = 1, #self.tilemap[i][y] do
-                local currentTile = self.tilemap[i][y][x]
+        for y, row in pairs(self.tilemap[i]) do
+            for x, currentTile in pairs(self.tilemap[i][y]) do
                 if currentTile and currentTile.id then
                     love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
                     --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
@@ -328,11 +300,11 @@ function Editor:save()
     end
 
     for i = 1, #self.tilemap  do
-        for y = 1, #self.tilemap[i]  do
-            for x = 1, #self.tilemap[i][y] do
-                if self.tilemap[i][y][x].id then
+        for y , rows in pairs(self.tilemap[i]) do
+            for x, currentTile in pairs(self.tilemap[i][y]) do
+                if currentTile.id then
                     local adding = {}
-                    adding.id = self.tilemap[i][y][x].id
+                    adding.id = currentTile.id
                     adding.x = x
                     adding.y = y
                     table.insert(savedTilemap[i], adding)

@@ -153,10 +153,12 @@ end
 
 function Tiler:draw()
     love.graphics.draw(self.canvas,0,0)
-
-    for i, box in ipairs(self.colliders) do
-        love.graphics.rectangle("line", box.x1, box.y1, box.x2 - box.x1, box.y2 - box.y1)
-    end
 end
 
+function Tiler:removed()
+    if self.canvas then 
+        self.canvas:release()
+        self.canvas = nil
+    end
+end
 return Tiler

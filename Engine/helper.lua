@@ -63,13 +63,32 @@ end
 
 colour = {}
 colour.white = {255, 255, 255}
-colour.base = {151, 44, 62}
+colour.red = {151, 44, 62}
 colour.aqua = {26, 237, 191}
 colour.purple = {106, 70, 184}
 colour.brown = {184, 118, 83}
+colour.green = {75,242,33}
+colour.blue = {0,130,221}
 
 
+elements = {
+    ["fire"] = colour.red,
+    ["water"] = colour.aqua,
+    ["earth"] = colour.brown,
+    ["slime"] = colour.green,
+    ["air"] = colour.white,
+    ["health"] = colour.purple,
+    ["plasma"] = colour.blue
+}
 
+function mix(clr1, clr2)
+    clr2 = clr2 or clr1
+    local mixed = {}
+    for i=1, 3 do
+        mixed[i] = (clr1[i] + clr2[i]) / 2
+    end
+    return mixed
+end
  	
 
 

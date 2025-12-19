@@ -2,7 +2,9 @@ local Scene = Object:extend()
 
 function Scene:new(file)
     self.tilemap = Tiler(file)
-    self.colliders = self.tilemap.colliders
+    
+    self.colliders = self.tilemap.colliders or {}
+    
     self.tilemap.colliders = nil
 end
 

@@ -204,47 +204,50 @@ function touchingWall(a)
 end
 
 function resolveWall(a)
-    for i=1, #level.colliders do
-        local wall = {}
-        
-        wall.hitbox = level.colliders[i]
-        wall.x = 0
-        wall.y = 0
-        if collideBasic(a, wall) then
-            local wallLength = wall.hitbox.x2 - wall.hitbox.x1
-            local wallHeight = wall.hitbox.y2 - wall.hitbox.y1
-
-            local playerLength = a.hitbox.x2 - a.hitbox.x1
-            local playerHeight = a.hitbox.y2 - a.hitbox.y1
-            if wasVert(a, wall) then
-                local pushback = 0
-
-                if a.y < wall.hitbox.y1 + wallHeight/2 then
-                    pushback = a.y + playerHeight - wall.hitbox.y1
-                    a.y = a.y - pushback + a.oy
-                else
-                    pushback = wall.hitbox.y1 + wallHeight - a.y
-                    a.y = a.y + pushback + a.oy
-                end
-
-            elseif wasHori(a, wall) then
-                local pushback = 0
-
-                if a.x < wall.hitbox.x1 + wallLength/2 then
-                    pushback = a.x + playerLength - wall.hitbox.x1
-                    a.x = a.x - pushback + a.ox
-                else
-                    pushback = wall.hitbox.x1 + wallLength - a.x
-                    a.x = a.x + pushback + a.ox
-                end
-
-            end
-
+    if level.colliders then
+        for i=1, #level.colliders do
+            local wall = {}
             
+            wall.hitbox = level.colliders[i]
+            wall.x = 0
+            wall.y = 0
+            if collideBasic(a, wall) then
+                local wallLength = wall.hitbox.x2 - wall.hitbox.x1
+                local wallHeight = wall.hitbox.y2 - wall.hitbox.y1
+
+                local playerLength = a.hitbox.x2 - a.hitbox.x1
+                local playerHeight = a.hitbox.y2 - a.hitbox.y1
+                if wasVert(a, wall) then
+                    local pushback = 0
+
+                    if a.y < wall.hitbox.y1 + wallHeight/2 then
+                        pushback = a.y + playerHeight - wall.hitbox.y1
+                        a.y = a.y - pushback + a.oy
+                    else
+                        pushback = wall.hitbox.y1 + wallHeight - a.y
+                        a.y = a.y + pushback + a.oy
+                    end
+
+                elseif wasHori(a, wall) then
+                    local pushback = 0
+
+                    if a.x < wall.hitbox.x1 + wallLength/2 then
+                        pushback = a.x + playerLength - wall.hitbox.x1
+                        a.x = a.x - pushback + a.ox
+                    else
+                        pushback = wall.hitbox.x1 + wallLength - a.x
+                        a.x = a.x + pushback + a.ox
+                    end
+
+                end
+
+                
+                
+            end
             
         end
         
+        
     end
-    
     return
 end

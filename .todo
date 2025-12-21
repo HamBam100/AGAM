@@ -1,6 +1,7 @@
 alt-enter to create box, alt-d to make complete
 
 General:
+    ☐ Add folder class
     ☐ Add partical system
     ☐ Extend classes from similar classes classic -> body2d -> enemy -> slime
     ☐ Add more collision types box + circle, circle + circle, sat + circle

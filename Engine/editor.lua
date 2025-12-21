@@ -93,7 +93,7 @@ function Editor:new()
             function()
                 random = false
                 self.tiletype = self.tilesheet[i]
-            end, self.tilesheet[i].id
+            end, tileset[self.tilesheet[i].id]
         )
 
         table.insert(self.buttons.tilemap, button)
@@ -104,7 +104,7 @@ function Editor:new()
     local button = Button(gameWidth - 64, 0, 64, 64, 
             function()
                 random = true
-            end, 4
+            end, tileset[4]
         )
 
     table.insert(self.buttons.tilemap, button)

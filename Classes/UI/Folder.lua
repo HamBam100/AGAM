@@ -1,19 +1,20 @@
 UIElement = require "Classes.UI.UIElement"
 
 
-local Button = UIElement:extend()
+local Folder = UIElement:extend()
 
 
-function Button:new(x,y,width,height,func,sprite)
-    Button.super.new(self, x, y, width, height)
-    self.sprite = sprite
+function Folder:new(x,y,width,height,func)
+    Folder.super.new(self, x, y, width, height)
+    self.sprite = love.graphics.newImage("Sprites/Folder.png")
 
     self.hover = false
     self.clicked = false
 
     self.r = 0
 
-    
+    self.open = false
+
     self.hoverColour = colour.white
     self.lineColour = {1,1,1}
     self.backgroundColour = {}
@@ -31,7 +32,7 @@ function Button:new(x,y,width,height,func,sprite)
     -- self.oy = self.height - self.sprite:getHeight() /2
 end
 
-function Button:update()
+function Folder:update()
     local clickState = self.clicked
 
     self.clicked = false
@@ -48,12 +49,12 @@ function Button:update()
     end
 
     if self.hover and self.clicked and clickState == false then
-        self.func()
+        self.open = not self.open
     end
 
 end
 
-function Button:draw()
+function Folder:draw()
     if self.hover then
         love.graphics.setShader(tintShader)
         tintShader:send("targetColour", self.hoverColour)
@@ -69,4 +70,4 @@ function Button:draw()
     love.graphics.setShader()
 end
 
-return Button
+return Folder

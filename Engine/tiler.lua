@@ -12,8 +12,8 @@ function Tiler:new(mapfile)
         local file = love.filesystem.read(mapfile)
         local loadedtilemap = Sir.loads(file)
 
-        filemaxwidth = 0
-        filemaxheight = 0
+        filemaxwidth = 1
+        filemaxheight = 1
         
         for i=1, #loadedtilemap do
             for _, tile in ipairs(loadedtilemap[i]) do

@@ -8,6 +8,7 @@
     require "Engine.collision"
     require "Engine.shaders"
     require "Engine.updateables"
+    require "Engine.sprites"
     Tiler = require "Engine.tiler"
     Scene = require "Engine.scene"
     Layer = require "Engine.layers"
@@ -18,13 +19,13 @@
 
 
 -- Classes
+    Body2d = require "Classes.body2d"
     --Player components
         Player = require "Classes.Player.player"
         Wand = require "Classes.Player.wand"
         Eyes = require "Classes.Player.eyes"
 
     Slime = require "Classes.slime"
-    DebugSlime = require "Classes.debug"
     Projectile = require "Classes.projectile"
     Mouse = require "Classes.mouse"
 

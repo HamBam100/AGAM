@@ -4,10 +4,10 @@ UIElement = require "Classes.UI.UIElement"
 local Button = UIElement:extend()
 
 
-function Button:new(x,y,width,height,func,sprite)
+function Button:new(x,y,width,height,func,sprite,version)
     Button.super.new(self, x, y, width, height)
     self.sprite = sprite
-
+    self.version = version or "normal"
     self.hover = false
     self.clicked = false
 
@@ -62,8 +62,12 @@ function Button:draw()
     love.graphics.setColor(self.backgroundColour)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
     love.graphics.setColor(self.lineColour)
+    if self.version == "tilemap" then
+        love.graphics.draw(tilesetimage,self.sprite,self.x + self.ox, self.y + self.oy)
+    else
+        love.graphics.draw(self.sprite,self.x + self.ox, self.y + self.oy)
+    end
     
-    love.graphics.draw(tilesetimage,self.sprite,self.x + self.ox, self.y + self.oy)
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1,1,1)
     love.graphics.setShader()

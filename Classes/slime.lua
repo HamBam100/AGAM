@@ -1,17 +1,12 @@
-local Slime = Object:extend()
+local Slime = Body2d:extend()
 
 function Slime:new(x, y)
+    self.super.new(self,x,y,Sprite["Slime"])
 
-    self.sprite = love.graphics.newImage("Sprites/Slime.png")
-    self.x = x or 256
-    self.y = y or 500
     self.xv = 0
     self.yv = 0
-    self.ox = self.sprite:getWidth() / 2
-    self.oy = self.sprite:getHeight() / 2
     
     self.speed = 160
-    self.r = degtorad(0)
     self.hp = 1
     self.inv = {i = 0, dur = 0.1}
 

@@ -1,7 +1,7 @@
 local Mouse = Object:extend()
 
 function Mouse:new()
-    self.sprite = love.graphics.newImage("Sprites/Cursor.png")
+    self.sprite = Sprite["Cursor"]
     self.x = 0
     self.y = 0
 end

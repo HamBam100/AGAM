@@ -1,20 +1,15 @@
-
-local Wand = Object:extend()
-
-
+local Wand = Body2d:extend()
 
 function Wand:new(parent)
     -- Provides object with the variables of player
     self.parent = parent
-    
-    self.sprite = love.graphics.newImage("Sprites/Magic Staff.png")
-    self.x = parent.x
-    self.y = parent.y
+
+    self.super.new(self,parent.x,parent.y,Sprite["Wand"])
+
     self.xv = 0
     self.yv = 0
-    self.r = 0
+
     self.cooldown = {timer = 0, time = 0.1}
-    
     
 end
 
@@ -30,9 +25,6 @@ function Wand:update(dt)
     self.x = math.floor(self.x + self.xv)
     self.y = math.floor(self.y + self.yv)
 
-
-
-
     if bindPressed(keybinds.shoot) and self.cooldown.timer <= 0 then
         self:createProj()
         self.cooldown.timer = self.cooldown.time
@@ -42,23 +34,12 @@ function Wand:update(dt)
         self.cooldown.timer = self.cooldown.timer - (1 * dt)
     end
 
-
-
-
-    
-    
-    
-
 end
 
 function Wand:createProj()
     
-            
-            
-
     spawn(Projectile(self), updateables.projectiles, "Projectiles")
 
-    
 end
 
 
@@ -66,8 +47,5 @@ function Wand:draw()
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,64,64)
 
 end
-
-
-
 
 return Wand

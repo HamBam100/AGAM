@@ -1,9 +1,10 @@
 alt-enter to create box, alt-d to make complete
 
 General:
-    ☐ Add folder class
+    ✔ Add folder class @done(25-12-22 16:39)
     ☐ Add partical system
-    ☐ Extend classes from similar classes classic -> body2d -> enemy -> slime
+    ✔ Extend classes from similar classes classic -> body2d -> enemy -> slime @done(25-12-22 17:23)
+    ☐ Create general enemy class to extend from
     ☐ Add more collision types box + circle, circle + circle, sat + circle
     ☐ Save custom names in editor
     ☐ Browse and load all levels in editor

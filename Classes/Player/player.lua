@@ -1,19 +1,8 @@
-
-local Player = Object:extend()
-
-
-
-
-
+local Player = Body2d:extend()
 
 function Player:new(x,y)
-    self.sprite = love.graphics.newImage("Sprites/Player.png")
-    self.x = x
-    self.y = y
-    self.r = 0
-    
-    self.ox = self.sprite:getWidth() / 2
-    self.oy = self.sprite:getHeight() / 2
+    self.super.new(self,x,y,Sprite["Player"])
+
     self.xv = 0
     self.yv = 0
     self.speed = 350
@@ -60,7 +49,7 @@ function Player:draw()
     love.graphics.setShader(tintPlayerShader)
     tintPlayerShader:send("targetColour", self.colour)
 
-    love.graphics.draw(self.sprite,self.x,self.y,self.r,1,1,self.ox,self.oy)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r,1,1,self.ox,self.oy)
 
     love.graphics.setShader()
 

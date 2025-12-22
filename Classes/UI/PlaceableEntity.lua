@@ -82,7 +82,7 @@ function PlaceableEntity:draw(originx, originy, scale)
     love.graphics.rectangle("fill", drawx, drawy, self.width * scale / 64, self.height * scale / 64)
     love.graphics.setColor(self.lineColour)
 
-    love.graphics.draw(self.obj.sprite, drawx, drawy, 0, scale / 64, scale / 64)
+    love.graphics.draw(self.obj.sprite, math.floor(drawx), math.floor(drawy), 0, scale / 64, scale / 64)
     -- love.graphics.draw(self.obj.sprite,self.x + self.obj.ox, self.y + self.obj.oy)
     love.graphics.rectangle("line", drawx, drawy, self.width * scale / 64, self.height * scale / 64)
     love.graphics.setColor(1,1,1)

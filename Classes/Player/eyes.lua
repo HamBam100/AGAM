@@ -1,15 +1,14 @@
-local Eyes = Object:extend()
+local Eyes = Body2d:extend()
 
 function Eyes:new(parent)
-    self.sprite = love.graphics.newImage("Sprites/Player Eyes.png")
-    self.x = 64
-    self.y = 64
+    -- Provides object with the variables of player
+    self.parent = parent
+
+    self.super.new(self,64,64,Sprite["Eyes"])
+
     self.xv = 0
     self.yv = 0
-    -- Set origin to centre of the sprite
-    self.ox = math.floor(self.sprite:getWidth() / 2)
-    self.oy = math.floor(self.sprite:getHeight() / 2)
-    self.parent = parent
+
 end
 
 function Eyes:update()
@@ -26,7 +25,7 @@ end
 
 
 function Eyes:draw()
-    love.graphics.draw(self.sprite,self.x,self.y,0,1,1,self.ox,self.oy)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),0,1,1,self.ox,self.oy)
 
 end
 

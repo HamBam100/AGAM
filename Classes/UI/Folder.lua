@@ -4,13 +4,13 @@ UIElement = require "Classes.UI.UIElement"
 local Folder = UIElement:extend()
 
 
-function Folder:new(x,y,width,height,func)
+function Folder:new(x,y,width,height,name,elements)
     Folder.super.new(self, x, y, width, height)
-    self.sprite = love.graphics.newImage("Sprites/Folder.png")
-
+    self.sprite = Sprite["Folder"]
+    self.type = "folder"
     self.hover = false
     self.clicked = false
-
+    self.name = name
     self.r = 0
 
     self.open = false
@@ -23,7 +23,7 @@ function Folder:new(x,y,width,height,func)
         self.backgroundColour[i] = self.lineColour[i] * 0.8
     end
 
-    self.func = func
+    self.elements = elements
     
     self.ox = (self.width - 64) / 2
     self.oy = (self.height - 64) / 2
@@ -33,6 +33,9 @@ function Folder:new(x,y,width,height,func)
 end
 
 function Folder:update()
+    local stateChanged = false
+
+    
     local clickState = self.clicked
 
     self.clicked = false
@@ -48,10 +51,21 @@ function Folder:update()
         self.clicked = true
     end
 
+    local prevOpen = self.open
     if self.hover and self.clicked and clickState == false then
         self.open = not self.open
     end
 
+    if self.open ~= prevOpen then
+        stateChanged = true
+    end
+
+    if self.open then
+        for i, element in pairs(self.elements) do
+            element:update()
+        end
+    end
+    return stateChanged
 end
 
 function Folder:draw()
@@ -64,10 +78,17 @@ function Folder:draw()
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
     love.graphics.setColor(self.lineColour)
     
-    love.graphics.draw(tilesetimage,self.sprite,self.x + self.ox, self.y + self.oy)
+    love.graphics.draw(self.sprite,self.x + self.ox, self.y + self.oy)
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1,1,1)
     love.graphics.setShader()
+
+    love.graphics.printf(self.name,self.x,self.y+32,64,"center")
+    if self.open then
+        for i, element in pairs(self.elements) do
+            element:draw()
+        end
+    end
 end
 
 return Folder

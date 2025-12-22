@@ -6,8 +6,55 @@ Editor.tilesheet = {}
 local currentfile = "walls.lua"
 
 local count = 0
+local panspeed = 800
+
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
+end
+
+function Editor:createbutton(start,stop,offset)
+    local list = {}
+    local count = 1
+    for i=start, stop do 
+        
+        local button = Button(64 * (count - 1), offset, 64, 64, 
+            function()
+                random = false
+                self.tiletype = self.tilesheet[i]
+            end, 
+            tileset[self.tilesheet[i].id], "tilemap"
+        )
+
+        table.insert(list, button)
+        count = count + 1
+    end
+    return list
+end
+
+
+function Editor:createFolders(where) 
+
+    local entries = {
+        {name = "Walls", start = 1, stop = 3},
+        {name = "Floors", start = 4, stop = 7, extra = {onclick = function() random = true end, sprite = love.graphics.newImage("Sprites/Tilemap/rndtile.png"),}},
+        {name = "Corners", start = 8, stop = 11},
+        {name = "Edges", start = 12, stop = 15},
+        {name = "Crowns", start = 16, stop = 19},
+        {name = "Decals", start = 20, stop = 20}
+    }
+
+    for i, entry in ipairs(entries) do
+        local buttons = self:createbutton(entry.start,entry.stop,64)
+        if entry.extra then
+            local button = {}
+            button = Button(64 * #buttons, 64, 64, 64, 
+            entry.extra.onclick, entry.extra.sprite)
+            table.insert(buttons, button)
+        
+        end
+        local newFolder = Folder(i * 64 - 64,0,64,64,entry.name,buttons)
+        table.insert(where, newFolder)
+    end
 end
 
 function Editor:load()
@@ -40,7 +87,7 @@ function Editor:load()
     self.currentLayer = 1
 
     self.editorMode = "tile"
-    -- self.editorMode = "entity"
+
 end
 
 
@@ -86,28 +133,7 @@ function Editor:new()
     self.buttons.entity = {}
     
     entitys = {}
-
-    for i=1, #self.tilesheet do 
-        
-        local button = Button(64 * (i - 1), 64 * 0, 64, 64, 
-            function()
-                random = false
-                self.tiletype = self.tilesheet[i]
-            end, tileset[self.tilesheet[i].id]
-        )
-
-        table.insert(self.buttons.tilemap, button)
-    end
-
-    local button = {}
-    button.random = love.math.random(5,8)
-    local button = Button(gameWidth - 64, 0, 64, 64, 
-            function()
-                random = true
-            end, tileset[4]
-        )
-
-    table.insert(self.buttons.tilemap, button)
+    self:createFolders(self.buttons.tilemap)
 
 
     local brib = PlaceableEntity(256,256,Player)
@@ -116,7 +142,7 @@ function Editor:new()
 end
 
 
-function Editor:update()
+function Editor:update(dt)
     if bindPressed(keybinds.one) then
         self.editorMode = "tile"
     end
@@ -133,7 +159,7 @@ function Editor:update()
     truemousex = mousex - self.origin.x
     truemousey = mousey - self.origin.y
 
-    globalhover = false
+
     
 
 
@@ -144,7 +170,49 @@ function Editor:update()
     self.tileSelection.x = round((self.tileSelection.mx) + 0.5)
     self.tileSelection.y = round((self.tileSelection.my) + 0.5)
 
+    globalhover = false
+    if self.editorMode == "tile" then
+        local changedButton = nil
+        for i, button in ipairs(self.buttons.tilemap) do
+            if button.type == "folder" then
+                local stateChanged = button:update(dt)
+                if stateChanged then
+                    changedButton = i
+                end
+            else
+                button:update(dt)
+            end
+        end
 
+        for i, button in ipairs(self.buttons.tilemap) do
+            if button.type == "folder" and changedButton then
+                if changedButton ~= i then
+                    button.open = false
+                end
+            end
+        end
+
+        if globalhover == false then
+            if bindPressed(keybinds.shoot) then
+
+
+                self:add(self.tileSelection.x, self.tileSelection.y)
+            end
+
+            if bindPressed(keybinds.shootalt) then
+
+
+                self:remove(self.tileSelection.x, self.tileSelection.y)
+            end
+            
+        end
+    end
+
+    if self.editorMode == "entity" then
+        for i = #entitys, 1, -1 do
+            entitys[i]:update(self.origin.x, self.origin.y, self.scale, i)
+        end
+    end
 
     if bindPressed(keybinds.space) then
 
@@ -154,39 +222,26 @@ function Editor:update()
         self.origin.y = mousey - self.tileSelection.my * self.scale
     end
 
-    if globalhover == false then
-        if bindPressed(keybinds.shoot) then
 
-
-            self:add(self.tileSelection.x, self.tileSelection.y)
-        end
-
-        if bindPressed(keybinds.shootalt) then
-
-
-            self:remove(self.tileSelection.x, self.tileSelection.y)
-        end
-        
-    end
 
     if bindPressed(keybinds.right) then
 
-        self.origin.x = self.origin.x - 1
+        self.origin.x = self.origin.x - panspeed * dt
     end
 
     if bindPressed(keybinds.left) then
 
-        self.origin.x = self.origin.x + 1
+        self.origin.x = self.origin.x + panspeed * dt
     end
 
     if bindPressed(keybinds.down) then
 
-        self.origin.y = self.origin.y - 1
+        self.origin.y = self.origin.y - panspeed * dt
         
     end
     if bindPressed(keybinds.up) then
 
-        self.origin.y = self.origin.y + 1
+        self.origin.y = self.origin.y + panspeed * dt
         
     end
     if bindPressed(keybinds.save) then
@@ -230,17 +285,7 @@ function Editor:update()
     
 
 
-    if self.editorMode == "tile" then
-        for i = #self.buttons.tilemap, 1, -1 do
-            self.buttons.tilemap[i]:update(dt)
-        end
-    end
 
-    if self.editorMode == "entity" then
-        for i = #entitys, 1, -1 do
-            entitys[i]:update(self.origin.x, self.origin.y, self.scale, i)
-        end
-    end
 end
 
 function Editor:draw()
@@ -264,28 +309,33 @@ function Editor:draw()
         entitys[i]:draw(self.origin.x, self.origin.y, self.scale)
     end
 
-    love.graphics.print("mx: " .. self.tileSelection.mx,0,60)
-    love.graphics.print("my: " .. self.tileSelection.my,0,80)
+    local textoffset = 100
+    love.graphics.print("mx: " .. self.tileSelection.mx,0,60 + textoffset)
+    love.graphics.print("my: " .. self.tileSelection.my,0,80 + textoffset)
 
-    love.graphics.print("x: " .. self.tileSelection.x,0,100)
-    love.graphics.print("y: " .. self.tileSelection.y,0,120)
+    love.graphics.print("x: " .. self.tileSelection.x,0,100 + textoffset)
+    love.graphics.print("y: " .. self.tileSelection.y,0,120 + textoffset)
 
-    love.graphics.print("self.currentLayer: " .. self.currentLayer,0,140)
-    love.graphics.print("#tilemap: " .. #self.tilemap,0,160)
+    love.graphics.print("self.currentLayer: " .. self.currentLayer,0,140 + textoffset)
+    love.graphics.print("#tilemap: " .. #self.tilemap,0,160 + textoffset)
 
-    love.graphics.print("Scale: "..self.scale,0,180)
+    love.graphics.print("Scale: "..self.scale,0,180 + textoffset)
 
-    love.graphics.print("FPS: "..love.timer.getFPS(),0,220)
+    love.graphics.print("FPS: "..love.timer.getFPS(),0,220 + textoffset)
+
+    love.graphics.print("Hover: "..tostring(globalhover),0,240 + textoffset)
 
     if not globalhover then
         love.graphics.rectangle("line", self.origin.x + (self.tileSelection.x - 1) * self.scale, self.origin.y + (self.tileSelection.y - 1) * self.scale, self.scale, self.scale)
     end
 
     if self.editorMode == "tile" then
-        for i = #self.buttons.tilemap, 1, -1 do
-            self.buttons.tilemap[i]:draw()
+        for i, button in ipairs(self.buttons.tilemap) do
+            button:draw(dt)
         end
+
     end
+
     if self.editorMode == "tile" then
         for i = #self.buttons, 1, -1 do
             self.buttons[i]:draw()

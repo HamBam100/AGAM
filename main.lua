@@ -1,11 +1,12 @@
 
 function love.load()
-    
+    love.graphics.setDefaultFilter("nearest","nearest")
+
     require "Engine.requirments"
 
     local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
     tilesetimage = love.graphics.newImage(tilesheetdir)
-    tilesetimage:setFilter("nearest", "nearest")
+
     tilesetimagewidth = tilesetimage:getWidth()
     tilesetimageheight = tilesetimage:getHeight()
     tileset = {}
@@ -78,7 +79,6 @@ function gameinit()
 
     spawn(Player(256,256), updateables.players, "Game")
     spawn(Slime(), updateables.enemies, "Game")
-    spawn(DebugSlime(), updateables.enemies, "Game")
     spawn(Mouse(), updateables.mouse, "UI")
 
     
@@ -166,7 +166,7 @@ function love.draw()
         love.graphics.print(state,10,30)
         love.graphics.print("DPI Scale: " .. love.window.getDPIScale(), 10, 40)
         
-
+        love.graphics.print("Memory: " .. math.floor(collectgarbage("count")) .. " KB", 10, 50)
     end
 
     if state == "editor" then
@@ -174,7 +174,7 @@ function love.draw()
         Render.drawLayers()
 
     end
-    love.graphics.print("Memory: " .. math.floor(collectgarbage("count")) .. " KB", 10, 50)
+    
     GameWindow.finish()
 end
 

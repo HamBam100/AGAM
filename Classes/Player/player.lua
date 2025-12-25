@@ -7,7 +7,7 @@ function Player:new(x,y)
     self.yv = 0
     self.speed = 350
 
-    self.colour = mix(elements["plasma"], elements["water"])
+    self.colour = mix(elements["plasma"], elements["earth"])
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
     self.eyes = Eyes(self)
     self.wand = Wand(self)

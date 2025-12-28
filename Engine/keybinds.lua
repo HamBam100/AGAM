@@ -1,31 +1,35 @@
 keybinds = {}
 
-keybinds.up = {"key:w", "key:up", "gamepad:dpup", "analog:lefty:up"}
-keybinds.down = {"key:s", "key:down", "gamepad:dpdown", "analog:lefty:down"}
-keybinds.left = {"key:a", "key:left", "gamepad:dpleft", "analog:leftx:left"}
-keybinds.right = {"key:d", "key:right", "gamepad:dpright", "analog:leftx:right"}
-keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
-keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
-keybinds.save = {"key:e"}
-keybinds.space = {"key:space", "gamepad:a"}
-keybinds.scrollup = {"wheel:up"}
-keybinds.scrolldown = {"wheel:down"}
-keybinds.minus = {"key:-"}
-keybinds.plus = {"key:="}
-keybinds.one = {"key:1"}
-keybinds.two = {"key:2"}
+keybinds.up = {"key:w", "key:up", "gamepad:dpup", "analog:lefty:up", default = "w"}
+keybinds.down = {"key:s", "key:down", "gamepad:dpdown", "analog:lefty:down", default = "s"}
+keybinds.left = {"key:a", "key:left", "gamepad:dpleft", "analog:leftx:left", default = "a"}
+keybinds.right = {"key:d", "key:right", "gamepad:dpright", "analog:leftx:right", default = "d"}
+keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down", default = "1"}
+keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down", default = "2"}
+keybinds.save = {"key:e", default = "e"}
+keybinds.space = {"key:space", "gamepad:a", default = "space"}
+keybinds.scrollup = {"wheel:up", default = "space"}
+keybinds.scrolldown = {"wheel:down", default = "space"}
+keybinds.minus = {"key:-", default = "space"}
+keybinds.plus = {"key:=", default = "space"}
+keybinds.one = {"key:1", default = "space"}
+keybinds.two = {"key:2", default = "space"}
 
 inputMode = "keyboard"
-
+inputType = "complex" -- "simple", "complex"
 wheel = {up = false, down = false}
 
 function bindPressed(bind)
+
+    if inputType == "simple" then
+        return love.keyboard.isDown(bind.default)
+    end
+
     keyIsDown = false
     bind.held = false
     
     for i=1,#bind,1 do
         
-
         if string.sub(bind[i], 1, 6) == "mouse:" then
             local button = tonumber(string.sub(bind[i], 7))
             if love.mouse.isDown(button) then
@@ -40,11 +44,12 @@ function bindPressed(bind)
             local direction = string.sub(bind[i], 7)
 
             if wheel[direction] then
+                wheel = {up = false, down = false}
                 inputMode = "keyboard"
                 keyIsDown = true
-                wheel = {up = false, down = false}
                 break
             end
+
         end
 
         if string.sub(bind[i], 1, 4) == "key:" then
@@ -151,11 +156,14 @@ function love.wheelmoved(x, y)
     
     if y > 0 then
         wheel.up = true
+        return
     end
 
     if y < 0 then
         wheel.down = true
+        return
     end
+
 end
 
 function love.joystickadded(detectedJoyStick)

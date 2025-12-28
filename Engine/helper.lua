@@ -63,6 +63,7 @@ end
 
 colour = {}
 colour.white = {255, 255, 255}
+colour.grey = {190, 190, 190}
 colour.red = {151, 44, 62}
 colour.aqua = {26, 237, 191}
 colour.purple = {106, 70, 184}

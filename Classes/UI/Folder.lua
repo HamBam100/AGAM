@@ -15,7 +15,7 @@ function Folder:new(x,y,width,height,name,elements)
 
     self.open = false
 
-    self.hoverColour = colour.white
+    self.hoverColour = colour.grey
     self.lineColour = {1,1,1}
     self.backgroundColour = {}
     
@@ -69,21 +69,27 @@ function Folder:update()
 end
 
 function Folder:draw()
-    if self.hover then
-        love.graphics.setShader(tintShader)
-        tintShader:send("targetColour", self.hoverColour)
-    end
+
     
     love.graphics.setColor(self.backgroundColour)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
     love.graphics.setColor(self.lineColour)
     
+    if self.hover or self.open then
+        love.graphics.setShader(tintShader)
+        tintShader:send("targetColour", self.hoverColour)
+    end
+
     love.graphics.draw(self.sprite,self.x + self.ox, self.y + self.oy)
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1,1,1)
     love.graphics.setShader()
 
+    if self.hover or self.open then
+        love.graphics.setColor(0.1,0.1,0.1)
+    end
     love.graphics.printf(self.name,self.x,self.y+32,64,"center")
+    love.graphics.setColor(1,1,1)
     if self.open then
         for i, element in pairs(self.elements) do
             element:draw()

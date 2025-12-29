@@ -1,4 +1,3 @@
-
 function drawHitbox(obj)
     local vertices = makeVertices(obj)
     for i = 1, #vertices do 
@@ -8,8 +7,8 @@ function drawHitbox(obj)
         end
         
         love.graphics.line(vertices[i].x, vertices[i].y, vertices[j].x, vertices[j].y)
-        
     end
+
 end
 
 function xy(x,y)
@@ -17,6 +16,7 @@ function xy(x,y)
     this.x = x
     this.y = y
     return this
+
 end
 
 function rotatePoint(px, py, ox, oy, angle)
@@ -27,6 +27,7 @@ function rotatePoint(px, py, ox, oy, angle)
     local rx = ox + dx * c - dy * s
     local ry = oy + dx * s + dy * c
     return rx, ry
+
 end
 
 function makeHitbox(x1,y1,x2,y2,obj)
@@ -41,6 +42,7 @@ function makeHitbox(x1,y1,x2,y2,obj)
     hitbox.y2 = y2 - oy --bottom
 
     return hitbox
+
 end
 
 function updateBox(obj)
@@ -53,6 +55,7 @@ function updateBox(obj)
     box.x2 = obj.x + obj.hitbox.x2
 
     return box
+
 end
 
 function collideBasic(a,b)
@@ -62,6 +65,7 @@ function collideBasic(a,b)
         return false
     end
     return true
+
 end
 
 function makeVertices(obj)
@@ -81,6 +85,7 @@ function makeVertices(obj)
     end
 
     return vertices
+
 end
 
 function makeEdges(vertices)
@@ -96,6 +101,7 @@ function makeEdges(vertices)
         table.insert(edges, edge)
     end
     return edges
+
 end 
 
 function makePolygon(obj)
@@ -103,10 +109,10 @@ function makePolygon(obj)
     a.vertex = makeVertices(obj)
     a.edge = makeEdges(a.vertex)
     return a
+
 end
 
 function collideSAT(objA, objB)
-
     polygonA = makePolygon(objA)
     polygonB = makePolygon(objB)
     local perpendicularStack = {}
@@ -140,6 +146,7 @@ function collideSAT(objA, objB)
             end
 
         end
+
         for j = 1, #polygonB.vertex, 1 do
         local dot = polygonB.vertex[j].x *
             perpendicularStack[i].x +
@@ -152,17 +159,15 @@ function collideSAT(objA, objB)
             if bmin == nil or dot < bmin then
                 bmin = dot
             end
-
         end
-        if (amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin) then 
-            goto continue_loop
-        else
+        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then 
             return false
         end
-        ::continue_loop::
+
     end
 
     return true
+
 end
 
 function collide(a,b)
@@ -175,15 +180,17 @@ function collide(a,b)
         return collideSAT(a, b)
         
     end
+
 end
 
 function wasVert(a, b)
-
     return a.past.x + a.hitbox.x1 < b.x + b.hitbox.x2 and a.past.x + a.hitbox.x2 > b.x + b.hitbox.x1
+
 end
 
 function wasHori(a, b)
     return a.past.y + a.hitbox.y1 < b.y + b.hitbox.y2 and a.past.y + a.hitbox.y2 > b.y + b.hitbox.y1
+
 end
 
 
@@ -201,6 +208,7 @@ function touchingWall(a)
 
     end
     return false
+
 end
 
 function resolveWall(a)
@@ -238,16 +246,10 @@ function resolveWall(a)
                         pushback = wall.hitbox.x1 + wallLength - a.x
                         a.x = a.x + pushback + a.ox
                     end
-
                 end
-
-                
-                
             end
-            
         end
-        
-        
     end
     return
+
 end

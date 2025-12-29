@@ -9,13 +9,12 @@ function Slime:new(x, y)
     self.speed = 160
     self.hp = 1
     self.inv = {i = 0, dur = 0.1}
-
+    
     self.hitbox = makeHitbox(0,0,64,64,self)
 
 end
 
 function Slime:update(dt,i)
-
     self.xv = 0
     self.yv = 0
 
@@ -26,13 +25,10 @@ function Slime:update(dt,i)
     local closestPlayer =  {x=mousex,y=mousey} --or updateables.players[1]
     local smallestDistance = getDistance(self, closestPlayer)
     for i, currentPlayer in ipairs(updateables.players) do
-        
         if getDistance(self, currentPlayer) < smallestDistance then
             closestPlayer = currentPlayer
             smallestDistance = getDistance(self, currentPlayer)
-
         end
-
     end
 
     if smallestDistance > 1 then
@@ -67,7 +63,6 @@ function Slime:update(dt,i)
 end
 
 function Slime:draw()
-
     if self.inv.i > 0 then
         love.graphics.setShader(flashShader)
     end

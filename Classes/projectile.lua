@@ -1,14 +1,8 @@
-
 local Projectile = Object:extend()
 
-
-
 function Projectile:new(i)
-
-
     local rotation = radtodeg(i.r) + love.math.random(-3,3)
     rotation = degtorad(rotation)
-
 
     local xv = math.cos(rotation)
     local yv = math.sin(rotation)
@@ -24,13 +18,13 @@ function Projectile:new(i)
     self.hitbox = makeHitbox(0 - self.radius,0 - self.radius,0 + self.radius,0 + self.radius,self)
     
     self.speed = 350
+
 end
 
 function Projectile:update(dt,iteration)
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
     
-
     if self.x > gameWidth or self.x < 0 or self.y > gameHeight or self.y < 0 then
         poof(self, updateables.projectiles, "Projectiles", iteration)
     end 

@@ -1,29 +1,17 @@
-
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
 
     require "Engine.requirments"
 
-
-
     GameWindow.load(1920, 1080)
 
     virtualMouseStart()
 
-
-
-    
-    
-
     editorinit()
     
-    
-
-
     Steam.init()
 
 end
-
 
 function gameinit()
     Render.reset()
@@ -45,25 +33,18 @@ function gameinit()
         level = nil
     end
     collectgarbage("collect")
-
     
     updateables.players = createUpdateableContainer()
     updateables.enemies = createUpdateableContainer()
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
 
-
-
     spawn(Player(256,256), updateables.players, "Game")
     spawn(Slime(), updateables.enemies, "Game")
     spawn(Mouse(), updateables.mouse, "UI")
 
-    
-
     level = Scene("walls.lua")
     Render.addObjectToLayer("Background", level)
-
-    
 
 end
 
@@ -89,18 +70,13 @@ function editorinit()
     end
     collectgarbage("collect")
 
-
     updateables.ui = createUpdateableContainer()
-
-
-    
 
     spawn(Editor(), updateables.ui, "UI")
 
 end
 
 function love.update(dt)
-    
     mousex, mousey = GameWindow.getMousePosition()
 
     --Scene:update(dt)
@@ -121,14 +97,12 @@ function love.update(dt)
 
     if state == "editor" then
 
-
         for i, update in pairs(updateables) do
             update:update(dt)
         end
 
-
-        
     end
+
 end
 
 function love.draw()
@@ -153,6 +127,7 @@ function love.draw()
     end
     
     GameWindow.finish()
+
 end
 
 function love.resize(w, h)
@@ -171,8 +146,10 @@ function love.keypressed(k)
     if k == "]" then
         editorinit()
     end
+
 end
 
 function love.quit()
     Steam.shutdown()
+    
 end

@@ -14,7 +14,6 @@ tilesetimagewidth = tilesetimage:getWidth()
 tilesetimageheight = tilesetimage:getHeight()
 tileset = {}
 
-
 local tilesetwidth = 12
 local tilesetheight = 2
 local tilewidth = 64

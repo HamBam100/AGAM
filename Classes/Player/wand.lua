@@ -37,11 +37,9 @@ function Wand:update(dt)
 end
 
 function Wand:createProj()
-    
     spawn(Projectile(self), updateables.projectiles, "Projectiles")
 
 end
-
 
 function Wand:draw()
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,64,64)

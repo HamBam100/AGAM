@@ -1,7 +1,6 @@
 local Body2d = Object:extend()
 
 function Body2d:new(x, y, sprite, r)
-
     self.x = x or 0
     self.y = y or 0
     
@@ -11,7 +10,6 @@ function Body2d:new(x, y, sprite, r)
 
     self.r = r or 0
     
-
 end
 
 return Body2d

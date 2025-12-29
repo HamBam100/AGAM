@@ -1,7 +1,6 @@
 local OS = love.system.getOS()
 local dir = love.filesystem.getSourceBaseDirectory()
 
-
 if OS == "Windows" then
     package.loadlib(dir .. "/steam_api64.dll", "*")
 
@@ -11,9 +10,6 @@ elseif OS == "Linux" then
     package.loadlib(dir .. "/libsteam_api.so", "*")
     
     package.cpath = package.cpath .. ';' .. dir .. '/Steam/Linux/?.so'
-
 end
 
-
 Steam = require "luasteam"
-

@@ -1,6 +1,7 @@
 local Player = Body2d:extend()
 
 function Player:new(x,y)
+    
     self.super.new(self,x,y,Sprite["Player"])
 
     self.xv = 0
@@ -11,6 +12,7 @@ function Player:new(x,y)
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
     self.eyes = Eyes(self)
     self.wand = Wand(self)
+
 end
 
 function Player:update(dt)
@@ -56,12 +58,11 @@ function Player:draw()
     self.eyes:draw()
     self.wand:draw()
     
-
-    
     if debug then
         printcoords(self.x,self.y,-25,64,1)
         drawHitbox(self)
     end
+
 end
 
 return Player

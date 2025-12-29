@@ -2,7 +2,6 @@ Editor = require "Engine.editor"
 
 local Tiler = Object:extend()
 
-
 function Tiler:new(mapfile)
     if love.filesystem.exists(mapfile) then
 
@@ -27,7 +26,6 @@ function Tiler:new(mapfile)
             end
         end
 
-        
         self.colliders = self:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
         
         filemaxwidth = filemaxwidth * 64
@@ -52,8 +50,6 @@ function Tiler:new(mapfile)
     love.graphics.setCanvas()
 
 end
-
-
 
 function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
     local collisionmask = {2,3,8,9,10,11,12,13,14,15,16,17,18,19}
@@ -82,18 +78,12 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                 end
                 tilemap[l][tile.y][tile.x] = {id = tile.id, checked = false, collision = col}
             end
-
         end
     end
-
-
-
 
     for l=1, #loadedtilemap do 
         for y=1, filemaxheight do 
             for x=1, filemaxwidth do 
-
-
                 local tile = tilemap[l][y][x]
 
                 if tile.collision and not tile.checked then
@@ -104,7 +94,6 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                         width = width + 1
 
                     end
-
 
                     local canExtend = true
                     local height = 0
@@ -122,9 +111,6 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                         end
                     end
 
-
-
-
                     for j=1, height do
                         for k=1, width do
                             tilemap[l][y - 1 + j][x - 1 + k].checked = true
@@ -133,26 +119,18 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                     local tilesize = 64
                     local collider = makeHitbox((x - 1)* tilesize, (y - 1)* tilesize, ( x - 1 + width) * tilesize, ( y - 1 + height)* tilesize)
                     table.insert(createdcolliders, collider)
-
                 end
-                
-
-
-
             end
         end
     end
 
-
-
-
-    
-
     return createdcolliders
+
 end
 
 function Tiler:draw()
     love.graphics.draw(self.canvas,0,0)
+
 end
 
 function Tiler:removed()
@@ -160,5 +138,7 @@ function Tiler:removed()
         self.canvas:release()
         self.canvas = nil
     end
+
 end
+
 return Tiler

@@ -1,6 +1,5 @@
 local shader_code_1 = [[
 vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
-
     vec4 pixel = Texel(image, uvs);
 
     float av = pixel.r*255 + pixel.g*255 + pixel.b*255 + pixel.a*255;
@@ -9,17 +8,16 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
     float opacity = pixel.a;
 
     return vec4(value, value, value, opacity);
+
 }
 
 ]]
-
 
 local shader_code_2 = [[
 
 uniform vec3 targetColour;
     
 vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
-
     vec4 pixel = Texel(image, uvs);
     
     vec4 newPixel = pixel;
@@ -37,6 +35,7 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
     } 
     
     return vec4(newPixel.r, newPixel.g, newPixel.b, newPixel.a);
+
 }
 
 ]]
@@ -46,7 +45,6 @@ local shader_code_3 = [[
 uniform vec3 targetColour;
     
 vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
-
     vec4 pixel = Texel(image, uvs);
     
     vec4 newPixel = pixel;
@@ -64,10 +62,10 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
     } 
     
     return vec4(newPixel.r, newPixel.g, newPixel.b, newPixel.a);
+
 }
 
 ]]
-
 
 flashShader = love.graphics.newShader(shader_code_1)
 tintPlayerShader = love.graphics.newShader(shader_code_2)

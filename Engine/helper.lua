@@ -1,20 +1,14 @@
-function degtorad(degree)
-    local rad = degree * math.pi/180
-    return rad
-end
+degtorad = math.rad
 
-function radtodeg(rad)
-    local degree = rad * 180/math.pi
-    return degree
-end
+radtodeg = math.deg
 
 function lerp(a,b,t)
     local interp = a * (1-t) + b * t
     return interp
+
 end
 
 function round(a,b)
-
     place = b or 0
     place = 10^(place)
 
@@ -22,23 +16,25 @@ function round(a,b)
     number = number / place
 
     return number
+
 end
 
 function printcoords(x,y,offsetx,offsety,rounded)
     love.graphics.print("x: "..round(x,rounded).." y: "..round(y,rounded),x+offsetx,y+offsety)
+
 end
 
 function getDistance(a,b)
     local horizontal = a.x - b.x
     local vertical = a.y - b.y
 
-    
     local matha = horizontal ^2
     local mathb = vertical ^2
     local mathc = matha + mathb
 
     local distance = math.sqrt(mathc)
     return distance
+
 end
 
 --Removes an object from the Game
@@ -48,6 +44,7 @@ function poof(obj, array, layer, i)
     end
     Render.removeObjectFromLayer(layer, obj)
     table.remove(array, i)
+
 end
 
 --Adds an object to the Game
@@ -55,10 +52,12 @@ function spawn(class, array, layer)
     local obj = class
     Render.addObjectToLayer(layer, obj)
     table.insert(array,obj)
+
 end
 
 function torgb(clr)
     return clr / 255
+
 end
 
 colour = {}
@@ -70,7 +69,6 @@ colour.purple = {106, 70, 184}
 colour.brown = {184, 118, 83}
 colour.green = {75,242,33}
 colour.blue = {0,130,221}
-
 
 elements = {
     ["fire"] = colour.red,
@@ -89,8 +87,5 @@ function mix(clr1, clr2)
         mixed[i] = (clr1[i] + clr2[i]) / 2
     end
     return mixed
+
 end
- 	
-
-
-

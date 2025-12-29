@@ -34,23 +34,24 @@ end
 
 
 function gameWindow.getMouseX()
-
     local offsetX = (w - gameWidth * gameWindow.scale) / 2
     local mouseX = (love.mouse.getX() - offsetX) / gameWindow.scale
 
     return math.floor(mouseX)
+
 end
 
 function gameWindow.getMouseY()
-
     local offsetY = (h - gameHeight * gameWindow.scale) / 2
     local mouseY = (love.mouse.getY() - offsetY) / gameWindow.scale
 
     return math.floor(mouseY)
+
 end
 
 function gameWindow.getMousePosition()
     return gameWindow.getMouseX(), gameWindow.getMouseY()
+
 end
 
 function gameWindow.start()
@@ -62,6 +63,7 @@ end
 function gameWindow.finish()
     love.graphics.setCanvas()
     love.graphics.draw(gameCanvas,gameWindow.translateX,gameWindow.translateY,0,gameWindow.scale,gameWindow.scale)
+    
 end
 
 return gameWindow

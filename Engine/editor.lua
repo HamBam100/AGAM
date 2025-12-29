@@ -1,4 +1,3 @@
-
 local Editor = Object:extend()
 local numberOfTiles = 20
 Editor.tilesheet = {}
@@ -10,6 +9,7 @@ local panspeed = 800
 
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
+
 end
 
 function Editor:createbutton(start,stop,offset)
@@ -29,11 +29,11 @@ function Editor:createbutton(start,stop,offset)
         count = count + 1
     end
     return list
+
 end
 
 
 function Editor:createFolders(where) 
-
     local entries = {
         {name = "Walls", start = 1, stop = 3},
         {name = "Floors", start = 4, stop = 7, extra = {onclick = function() random = true end, sprite = love.graphics.newImage("Sprites/Tilemap/rndtile.png"),}},
@@ -52,13 +52,13 @@ function Editor:createFolders(where)
             table.insert(buttons, button)
         
         end
-        local newFolder = Folder(i * 64 - 64,0,64,64,entry.name,buttons)
+        local newFolder = Folder(i * 64 - 64,0,entry.name,buttons)
         table.insert(where, newFolder)
     end
+
 end
 
 function Editor:load()
-    
     self.tilemap = {}
 
     self:createLayer(1)
@@ -99,6 +99,7 @@ function Editor:add(tx,ty)
         end
         self.tilemap[self.currentLayer] [ty][tx] = {id = self.tiletype.id}
     end
+
 end
 
 function Editor:remove(tx,ty)
@@ -108,6 +109,7 @@ function Editor:remove(tx,ty)
         end
         
     end
+
 end
 
 function Editor:new()
@@ -150,8 +152,6 @@ function Editor:update(dt)
         self.editorMode = "entity"
     end
 
-
-    
     if random then 
         self.tiletype = self.tilesheet[love.math.random(4,7)]
     end
@@ -159,11 +159,6 @@ function Editor:update(dt)
     truemousex = mousex - self.origin.x
     truemousey = mousey - self.origin.y
 
-
-    
-
-
-    
     self.tileSelection.mx = (mousex - self.origin.x) / self.scale
     self.tileSelection.my = (mousey - self.origin.y) / self.scale
 
@@ -194,17 +189,12 @@ function Editor:update(dt)
 
         if globalhover == false then
             if bindPressed(keybinds.shoot) then
-
-
                 self:add(self.tileSelection.x, self.tileSelection.y)
             end
 
             if bindPressed(keybinds.shootalt) then
-
-
                 self:remove(self.tileSelection.x, self.tileSelection.y)
             end
-            
         end
     end
 
@@ -215,7 +205,6 @@ function Editor:update(dt)
     end
 
     if bindPressed(keybinds.space) then
-
         self.scale = 64
 
         self.origin.x = mousex - self.tileSelection.mx * self.scale
@@ -225,32 +214,24 @@ function Editor:update(dt)
 
 
     if bindPressed(keybinds.right) then
-
         self.origin.x = self.origin.x - panspeed * dt
     end
 
     if bindPressed(keybinds.left) then
-
         self.origin.x = self.origin.x + panspeed * dt
     end
 
     if bindPressed(keybinds.down) then
-
         self.origin.y = self.origin.y - panspeed * dt
-        
     end
     if bindPressed(keybinds.up) then
-
         self.origin.y = self.origin.y + panspeed * dt
-        
     end
     if bindPressed(keybinds.save) then
-
         self:save()
     end
 
     if bindPressed(keybinds.scrollup) then
-
         if self.scale < 256 then
             self.scale = self.scale + 4
 
@@ -260,14 +241,12 @@ function Editor:update(dt)
     end
 
     if bindPressed(keybinds.scrolldown) then
-
         if self.scale > 4 then
             self.scale = self.scale - 4
 
             self.origin.x = mousex - self.tileSelection.mx * self.scale
             self.origin.y = mousey - self.tileSelection.my * self.scale
         end
-
     end
 
     if bindPressed(keybinds.minus) and not bindHeld(keybinds.minus) then
@@ -279,17 +258,12 @@ function Editor:update(dt)
         self.currentLayer = self.currentLayer + 1
         if self.currentLayer > #self.tilemap then
             self:createLayer(self.currentLayer)
-            
         end
     end
     
-
-
-
 end
 
 function Editor:draw()
-    
     for i = 1, #self.tilemap do
         for y, row in pairs(self.tilemap[i]) do
             for x, currentTile in pairs(self.tilemap[i][y]) do
@@ -302,8 +276,6 @@ function Editor:draw()
     end
 
     love.graphics.rectangle("line", self.origin.x + 0 * self.scale, self.origin.y + 0 * self.scale, 1, 1)
-
-    
 
     for i = #entitys, 1, -1 do
         entitys[i]:draw(self.origin.x, self.origin.y, self.scale)
@@ -333,7 +305,6 @@ function Editor:draw()
         for i, button in ipairs(self.buttons.tilemap) do
             button:draw(dt)
         end
-
     end
 
     if self.editorMode == "tile" then
@@ -341,6 +312,7 @@ function Editor:draw()
             self.buttons[i]:draw()
         end
     end
+
 end
 
 function Editor:save()
@@ -367,6 +339,7 @@ function Editor:save()
     -- local serialized = Lume.serialize(data)
     local serialized = Sir.dumps(data)
     love.filesystem.write(currentfile, serialized)
+
 end
 
 

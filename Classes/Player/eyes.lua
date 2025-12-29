@@ -21,6 +21,7 @@ function Eyes:update()
     self.yv = math.sin(rotation) * 5
     self.x = math.floor(self.x + self.xv)
     self.y = math.floor(self.y + self.yv)
+    
 end
 
 

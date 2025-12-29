@@ -1,4 +1,4 @@
- -- External tools
+-- External tools
     Object = require "External.classic"
     Lume = require "External.lume"
     Sir = require "External.bitser"
@@ -16,7 +16,6 @@
     Keybinds = require "Engine.keybinds"
     OS = require "Engine.OSinit"
     GameWindow = require "Engine.gameWindow"
-
 
 -- Classes
     Body2d = require "Classes.body2d"

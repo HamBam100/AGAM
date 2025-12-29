@@ -1,8 +1,6 @@
 UIElement = require "Classes.UI.UIElement"
 
-
 local Button = UIElement:extend()
-
 
 function Button:new(x,y,width,height,func,sprite,version)
     Button.super.new(self, x, y, width, height)
@@ -13,8 +11,7 @@ function Button:new(x,y,width,height,func,sprite,version)
 
     self.r = 0
 
-    
-    self.hoverColour = colour.white
+    self.hoverColour = colour.grey
     self.lineColour = {1,1,1}
     self.backgroundColour = {}
     
@@ -23,12 +20,7 @@ function Button:new(x,y,width,height,func,sprite,version)
     end
 
     self.func = func
-    
-    self.ox = (self.width - 64) / 2
-    self.oy = (self.height - 64) / 2
 
-    -- self.ox = self.width - self.sprite:getWidth() /2
-    -- self.oy = self.height - self.sprite:getHeight() /2
 end
 
 function Button:update()
@@ -63,14 +55,15 @@ function Button:draw()
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
     love.graphics.setColor(self.lineColour)
     if self.version == "tilemap" then
-        love.graphics.draw(tilesetimage,self.sprite,self.x + self.ox, self.y + self.oy)
+        love.graphics.draw(tilesetimage,self.sprite,self.x, self.y)
     else
-        love.graphics.draw(self.sprite,self.x + self.ox, self.y + self.oy)
+        love.graphics.draw(self.sprite,self.x, self.y)
     end
     
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1,1,1)
     love.graphics.setShader()
+
 end
 
 return Button

@@ -2,18 +2,18 @@ require "Engine.OSinit"
 
 local networking = {}
 
-local server = true
+local server = false
 local connectionId
 local pollGroup
 
 function networking.start()
         Steam.init()
         
-
         if server then
             connectionId = Steam.networkingSockets.createListenSocketP2P(0)
             pollGroup = Steam.networkingSockets.createPollGroup()
             Steam.friends.setRichPresence("connect", tostring(Steam.user.getSteamID()))
+            print("server started")
         end
 
 end
@@ -23,29 +23,30 @@ function Steam.friends.onGameRichPresenceJoinRequested(data)
 	Steam.networkingSockets.connectP2P(Steam.extra.parseUint64(data.connect), 0)
 	
 	Steam.friends.setRichPresence("connect", data.connect)
-end
 
+end
 
 function Steam.networkingSockets.onConnectionChanged(data)
     local state = data.state
 	local conn = data.connection
 
-    print(state)
-
     if state == "Connecting" then
+        print("Connecting...")
         if server then
             Steam.networkingSockets.acceptConnection(conn)
             Steam.networkingSockets.setConnectionPollGroup(conn, pollGroup)
         end
     elseif state == "Connected" then
         if not server then
-            print("client connected")
+            print("Connected to server")
             connectionId = conn
+        else
+            print("Client Connected")
         end
     elseif state == "ClosedByPeer" then
         print("client ".. connectionId .. " left")
     elseif state == "ProblemDetectedLocally" then
-        print("oopsy")
+        print("oopsy, local problem")
     end
 
 end
@@ -75,7 +76,6 @@ function networking.update()
         print(data.msg)
     end
 
-
     if server or not connectionId then
         return
     end
@@ -86,15 +86,12 @@ function networking.update()
 		local method = Steam.networkingSockets.flags.Send_Reliable
 		Steam.networkingSockets.sendMessageToConnection(connectionId, "Hello world!", method)
 	end
+
 end
 
 function networking.quit()
     Steam.shutdown()
+
 end
-
-
-
-
-
 
 return networking

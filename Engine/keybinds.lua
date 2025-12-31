@@ -14,6 +14,7 @@ keybinds.minus = {"keybd:-"}
 keybinds.plus = {"keybd:="}
 keybinds.one = {"keybd:1"}
 keybinds.two = {"keybd:2"}
+keybinds.send = {"keybd:p"}
 
 inputMode = "keyboard"
 

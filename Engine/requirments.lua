@@ -9,12 +9,13 @@
     require "Engine.shaders"
     require "Engine.updateables"
     require "Engine.sprites"
+    
+    Networking = require "Engine.steamNet"
     Tiler = require "Engine.tiler"
     Scene = require "Engine.scene"
     Layer = require "Engine.layers"
     Render = require "Engine.render"
     Keybinds = require "Engine.keybinds"
-    OS = require "Engine.OSinit"
     GameWindow = require "Engine.gameWindow"
 
 -- Classes

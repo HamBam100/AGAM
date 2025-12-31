@@ -32,6 +32,7 @@ function Player:update(dt)
     if bindPressed(keybinds.right) then
         self.xv = self.xv + (self.speed * dt)
     end
+    
     self.past = {}
     self.past.x = self.x
     self.past.y = self.y

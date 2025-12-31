@@ -9,7 +9,7 @@ function love.load()
 
     editorinit()
     
-    Steam.init()
+    Networking.start()
 
 end
 
@@ -77,6 +77,7 @@ function editorinit()
 end
 
 function love.update(dt)
+    Networking.update()
     mousex, mousey = GameWindow.getMousePosition()
 
     --Scene:update(dt)
@@ -150,6 +151,6 @@ function love.keypressed(k)
 end
 
 function love.quit()
-    Steam.shutdown()
-    
+    Networking.quit()
+
 end

@@ -147,6 +147,10 @@ function love.keypressed(k)
     if k == "]" then
         editorinit()
     end
+    
+    if k == "o" then
+        love.window.setMode(620, 480, {resizable=true, vsync=0, msaa = 0})
+    end
 
 end
 

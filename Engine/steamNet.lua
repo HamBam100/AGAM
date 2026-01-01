@@ -18,7 +18,6 @@ function networking.start()
 
 end
 
-
 function Steam.friends.onGameRichPresenceJoinRequested(data)
 	Steam.networkingSockets.connectP2P(Steam.extra.parseUint64(data.connect), 0)
 	
@@ -45,6 +44,9 @@ function Steam.networkingSockets.onConnectionChanged(data)
         end
     elseif state == "ClosedByPeer" then
         print("client ".. connectionId .. " left")
+        if server then
+            Steam.networkingSockets.closeConnection(conn)
+        end
     elseif state == "ProblemDetectedLocally" then
         print("oopsy, local problem")
     end
@@ -55,37 +57,50 @@ end
 
 function networking.update()
     Steam.runCallbacks()
-
-    local n, messages
-
-    if server then
-        n, messages = Steam.networkingSockets.receiveMessagesOnPollGroup(pollGroup)
-    else
-        if connectionId then
-            n, messages = Steam.networkingSockets.receiveMessagesOnConnection(connectionId)
-        else
-            n = 0
+    if connectionId then
+        --Send message to server
+        if bindPressed(keybinds.send) and not bindHeld(keybinds.send) then
+            local method = Steam.networkingSockets.flags.Send_Reliable
+            Steam.networkingSockets.sendMessageToConnection(connectionId, "Hello world!", method)
         end
-    end
 
-    if n == 0 then
+        if server then
+            local sendmessages = {}
+            sendmessages[1] = {conn = pollGroup, msg = "Hello", flag = Steam.networkingSockets.flags.Send_Reliable}
+            Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
+        else
+            local sendmessages = {}
+            sendmessages[1] = {conn = connectionId, msg = "Hello", flag = Steam.networkingSockets.flags.Send_Reliable}
+            Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
+        end
+
+        local n, messages
+
+        if server then
+            n, messages = Steam.networkingSockets.receiveMessagesOnPollGroup(pollGroup)
+        else
+            if connectionId then
+                n, messages = Steam.networkingSockets.receiveMessagesOnConnection(connectionId)
+            else
+                n = 0
+            end
+        end
+
+        if n == 0 or nil then
+            return
+        end
+
+        for _, data in ipairs(messages) do
+            print(data.msg)
+        end
+
+        if server or not connectionId then
+            return
+        end
+
+    else
         return
     end
-
-    for _, data in ipairs(messages) do
-        print(data.msg)
-    end
-
-    if server or not connectionId then
-        return
-    end
-
-    --Send message to server
-	if bindPressed(keybinds.send) and not bindHeld(keybinds.send) then
-
-		local method = Steam.networkingSockets.flags.Send_Reliable
-		Steam.networkingSockets.sendMessageToConnection(connectionId, "Hello world!", method)
-	end
 
 end
 

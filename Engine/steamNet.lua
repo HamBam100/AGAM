@@ -79,13 +79,13 @@ function networking.clientUpdate()
         local n, messages
         n, messages = Steam.networkingSockets.receiveMessagesOnConnection(connectionId)
 
-        if n == 0 or nil then
+        if n == 0 or n == nil then
             return
         end
 
         if messages then
             for _, data in ipairs(messages) do
-                print(data.msg)
+                print(data)
             end
         end
     else
@@ -106,13 +106,14 @@ function networking.serverUpdate()
         local n, messages
         n, messages = Steam.networkingSockets.receiveMessagesOnPollGroup(pollGroup)
 
-        if n == 0 or nil then
+        if n == 0 or n == nil then
             return
         end
 
         if messages then
             for _, data in ipairs(messages) do
-                print(data.msg)
+                data = data.msg
+                print(data)
             end
         end
     else

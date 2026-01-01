@@ -7,6 +7,10 @@ local connectionId
 local pollGroup
 local clients
 
+local method_reliable = Steam.networkingSockets.flags.Send_Reliable
+local method_unreliable = Steam.networkingSockets.flags.Send_Unreliable
+local method_unreliableQuick = Steam.networkingSockets.flags.Send_UnreliableNoDelay
+
 function networking.start()
         Steam.init()
         
@@ -71,9 +75,8 @@ end
 
 function networking.clientUpdate()
     if connectionId then
-        local method = Steam.networkingSockets.flags.Send_Reliable
         local sendmessages = {}
-        sendmessages[1] = {conn = connectionId, msg = "Hello", flag = method}
+        sendmessages[1] = {conn = connectionId, msg = "Hello", flag = method_reliable}
         Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
 
         local n, messages
@@ -96,10 +99,9 @@ end
 
 function networking.serverUpdate()
     if listenSocket then
-        local method = Steam.networkingSockets.flags.Send_Reliable
         for i, client in ipairs(clients) do
             local sendmessages = {}
-            sendmessages[1] = {conn = client, msg = "Hello", flag = method}
+            sendmessages[1] = {conn = client, msg = "Hello", flag = method_reliable}
             Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
         end
         

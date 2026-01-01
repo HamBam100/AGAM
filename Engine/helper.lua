@@ -43,7 +43,7 @@ function poof(obj, array, layer, i)
         obj:removed()
     end
     Render.removeObjectFromLayer(layer, obj)
-    table.remove(array, i)
+    array:remove(obj)
 
 end
 

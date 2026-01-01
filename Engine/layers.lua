@@ -19,8 +19,7 @@ function Layer:add(obj)
 end
 
 function Layer:remove(obj)
-    for i, o in pairs(self.objects) do
-        --If the object has a draw function, then run it
+    for i, o in ipairs(self.objects) do
         if o == obj then
             table.remove(self.objects, i)
             return
@@ -30,7 +29,7 @@ function Layer:remove(obj)
 end
 
 function Layer:draw()
-    for _, obj in pairs(self.objects) do
+    for _, obj in ipairs(self.objects) do
         --If the object has a draw function, then run it
         if obj.draw then
             obj:draw()

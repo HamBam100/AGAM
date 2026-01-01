@@ -17,7 +17,7 @@ end
 
 function Render.addObjectToLayer(name, obj)
     --checks through all layers, and if a layer matches the name requested, inserts the object into that layer
-    for _, layer in pairs(Render.layers) do
+    for _, layer in ipairs(Render.layers) do
         if name == layer.name then
             layer:add(obj)
             return
@@ -28,7 +28,7 @@ end
 
 function Render.removeObjectFromLayer(name, obj)
     --checks through all layers, and if a layer matches the name requested, removes the object from that layer
-    for _, layer in pairs(Render.layers) do
+    for _, layer in ipairs(Render.layers) do
         if name == layer.name then
             layer:remove(obj)
             return
@@ -39,14 +39,14 @@ end
 
 function Render.drawLayers()
     --runs through all objects in all layers and runs their draw function
-    for _, layer in pairs(Render.layers) do
+    for _, layer in ipairs(Render.layers) do
         layer:draw()
     end
 
 end
 
 function Render.sortitems()
-    for _, layer in pairs(Render.layers) do
+    for _, layer in ipairs(Render.layers) do
 
         if layer.sort then
             table.sort(layer.objects, function(a, b) return a.y < b.y end)

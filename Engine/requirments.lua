@@ -29,6 +29,12 @@
     Projectile = require "Classes.projectile"
     Mouse = require "Classes.mouse"
 
+    --Remote components
+        RemotePlayer = require "Classes.remotePlayer.remotePlayer"
+        RemoteWand = require "Classes.remotePlayer.remoteWand"
+        RemoteEyes = require "Classes.remotePlayer.remoteEyes"
+        RemoteProjectile = require "Classes.remotePlayer.remoteProjectile"
+
 -- UI components
     Button = require "Classes.UI.Button"
     Folder = require "Classes.UI.Folder"

@@ -14,7 +14,7 @@ function Slime:new(x, y)
 
 end
 
-function Slime:update(dt,i)
+function Slime:update(dt)
     self.xv = 0
     self.yv = 0
 
@@ -55,7 +55,7 @@ function Slime:update(dt,i)
         if collide(self,p) then
             -- self.hp = self.hp - 1
             -- self.inv.i = self.inv.dur
-            poof(self, updateables.enemies, "Game", i)
+            poof(self, updateables.enemies, "Game")
             return
         end
     end

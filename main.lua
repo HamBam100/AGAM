@@ -39,6 +39,9 @@ function gameinit()
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
 
+    updateables.remotePlayers = createUpdateableContainer()
+    updateables.remoteProjectiles = createUpdateableContainer()
+    
     spawn(Player(256,256), updateables.players, "Game")
     spawn(Slime(), updateables.enemies, "Game")
     spawn(Mouse(), updateables.mouse, "UI")

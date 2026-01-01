@@ -5,15 +5,17 @@ local networking = {}
 local server = false
 local connectionId
 local pollGroup
+local clients
 
 function networking.start()
         Steam.init()
         
         if server then
-            connectionId = Steam.networkingSockets.createListenSocketP2P(0)
+            listenSocket = Steam.networkingSockets.createListenSocketP2P(0)
             pollGroup = Steam.networkingSockets.createPollGroup()
             Steam.friends.setRichPresence("connect", tostring(Steam.user.getSteamID()))
             print("server started")
+            clients = {}
         end
 
 end
@@ -41,14 +43,14 @@ function Steam.networkingSockets.onConnectionChanged(data)
             connectionId = conn
         else
             print("Client Connected")
+            table.insert(clients, conn)
         end
     elseif state == "ClosedByPeer" then
-        print("client ".. connectionId .. " left")
-        if server then
-            Steam.networkingSockets.closeConnection(conn)
-        end
+        print("client ".. conn .. " left")
+        Steam.networkingSockets.closeConnection(conn)
     elseif state == "ProblemDetectedLocally" then
         print("oopsy, local problem")
+        Steam.networkingSockets.closeConnection(conn)
     end
 
 end
@@ -57,47 +59,62 @@ end
 
 function networking.update()
     Steam.runCallbacks()
-    if connectionId then
-        --Send message to server
-        if bindPressed(keybinds.send) and not bindHeld(keybinds.send) then
-            local method = Steam.networkingSockets.flags.Send_Reliable
-            Steam.networkingSockets.sendMessageToConnection(connectionId, "Hello world!", method)
-        end
 
-        if server then
-            local sendmessages = {}
-            sendmessages[1] = {conn = pollGroup, msg = "Hello", flag = Steam.networkingSockets.flags.Send_Reliable}
-            Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
-        else
-            local sendmessages = {}
-            sendmessages[1] = {conn = connectionId, msg = "Hello", flag = Steam.networkingSockets.flags.Send_Reliable}
-            Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
-        end
+    if server then
+        networking.serverUpdate()
+    else
+        networking.clientUpdate()
+    end
+
+end
+
+
+function networking.clientUpdate()
+    if connectionId then
+        local method = Steam.networkingSockets.flags.Send_Reliable
+        local sendmessages = {}
+        sendmessages[1] = {conn = connectionId, msg = "Hello", flag = method}
+        Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
 
         local n, messages
-
-        if server then
-            n, messages = Steam.networkingSockets.receiveMessagesOnPollGroup(pollGroup)
-        else
-            if connectionId then
-                n, messages = Steam.networkingSockets.receiveMessagesOnConnection(connectionId)
-            else
-                n = 0
-            end
-        end
+        n, messages = Steam.networkingSockets.receiveMessagesOnConnection(connectionId)
 
         if n == 0 or nil then
             return
         end
 
-        for _, data in ipairs(messages) do
-            print(data.msg)
+        if messages then
+            for _, data in ipairs(messages) do
+                print(data.msg)
+            end
         end
+    else
+        return
+    end
 
-        if server or not connectionId then
+end
+
+function networking.serverUpdate()
+    if listenSocket then
+        local method = Steam.networkingSockets.flags.Send_Reliable
+        for i, client in ipairs(clients) do
+            local sendmessages = {}
+            sendmessages[1] = {conn = client, msg = "Hello", flag = method}
+            Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
+        end
+        
+        local n, messages
+        n, messages = Steam.networkingSockets.receiveMessagesOnPollGroup(pollGroup)
+
+        if n == 0 or nil then
             return
         end
 
+        if messages then
+            for _, data in ipairs(messages) do
+                print(data.msg)
+            end
+        end
     else
         return
     end

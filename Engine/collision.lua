@@ -226,25 +226,16 @@ function resolveWall(a)
                 local playerLength = a.hitbox.x2 - a.hitbox.x1
                 local playerHeight = a.hitbox.y2 - a.hitbox.y1
                 if wasVert(a, wall) then
-                    local pushback = 0
-
                     if a.y < wall.hitbox.y1 + wallHeight/2 then
-                        pushback = a.y + playerHeight - wall.hitbox.y1
-                        a.y = a.y - pushback + a.oy
+                        a.y = wall.hitbox.y1 - a.hitbox.y2
                     else
-                        pushback = wall.hitbox.y1 + wallHeight - a.y
-                        a.y = a.y + pushback + a.oy
+                        a.y = wall.hitbox.y2 + a.hitbox.y2
                     end
-
                 elseif wasHori(a, wall) then
-                    local pushback = 0
-
                     if a.x < wall.hitbox.x1 + wallLength/2 then
-                        pushback = a.x + playerLength - wall.hitbox.x1
-                        a.x = a.x - pushback + a.ox
+                        a.x = wall.hitbox.x1 - a.hitbox.x2
                     else
-                        pushback = wall.hitbox.x1 + wallLength - a.x
-                        a.x = a.x + pushback + a.ox
+                        a.x = wall.hitbox.x2 - a.hitbox.x1
                     end
                 end
             end

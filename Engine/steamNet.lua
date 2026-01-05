@@ -105,9 +105,11 @@ function networking.update()
         print("remote player "..player.steamID.." ".._)
     end
 
-    print("#clients "..#clients)
-    for _, client in ipairs(clients) do
-        print("client "..client.." ".._)
+    if clients then
+        print("#clients "..#clients)
+        for _, client in ipairs(clients) do
+            print("client "..client.." ".._)
+        end
     end
     
     if server then
@@ -115,15 +117,19 @@ function networking.update()
     else
         networking.clientUpdate()
     end
-    
+    print(#pendingSpawns)
     -- Process spawns
-    for _, data in ipairs(pendingSpawns) do
+    for i=#pendingSpawns, 1,-1 do
+        local data = pendingSpawns[i]
         if data.spawnType == "player" then
             spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
         end
 
     end
-    pendingSpawns = {}
+    if #pendingSpawns>0 then
+        pendingSpawns = {}
+        collectgarbage("collect")
+    end
 end
 
 function networking.playerSend()

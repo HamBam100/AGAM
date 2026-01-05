@@ -84,8 +84,10 @@ end
 
 function networking.clientUpdate()
     if connectionId then
+
+        local serialized = networking.playerSend(connectionId)
         local sendmessages = {}
-        sendmessages[1] = {conn = connectionId, msg = "Hello", flag = method_reliable}
+        sendmessages[1] = {conn = connectionId, msg = serialized, flag = method_reliable}
         Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
 
         local n, messages
@@ -151,9 +153,7 @@ function networking.serverUpdate()
 
         if messages then
             for _, data in ipairs(messages) do
-                data = data.msg
-
-                local deserData = Sir.loads(data)
+                local deserData = Sir.loads(data.msg)
                 if deserData.type == "playerPacket" then
                     networking.playerUpdate(deserData, connectionId)
                 end

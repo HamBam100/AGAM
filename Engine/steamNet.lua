@@ -155,6 +155,9 @@ function networking.playerUpdate(data)
                 return
             end
         end
+        if data.id == mySteamID then
+            return
+        end
         local new = {id = data.id, spawnType = "player"}
         table.insert(pendingSpawns, new)
     end

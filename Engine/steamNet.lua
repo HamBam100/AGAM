@@ -140,9 +140,6 @@ function networking.playerSend()
 end
 
 function networking.playerUpdate(data)
-    if data.id == mySteamID then
-        return
-    end
     local playerExists = false
     for i, player in ipairs(updateables.remotePlayers) do
         if player.steamID == data.id then
@@ -153,6 +150,11 @@ function networking.playerUpdate(data)
         
     end
     if playerExists == false then
+        for _, pending in ipairs(pendingSpawns) do
+            if data.id == pending.id then
+                return
+            end
+        end
         local new = {id = data.id, spawnType = "player"}
         table.insert(pendingSpawns, new)
     end

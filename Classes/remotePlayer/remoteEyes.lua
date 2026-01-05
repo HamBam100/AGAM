@@ -10,7 +10,7 @@ function REyes:new(parent)
     
 end
 
-function REyes:update(wandPacket) --Use wand packet since it will be the same r value for both eyes and wand
+function REyes:update() --Use wand packet since it will be the same r value for both eyes and wand
     self.x = self.parent.x
     self.y = self.parent.y - 30
 
@@ -23,7 +23,7 @@ function REyes:update(wandPacket) --Use wand packet since it will be the same r 
 end
 
 --self:serverUpdate(wandPacket)
-function REyes:serverUpdate(wandPacket)
+function REyes:serverUpdate(playerPacket)
     self.r = wandPacket.r
     
 end

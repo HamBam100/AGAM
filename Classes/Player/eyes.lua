@@ -9,11 +9,15 @@ function Eyes:new(parent)
     self.xv = 0
     self.yv = 0
 
+    self.ox = math.floor((self.parent.ox / 2) - (self.ox / 2))
+    self.oy = math.floor((self.parent.oy /2) - (self.oy / 2))
+
+
 end
 
 function Eyes:update()
     self.x = self.parent.x
-    self.y = self.parent.y - 30
+    self.y = self.parent.y
 
     -- Offset eyes to point towards mouse
     local rotation = math.atan2(mousey - self.y, mousex - self.x) 
@@ -26,7 +30,7 @@ end
 
 
 function Eyes:draw()
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),0,1,1,self.ox,self.oy)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.parent.r,1,1,self.ox,self.oy)
 
 end
 

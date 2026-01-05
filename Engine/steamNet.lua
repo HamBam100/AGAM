@@ -88,6 +88,17 @@ function networking.clientUpdate()
 
         if messages then
             for _, data in ipairs(messages) do
+                if data.type == "playerPacket" then
+                    local playerExists = false
+                    for i, player in ipairs(updateables.remotePlayers) do
+                        if player.id == connectionId then
+                            player:serverUpdate(data.packet)
+                        end
+                    end
+                    if playerExists == false then
+                        spawn(RemotePlayer(), updateables.remotePlayers, "Game")
+                    end
+                end
                 print(data)
             end
         end
@@ -100,8 +111,12 @@ end
 function networking.serverUpdate()
     if listenSocket then
         for i, client in ipairs(clients) do
+
+            local sendingData = {type = "playerPacket", packet = {r = 0, x = 110, y = 110, xv = 0, yv = 0},id = client}
+            local serialized = Sir.dumps(sendingData)
+
             local sendmessages = {}
-            sendmessages[1] = {conn = client, msg = "Hello", flag = method_reliable}
+            sendmessages[1] = {conn = client, msg = serialized, flag = method_reliable}
             Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
         end
         

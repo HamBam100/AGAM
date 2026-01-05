@@ -32,6 +32,9 @@ function RPlayer:serverUpdate(playerPacket)
     self.x = playerPacket.x
     self.y = playerPacket.y
 
+    self.wand:serverUpdate(playerPacket)
+    self.eyes:serverUpdate(playerPacket)
+
 end
 
 return RPlayer

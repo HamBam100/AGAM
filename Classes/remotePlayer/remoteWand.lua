@@ -24,8 +24,8 @@ function RWand:update(dt)
 
 end
 
---self:serverUpdate(wandPacket)
-function RWand:serverUpdate(wandPacket)
+--self:serverUpdate(playerPacket)
+function RWand:serverUpdate(playerPacket)
     self.r = wandPacket.r
 
 end

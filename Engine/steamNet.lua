@@ -99,18 +99,7 @@ function networking.clientUpdate()
             for _, data in ipairs(messages) do
                 local deserData = Sir.loads(data)
                 if deserData.type == "playerPacket" then
-                    local playerExists = false
-                    for i, player in ipairs(updateables.remotePlayers) do
-                        if player.steamID == connectionId then
-                            player:serverUpdate(deserData.packet)
-                            playerExists = true
-                        end
-                        
-                    end
-                    if playerExists == false then
-                        local new = {id = connectionId, spawnType = "player"}
-                        table.insert(pendingSpawns, new)
-                    end
+                    networking.playerUpdate(deserData, connectionId)
                 end
                 print(deserData)
             end
@@ -121,12 +110,32 @@ function networking.clientUpdate()
 
 end
 
+function networking.playerSend(id)
+    local plrtosend = updateables.players[1]
+    local sendingData = {type = "playerPacket", packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv},id = id}
+    local serialized = Sir.dumps(sendingData)
+    return serialize
+end
+
+function networking.playerUpdate(data, id)
+    local playerExists = false
+    for i, player in ipairs(updateables.remotePlayers) do
+        if player.steamID == id then
+            player:serverUpdate(data.packet)
+            playerExists = true
+        end
+        
+    end
+    if playerExists == false then
+        local new = {id = id, spawnType = "player"}
+        table.insert(pendingSpawns, new)
+    end
+end
+
 function networking.serverUpdate()
     if listenSocket then
         for i, client in ipairs(clients) do
-            local plrtosend = updateables.players[1]
-            local sendingData = {type = "playerPacket", packet = {r = plrtosend.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv},id = client}
-            local serialized = Sir.dumps(sendingData)
+            local serialized = networking.playerSend(client)
 
             local sendmessages = {}
             sendmessages[1] = {conn = client, msg = serialized, flag = method_reliable}
@@ -143,6 +152,12 @@ function networking.serverUpdate()
         if messages then
             for _, data in ipairs(messages) do
                 data = data.msg
+
+                local deserData = Sir.loads(data)
+                if deserData.type == "playerPacket" then
+                    networking.playerUpdate(deserData, connectionId)
+                end
+
                 print(data)
             end
         end

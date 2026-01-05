@@ -43,8 +43,8 @@ end
 
 --self:serverUpdate(playerPacket)
 function RPlayer:serverUpdate(playerPacket)
-    self.xv = playerPacket.xv
-    self.yv = playerPacket.yv
+    self.xv = playerPacket.xv / 10
+    self.yv = playerPacket.yv / 10
 
     self.x = playerPacket.x
     self.y = playerPacket.y

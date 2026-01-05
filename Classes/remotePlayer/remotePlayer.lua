@@ -1,9 +1,9 @@
 local RPlayer = Body2d:extend()
 
-function RPlayer:new(Id)
+function RPlayer:new(ID)
     
     self.super.new(self,0,0,Sprite["Player"])
-    self.steamID = Id
+    self.steamID = tostring(ID)
     self.xv = 0
     self.yv = 0
     self.speed = 350

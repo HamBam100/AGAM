@@ -7,7 +7,7 @@ function love.load()
 
     virtualMouseStart()
 
-    editorinit()
+    gameinit()
     
     Networking.start()
 

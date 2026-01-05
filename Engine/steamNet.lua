@@ -62,8 +62,7 @@ function Steam.networkingSockets.onConnectionChanged(data)
         end
     elseif state == "ClosedByPeer" then
         print("client ".. conn .. " left")
-        Steam.networkingSockets.closeConnection(conn)
-
+        
         if server then
             for i, client in ipairs(clients) do
                 if client == conn then
@@ -86,7 +85,9 @@ function Steam.networkingSockets.onConnectionChanged(data)
             poof(playerToRemove, updateables.remotePlayers, "Game")
             print("deleted ".. playerToRemove.steamID)
         end
-        
+
+        Steam.networkingSockets.closeConnection(conn)
+
     elseif state == "ProblemDetectedLocally" then
         print("oopsy, local problem")
         Steam.networkingSockets.closeConnection(conn)
@@ -99,6 +100,15 @@ end
 function networking.update()
     Steam.runCallbacks()
 
+    print("mysteamid "..mySteamID)
+    for _, player in ipairs(updateables.remotePlayers) do
+        print("remote player "..player.steamID.." ".._)
+    end
+
+    print("#clients "..#clients)
+    for _, client in ipairs(clients) do
+        print("client "..client.." ".._)
+    end
     
     if server then
         networking.serverUpdate()

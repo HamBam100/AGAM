@@ -125,7 +125,7 @@ function networking.update()
         if data.spawnType == "player" then
             spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
         elseif data.spawnType =="projectile" then
-            spawn(RemoteProjectile(data.packet), updateables.remoteProjectiles, "Game")
+            spawn(RemoteProjectile(data.packet), updateables.remoteProjectiles, "Projectiles")
         end
     end
     if #pendingSpawns>0 then
@@ -165,10 +165,7 @@ function networking.playerUpdate(data)
     end
 end
 
-function projectileCreate(data)
-
-    
-    
+function networking.projectileCreate(data)
     local new = {packet = data.packet, spawnType = "projectile"}
     for _, pending in ipairs(pendingSpawns) do
         if pending == new then
@@ -188,6 +185,18 @@ function networking.clientUpdate()
         local serialized = networking.playerSend()
         local sendmessages = {}
         sendmessages[1] = {conn = connectionID, msg = serialized, flag = method_reliable}
+
+        if #pendingSends > 0 then
+            for _, item in ipairs(pendingSends) do
+                local sendingData = {type = item.type, id = item.id, packet = item.packet}
+                local serialized = Sir.dumps(sendingData)
+                local newMessage = {conn = connectionID, msg = serialized, flag = method_reliable}
+
+                table.insert(sendmessages, newMessage)
+            end
+            pendingSends = {}
+        end
+
         Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
 
         local n, messages
@@ -203,7 +212,7 @@ function networking.clientUpdate()
                 if deserData.type == "playerPacket" then
                     networking.playerUpdate(deserData)
                 elseif deserData.type == "projectilePacket" then
-                    networking.projectileUpdate(deserData)
+                    networking.projectileCreate(deserData)
                 end
                 
             end
@@ -248,7 +257,7 @@ function networking.serverUpdate()
                     table.insert(sendmessages, newMessage)
                 end
             end
-            if pendingSends > 0 then
+            if #pendingSends > 0 then
                 for _, item in ipairs(pendingSends) do
                     local sendingData = {type = item.type, id = item.id, packet = item.packet}
                     local serialized = Sir.dumps(sendingData)

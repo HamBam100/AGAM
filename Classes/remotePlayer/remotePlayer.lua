@@ -8,7 +8,7 @@ function RPlayer:new(ID)
     self.yv = 0
     self.speed = 350
 
-    self.colour = mix(elements["slime"], elements["earth"])
+    self.colour = mix(elements["health"], elements["fire"])
     
     self.eyes = RemoteEyes(self)
     self.wand = RemoteWand(self)

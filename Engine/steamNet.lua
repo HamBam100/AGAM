@@ -11,6 +11,7 @@ local mySteamID
 local conIDtoSteamID = {}
 
 local pendingSpawns = {}
+local pendingSends = {}
 
 local method_reliable
 local method_unreliable
@@ -123,8 +124,9 @@ function networking.update()
         local data = pendingSpawns[i]
         if data.spawnType == "player" then
             spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
+        elseif data.spawnType =="projectile" then
+            spawn(RemoteProjectile(data.packet), updateables.remoteProjectiles, "Game")
         end
-
     end
     if #pendingSpawns>0 then
         pendingSpawns = {}
@@ -163,6 +165,20 @@ function networking.playerUpdate(data)
     end
 end
 
+function projectileCreate(data)
+
+    
+    
+    local new = {packet = data.packet, spawnType = "projectile"}
+    for _, pending in ipairs(pendingSpawns) do
+        if pending == new then
+            return
+        end
+    end
+    table.insert(pendingSpawns, new)
+
+end
+
 function networking.clientUpdate()
     if connectionID then
         if conIDtoSteamID[connectionID] == nil then
@@ -186,6 +202,8 @@ function networking.clientUpdate()
                 local deserData = Sir.loads(data)
                 if deserData.type == "playerPacket" then
                     networking.playerUpdate(deserData)
+                elseif deserData.type == "projectilePacket" then
+                    networking.projectileUpdate(deserData)
                 end
                 
             end
@@ -197,16 +215,25 @@ function networking.clientUpdate()
 
 end
 
+function networking.addToSendQue(data)
+    local newdata = data
+    newdata.id = mySteamID
+    
+    table.insert(pendingSends, newdata)
+
+end
+
 function networking.serverUpdate()
     if listenSocket then
         for i, client in ipairs(clients) do
             if conIDtoSteamID[client] == nil then
                 conIDtoSteamID[client] = tostring(Steam.networkingSockets.getIdentity(client))
             end
-            local serialized = networking.playerSend()
+            local selfserialized = networking.playerSend()
 
             local sendmessages = {}
-            sendmessages[1] = {conn = client, msg = serialized, flag = method_reliable}
+            local playermessage = {conn = client, msg = selfserialized, flag = method_reliable}
+            table.insert(sendmessages, playermessage)
 
             for _, player in ipairs(updateables.remotePlayers) do
                 local plrtosend = player
@@ -215,12 +242,23 @@ function networking.serverUpdate()
                     print("conIDtoSteamID[client] "..conIDtoSteamID[client])
                     print("shouldnt be printed")
                     local sendingData = {type = "playerPacket", id = plrtosend.steamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
-                    local serialized2 = Sir.dumps(sendingData)
-                    local newMessage = {conn = client, msg = serialized2, flag = method_reliable}
+                    local serialized = Sir.dumps(sendingData)
+                    local newMessage = {conn = client, msg = serialized, flag = method_reliable}
                 
                     table.insert(sendmessages, newMessage)
                 end
             end
+            if pendingSends > 0 then
+                for _, item in ipairs(pendingSends) do
+                    local sendingData = {type = item.type, id = item.id, packet = item.packet}
+                    local serialized = Sir.dumps(sendingData)
+                    local newMessage = {conn = client, msg = serialized, flag = method_reliable}
+
+                    table.insert(sendmessages, newMessage)
+                end
+                pendingSends = {}
+            end
+
             Steam.networkingSockets.sendMessages(#sendmessages, sendmessages)
         end
         
@@ -236,8 +274,9 @@ function networking.serverUpdate()
                 local deserData = Sir.loads(data.msg)
                 if deserData.type == "playerPacket" then
                     networking.playerUpdate(deserData)
+                elseif deserData.type == "projectilePacket" then
+                    networking.projectileCreate(deserData)
                 end
-                
             end
         end
     else

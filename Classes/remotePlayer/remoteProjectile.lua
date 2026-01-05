@@ -1,9 +1,19 @@
-local RProjectile = Projectile:extend()
+local RProjectile = Object:extend()
 
 --Need to change further to be created from a projectile packet
-function RProjectile:new(i)
-    self.super.new(self,i)
+function RProjectile:new(packet)
 
+    self.x = packet.x
+    self.y = packet.y
+    self.xv = packet.xv
+    self.yv = packet.yv
+    self.ox = 0
+    self.oy = 0
+    self.r = 0
+    self.radius = 10
+    self.hitbox = makeHitbox(0 - self.radius,0 - self.radius,0 + self.radius,0 + self.radius,self)
+    
+    self.speed = 350
 end
 
 function RProjectile:update(dt)
@@ -18,6 +28,17 @@ function RProjectile:update(dt)
         poof(self, updateables.remoteProjectiles, "Projectiles")
     end
 
+end
+
+function RProjectile:draw()
+    love.graphics.setColor(0.2, 1, 0.3)
+    love.graphics.circle("line",math.floor(self.x),math.floor(self.y),self.radius)
+
+    if debug then
+        drawHitbox(self)
+        printcoords(self.x,self.y,-10,20,0)
+    end
+    love.graphics.setColor(1, 1, 1)
 end
 
 function RProjectile:removed()

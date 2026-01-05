@@ -1,17 +1,17 @@
-local RWand = Wand:extend()
+local RWand = Body2d:extend()
 
 function RWand:new(parent)
     -- Provides object with the variables of player
-    self.parent = parent
 
-    self.super.new(self,parent)
+    self.super.new(self,1,1,Sprite["Wand"])
+    self.parent = parent
 
     self.xv = 0
     self.yv = 0
     
 end
 
-function RWand:update(dt)
+function RWand:update()
     local p = self.parent
     self.x = p.x
     self.y = p.y
@@ -24,9 +24,13 @@ function RWand:update(dt)
 
 end
 
+function RWand:draw()
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,64,64)
+end
+
 --self:serverUpdate(playerPacket)
 function RWand:serverUpdate(playerPacket)
-    self.r = wandPacket.r
+    self.r = playerPacket.r
 
 end
 

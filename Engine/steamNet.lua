@@ -6,6 +6,7 @@ local server = false
 local connectionId
 local pollGroup
 local clients
+local pendingSpawns = {}
 
 local method_reliable = Steam.networkingSockets.flags.Send_Reliable
 local method_unreliable = Steam.networkingSockets.flags.Send_Unreliable
@@ -69,7 +70,15 @@ function networking.update()
     else
         networking.clientUpdate()
     end
+    
+    -- Process spawns
+    for _, data in ipairs(pendingSpawns) do
+        if data.spawnType == "player" then
+            spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
+        end
 
+    end
+    pendingSpawns = {}
 end
 
 
@@ -88,18 +97,22 @@ function networking.clientUpdate()
 
         if messages then
             for _, data in ipairs(messages) do
-                if data.type == "playerPacket" then
+                local deserData = Sir.loads(data)
+                if deserData.type == "playerPacket" then
                     local playerExists = false
                     for i, player in ipairs(updateables.remotePlayers) do
-                        if player.id == connectionId then
-                            player:serverUpdate(data.packet)
+                        if player.steamID == connectionId then
+                            player:serverUpdate(deserData.packet)
+                            playerExists = true
                         end
+                        
                     end
                     if playerExists == false then
-                        spawn(RemotePlayer(), updateables.remotePlayers, "Game")
+                        local new = {id = connectionId, spawnType = "player"}
+                        table.insert(pendingSpawns, new)
                     end
                 end
-                print(data)
+                print(deserData)
             end
         end
     else
@@ -111,8 +124,8 @@ end
 function networking.serverUpdate()
     if listenSocket then
         for i, client in ipairs(clients) do
-
-            local sendingData = {type = "playerPacket", packet = {r = 0, x = 110, y = 110, xv = 0, yv = 0},id = client}
+            local plrtosend = updateables.players[1]
+            local sendingData = {type = "playerPacket", packet = {r = plrtosend.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv},id = client}
             local serialized = Sir.dumps(sendingData)
 
             local sendmessages = {}

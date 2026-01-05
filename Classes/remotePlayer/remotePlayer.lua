@@ -1,27 +1,44 @@
-local RPlayer = Player:extend()
+local RPlayer = Body2d:extend()
 
-function RPlayer:new()
+function RPlayer:new(Id)
     
-    self.super.new(self,0,0)
-    self.steamID = 0
+    self.super.new(self,0,0,Sprite["Player"])
+    self.steamID = Id
     self.xv = 0
     self.yv = 0
     self.speed = 350
 
-    self.colour = mix(elements["plasma"], elements["earth"])
+    self.colour = mix(elements["slime"], elements["earth"])
     
-    self.eyes = Eyes(self)
-    self.wand = Wand(self)
+    self.eyes = RemoteEyes(self)
+    self.wand = RemoteWand(self)
 
 end
 
-function RPlayer:update(dt, playerPacket)
+function RPlayer:update(dt)
     self.x = self.x + self.xv
     self.y = self.y + self.yv
 
-    self.wand:update(dt)
+    self.wand:update()
     self.eyes:update()
     
+end
+
+function RPlayer:draw()
+    love.graphics.setShader(tintPlayerShader)
+    tintPlayerShader:send("targetColour", self.colour)
+
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r,1,1,self.ox,self.oy)
+
+    love.graphics.setShader()
+
+    self.eyes:draw()
+    self.wand:draw()
+    
+    if debug then
+        printcoords(self.x,self.y,-25,64,1)
+        drawHitbox(self)
+    end
 end
 
 --self:serverUpdate(playerPacket)

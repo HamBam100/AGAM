@@ -1,7 +1,8 @@
 local REyes = Body2d:extend()
 
 function REyes:new(parent)
-    self.super.new(self,parent)
+    self.parent = parent
+    self.super.new(self,64,64,Sprite["Eyes"])
 
     self.xv = 0
     self.yv = 0
@@ -22,9 +23,14 @@ function REyes:update() --Use wand packet since it will be the same r value for 
     
 end
 
+function REyes:draw()
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.parent.r,1,1,self.ox,self.oy)
+
+end
+
 --self:serverUpdate(wandPacket)
 function REyes:serverUpdate(playerPacket)
-    self.r = wandPacket.r
+    self.r = playerPacket.r
     
 end
 

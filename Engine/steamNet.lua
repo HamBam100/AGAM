@@ -247,9 +247,6 @@ end
 function networking.serverUpdate()
     if listenSocket then
         for i, client in ipairs(clients) do
-            if conIDtoSteamID[client] == nil then
-                conIDtoSteamID[client] = tostring(Steam.networkingSockets.getIdentity(client))
-            end
             local selfserialized = networking.playerSend()
 
             local sendmessages = {}
@@ -259,9 +256,6 @@ function networking.serverUpdate()
             for _, player in ipairs(updateables.remotePlayers) do
                 local plrtosend = player
                 if plrtosend.steamID ~= conIDtoSteamID[client] then
-                    print("plrtosend.steamID "..plrtosend.steamID)
-                    print("conIDtoSteamID[client] "..conIDtoSteamID[client])
-                    print("shouldnt be printed")
                     local sendingData = {type = "playerPacket", id = plrtosend.steamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
                     local serialized = Sir.dumps(sendingData)
                     local newMessage = {conn = client, msg = serialized, flag = method_reliable}
@@ -294,6 +288,9 @@ function networking.serverUpdate()
             for _, data in ipairs(messages) do
                 local deserData = Sir.loads(data.msg)
                 if deserData.type == "playerPacket" then
+                    if conIDtoSteamID[data.conn] == nil then
+                        conIDtoSteamID[data.conn] = data.conn
+                    end
                     networking.playerUpdate(deserData)
                 elseif deserData.type == "projectilePacket" then
                     networking.projectileCreate(deserData)

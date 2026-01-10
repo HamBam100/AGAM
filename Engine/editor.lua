@@ -249,12 +249,12 @@ function Editor:update(dt)
         end
     end
 
-    if bindPressed(keybinds.minus) and not bindHeld(keybinds.minus) then
+    if bindSinglePress(keybinds.minus) then
         if self.currentLayer > 1 then
             self.currentLayer = self.currentLayer - 1
         end
     end
-    if bindPressed(keybinds.plus) and not bindHeld(keybinds.plus) then
+    if bindSinglePress(keybinds.plus) then
         self.currentLayer = self.currentLayer + 1
         if self.currentLayer > #self.tilemap then
             self:createLayer(self.currentLayer)

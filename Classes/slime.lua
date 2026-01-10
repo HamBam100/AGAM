@@ -54,7 +54,7 @@ function Slime:update(dt)
     for j, p in ipairs(updateables.projectiles) do
         if collide(self,p) then
             -- self.hp = self.hp - 1
-            -- self.inv.i = self.inv.dur
+            self.inv.i = self.inv.dur
             poof(self, updateables.enemies, "Game")
             return
         end

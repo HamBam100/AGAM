@@ -11,7 +11,7 @@ function RProjectile:new(packet)
     self.oy = 0
     self.r = 0
     self.radius = 10
-    self.hitbox = makeHitbox(0 - self.radius,0 - self.radius,0 + self.radius,0 + self.radius,self)
+    self.collisionType = "circle"
     
     self.speed = 350
 end

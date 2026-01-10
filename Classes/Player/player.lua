@@ -16,7 +16,7 @@ function Player:new(x,y)
 end
 
 function Player:update(dt)
-
+    
     self.xv = 0
     self.yv = 0
 

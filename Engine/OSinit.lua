@@ -13,3 +13,4 @@ elseif OS == "Linux" then
 end
 
 Steam = require "luasteam"
+Steam.init()

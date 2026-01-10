@@ -7,6 +7,7 @@ function drawHitbox(obj)
         end
         
         love.graphics.line(vertices[i].x, vertices[i].y, vertices[j].x, vertices[j].y)
+        love.graphics.circle("fill", obj.x, obj.y, 5)
     end
 
 end
@@ -47,7 +48,7 @@ end
 
 function updateBox(obj)
     local box = {}
-    
+
     box.y1 = obj.y + obj.hitbox.y1
     box.y2 = obj.y + obj.hitbox.y2
 
@@ -68,6 +69,32 @@ function collideBasic(a,b)
 
 end
 
+function collideCircle(a,b)
+    if getDistance(a,b) > a.radius + b.radius then
+        return false
+    end
+    return true
+
+end
+
+function collideBasicBoxCircle(a,b)
+    if a.collisionType == "circle" then
+        return collideBoxCircle(b,a)
+    end
+    local box = updateBox(a)
+
+    local closestX = math.max(box.x1, math.min(b.x, box.x2))
+    local closestY = math.max(box.y1, math.min(b.y, box.y2))
+
+    local corner = {x = closestX, y = closestY}
+
+    if getDistance(corner,b) > b.radius then
+        return false
+    end
+    return true
+
+end
+
 function makeVertices(obj)
     local hitbox = updateBox(obj)
     local vertices = {
@@ -77,7 +104,7 @@ function makeVertices(obj)
     xy(hitbox.x1,hitbox.y2)}
 
     if obj.r ~= 0 then
-        local pivotX = (obj.x or 0) 
+        local pivotX = (obj.x or 0)
         local pivotY = (obj.y or 0)
         for i=1, #vertices do
             vertices[i].x, vertices[i].y = rotatePoint(vertices[i].x,vertices[i].y,pivotX,pivotY,obj.r)
@@ -170,13 +197,94 @@ function collideSAT(objA, objB)
 
 end
 
+function collideSATBoxCircle(objA, objB)
+    if objA.collisionType == "circle" then
+        return collideSATBoxCircle(objB,objA)
+    end
+    local polygonA = makePolygon(objA)
+
+    local perpendicularStack = {}
+
+    -- Add normals from polygon edges
+    for i = 1, #polygonA.edge do
+        local e = polygonA.edge[i]
+        local perpendicularLine = xy(-e.y, e.x)
+        table.insert(perpendicularStack, perpendicularLine)
+    end
+
+    -- find closest vertex on polygon to circle center
+    local cx, cy = objB.x, objB.y
+    local closestIdx = 1
+    local closestDist = nil
+    for i = 1, #polygonA.vertex do
+        local v = polygonA.vertex[i]
+        local dx = v.x - cx
+        local dy = v.y - cy
+        local d = dx*dx + dy*dy
+        if closestDist == nil or d < closestDist then
+            closestDist = d
+            closestIdx = i
+        end
+    end
+    local v = polygonA.vertex[closestIdx]
+    local axis = xy(v.x - cx, v.y - cy)
+    -- avoid zero-length axis
+    if not (axis.x == 0 and axis.y == 0) then
+        table.insert(perpendicularStack, axis)
+    end
+
+
+    -- Test overlaps on all axes
+    for i = 1, #perpendicularStack do
+        local axis = perpendicularStack[i]
+
+        local amin, amax = nil, nil
+        -- project polygon (polygonA)
+        for j = 1, #polygonA.vertex do
+            local v = polygonA.vertex[j]
+            local dot = v.x * axis.x + v.y * axis.y
+            if amax == nil or dot > amax then amax = dot end
+            if amin == nil or dot < amin then amin = dot end
+        end
+
+        local bmin, bmax = nil, nil
+
+        -- project circle onto axis: center projection +/- radius * |axis|
+        local centerDot = objB.x * axis.x + objB.y * axis.y
+        local axisLen = math.sqrt(axis.x * axis.x + axis.y * axis.y)
+        local r = objB.radius * axisLen
+        bmin = centerDot - r
+        bmax = centerDot + r
+
+
+        -- overlap check
+        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then
+            return false
+        end
+    end
+
+    return true
+
+end
+
 function collide(a,b)
-    if a.r == 0 and b.r == 0 then
-        mode = "Basic"
+    if a.collisionType == "circle" or b.collisionType == "circle" then
+        if a.collisionType == "circle" and b.collisionType == "circle" then
+            return collideCircle(a,b)
+        else
+            if a.r ==0 or b.r == 0 then
+                return collideBasicBoxCircle(a,b)
+            else
+                return collideSATBoxCircle(a,b)
+                
+            end
+        end
+    elseif a.r == 0 and b.r == 0 then
+        -- mode = "Basic"
         return collideBasic(a, b)
         
     else
-        mode = "SAT"
+        -- mode = "SAT"
         return collideSAT(a, b)
         
     end
@@ -193,8 +301,6 @@ function wasHori(a, b)
 
 end
 
-
-
 function touchingWall(a)
     for i=1, #level.colliders do
         local wall = {}
@@ -202,7 +308,7 @@ function touchingWall(a)
         wall.hitbox = level.colliders[i]
         wall.x = 0
         wall.y = 0
-        if collideBasic(a, wall) then
+        if collide(wall,a) then
             return true
         end
 

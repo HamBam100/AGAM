@@ -15,7 +15,7 @@ function Projectile:new(i)
     self.oy = 0
     self.r = 0
     self.radius = 10
-    self.hitbox = makeHitbox(0 - self.radius,0 - self.radius,0 + self.radius,0 + self.radius,self)
+    self.collisionType = "circle"
     
     self.speed = 350
     Networking.addToSendQue({type = "projectilePacket", packet = {x = self.x, y = self.y, xv = self.xv, yv = self.yv}})
@@ -41,7 +41,7 @@ function Projectile:draw()
     love.graphics.circle("line",math.floor(self.x),math.floor(self.y),self.radius)
 
     if debug then
-        drawHitbox(self)
+        --drawHitbox(self)
         printcoords(self.x,self.y,-10,20,0)
     end
     

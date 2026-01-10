@@ -1,5 +1,7 @@
 require "Engine.OSinit"
 
+
+
 local networking = {}
 
 local server = false
@@ -18,8 +20,12 @@ local method_unreliable
 local method_unreliableQuick
 
 function networking.start()
-        Steam.init()
         
+        multiplayer = true
+
+        updateables.remotePlayers = createUpdateableContainer()
+        updateables.remoteProjectiles = createUpdateableContainer()
+
         method_reliable = Steam.networkingSockets.flags.Send_Reliable
         method_unreliable = Steam.networkingSockets.flags.Send_Unreliable
         method_unreliableQuick = Steam.networkingSockets.flags.Send_UnreliableNoDelay
@@ -96,9 +102,10 @@ function Steam.networkingSockets.onConnectionChanged(data)
 
 end
 
-
-
 function networking.update()
+    if not multiplayer then
+        networking.start()
+    end
     Steam.runCallbacks()
 
     print("mysteamid "..mySteamID)
@@ -142,6 +149,11 @@ function networking.playerSend()
 end
 
 function networking.playerUpdate(data)
+
+    if data.id == mySteamID then
+        return
+    end
+    
     local playerExists = false
     for i, player in ipairs(updateables.remotePlayers) do
         if player.steamID == data.id then
@@ -295,7 +307,7 @@ function networking.serverUpdate()
 end
 
 function networking.quit()
-    Steam.shutdown()
+    multiplayer = false
 
 end
 

@@ -14,7 +14,7 @@ keybinds.minus = {"keybd:-"}
 keybinds.plus = {"keybd:="}
 keybinds.one = {"keybd:1"}
 keybinds.two = {"keybd:2"}
-keybinds.send = {"keybd:p"}
+keybinds.debug = {"keybd:p"}
 
 inputMode = "keyboard"
 
@@ -125,6 +125,11 @@ end
 function bindHeld(bind)
     return bind.held
 
+end
+
+
+function bindSinglePress(bind)
+    return bindPressed(bind) and not bindHeld(bind)
 end
 
 function virtualMouseStart()

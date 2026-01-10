@@ -1,6 +1,6 @@
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
-
+    
     require "Engine.requirments"
 
     GameWindow.load(1920, 1080)
@@ -8,7 +8,9 @@ function love.load()
     virtualMouseStart()
 
     gameinit()
-    
+
+    multiplayer = false
+
     Networking.start()
 
 end
@@ -38,12 +40,9 @@ function gameinit()
     updateables.enemies = createUpdateableContainer()
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
-
-    updateables.remotePlayers = createUpdateableContainer()
-    updateables.remoteProjectiles = createUpdateableContainer()
     
     spawn(Player(256,256), updateables.players, "Game")
-    spawn(Slime(), updateables.enemies, "Game")
+    -- spawn(Slime(), updateables.enemies, "Game")
     spawn(Mouse(), updateables.mouse, "UI")
 
     level = Scene("walls.lua")
@@ -52,8 +51,10 @@ function gameinit()
 end
 
 function editorinit()
-    Render.reset()
+    Networking.quit()
 
+    Render.reset()
+    
     love.mouse.setVisible(true)
 
     Render.createLayer("Background") -- 1
@@ -80,16 +81,23 @@ function editorinit()
 end
 
 function love.update(dt)
-    Networking.update()
+    
     mousex, mousey = GameWindow.getMousePosition()
 
     --Scene:update(dt)
     if state == "game" then
-        
+        if multiplayer then
+            Networking.update()
+        end
+
         virtualMouseUpdate(updateables.players[1])
 
         if bindPressed(keybinds.space) then
             spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
+        end
+
+        if bindSinglePress(keybinds.debug) then
+            debug = not debug
         end
 
         for i, update in pairs(updateables) do

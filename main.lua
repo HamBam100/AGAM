@@ -1,6 +1,8 @@
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
-    
+
+    multiplayer = false
+
     require "Engine.requirments"
 
     GameWindow.load(1920, 1080)
@@ -8,10 +10,6 @@ function love.load()
     virtualMouseStart()
 
     gameinit()
-
-    multiplayer = false
-
-    Networking.start()
 
 end
 
@@ -36,6 +34,9 @@ function gameinit()
     end
     collectgarbage("collect")
     
+    if multiplayer then
+        Networking.start()
+    end
     updateables.players = createUpdateableContainer()
     updateables.enemies = createUpdateableContainer()
     updateables.projectiles = createUpdateableContainer()

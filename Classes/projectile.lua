@@ -18,7 +18,7 @@ function Projectile:new(i)
     self.collisionType = "circle"
     
     self.speed = 350
-    Networking.addToSendQue({type = "projectilePacket", packet = {x = self.x, y = self.y, xv = self.xv, yv = self.yv}})
+    Networking.addToSendQueue({type = "projectilePacket", packet = {x = self.x, y = self.y, xv = self.xv, yv = self.yv}})
 
 end
 

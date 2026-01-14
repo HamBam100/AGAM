@@ -20,25 +20,24 @@ local method_unreliable
 local method_unreliableQuick
 
 function networking.start()
-        
-        multiplayer = true
+    multiplayer = true
 
-        updateables.remotePlayers = createUpdateableContainer()
-        updateables.remoteProjectiles = createUpdateableContainer()
+    updateables.remotePlayers = createUpdateableContainer()
+    updateables.remoteProjectiles = createUpdateableContainer()
 
-        method_reliable = Steam.networkingSockets.flags.Send_Reliable
-        method_unreliable = Steam.networkingSockets.flags.Send_Unreliable
-        method_unreliableQuick = Steam.networkingSockets.flags.Send_UnreliableNoDelay
+    method_reliable = Steam.networkingSockets.flags.Send_Reliable
+    method_unreliable = Steam.networkingSockets.flags.Send_Unreliable
+    method_unreliableQuick = Steam.networkingSockets.flags.Send_UnreliableNoDelay
 
-        mySteamID = tostring(Steam.user.getSteamID())
+    mySteamID = tostring(Steam.user.getSteamID())
 
-        if server then
-            listenSocket = Steam.networkingSockets.createListenSocketP2P(0)
-            pollGroup = Steam.networkingSockets.createPollGroup()
-            Steam.friends.setRichPresence("connect", tostring(Steam.user.getSteamID()))
-            print("server started")
-            clients = {}
-        end
+    if server then
+        listenSocket = Steam.networkingSockets.createListenSocketP2P(0)
+        pollGroup = Steam.networkingSockets.createPollGroup()
+        Steam.friends.setRichPresence("connect", tostring(Steam.user.getSteamID()))
+        print("server started")
+        clients = {}
+    end
 
 end
 
@@ -83,7 +82,7 @@ function Steam.networkingSockets.onConnectionChanged(data)
         for i, player in ipairs(updateables.remotePlayers) do
             print("player.steamID ".. player.steamID)
             print("conIDtoSteamID[conn] ".. conIDtoSteamID[conn])
-            if player.steamID == conIDtoSteamID[conn] then
+            if tostring(player.steamID) == tostring(conIDtoSteamID[conn]) then
                 playerToRemove = player
                 playerExists = true
             end
@@ -103,8 +102,9 @@ function Steam.networkingSockets.onConnectionChanged(data)
 end
 
 function networking.update()
+    -- Incase networking is updated when not in multiplayer, skip the update
     if not multiplayer then
-        networking.start()
+        return
     end
     Steam.runCallbacks()
 
@@ -236,7 +236,7 @@ function networking.clientUpdate()
 
 end
 
-function networking.addToSendQue(data)
+function networking.addToSendQueue(data)
     local newdata = data
     newdata.id = mySteamID
     

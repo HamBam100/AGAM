@@ -1,7 +1,7 @@
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
 
-    multiplayer = false
+    multiplayer = true
 
     require "Engine.requirments"
 
@@ -164,9 +164,19 @@ function love.keypressed(k)
         love.window.setMode(620, 480, {resizable=true, vsync=0, msaa = 0})
     end
 
+    if k == "u" then
+        Networking.addToSendQueue({type = "closePacket", packet = {}})
+        Networking.update()
+
+        Networking.quit()
+    end
+
 end
 
 function love.quit()
+    Networking.addToSendQueue({type = "closePacket", packet = {}})
+    Networking.update()
+
     Networking.quit()
 
 end

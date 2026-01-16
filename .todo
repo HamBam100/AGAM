@@ -30,4 +30,6 @@ Game Machanics:
         ✔ Basic start @done(26-01-06 00:51)
         ☐ syncing of health of enemies and bosses
         ☐ spells effect other players spells
+        ☐ Make server send close connection packet to all clients, when reciving it from a client
+        ☐ Make server send createprojectile packet to all clients, when reciving it from a client
     

@@ -1,8 +1,6 @@
 require "Engine.OSinit"
 
-
-
-local networking = {}
+local Networking = {}
 
 local server = false
 local connectionID
@@ -19,7 +17,7 @@ local method_reliable
 local method_unreliable
 local method_unreliableQuick
 
-function networking.start()
+function Networking.start()
     multiplayer = true
 
     updateables.remotePlayers = createUpdateableContainer()
@@ -68,32 +66,7 @@ function Steam.networkingSockets.onConnectionChanged(data)
         end
     elseif state == "ClosedByPeer" then
         print("client ".. conn .. " left")
-        
-        if server then
-            for i, client in ipairs(clients) do
-                if client == conn then
-                    table.remove(clients, i)
-                    break
-                end
-            end
-        end
-        local playerExists = false
-        local playerToRemove
-        for i, player in ipairs(updateables.remotePlayers) do
-            print("player.steamID ".. player.steamID)
-            print("conIDtoSteamID[conn] ".. conIDtoSteamID[conn])
-            if tostring(player.steamID) == tostring(conIDtoSteamID[conn]) then
-                playerToRemove = player
-                playerExists = true
-            end
-        end
-        if playerExists == true then
-            poof(playerToRemove, updateables.remotePlayers, "Game")
-            print("deleted ".. playerToRemove.steamID)
-        end
-
         Steam.networkingSockets.closeConnection(conn)
-
     elseif state == "ProblemDetectedLocally" then
         print("oopsy, local problem")
         Steam.networkingSockets.closeConnection(conn)
@@ -101,100 +74,15 @@ function Steam.networkingSockets.onConnectionChanged(data)
 
 end
 
-function networking.update()
-    -- Incase networking is updated when not in multiplayer, skip the update
-    if not multiplayer then
-        return
-    end
-    Steam.runCallbacks()
 
-    print("mysteamid "..mySteamID)
-    for _, player in ipairs(updateables.remotePlayers) do
-        print("remote player "..player.steamID.." ".._)
-    end
-
-    if clients then
-        print("#clients "..#clients)
-        for _, client in ipairs(clients) do
-            print("client "..client.." ".._)
-        end
-    end
-    
-    if server then
-        networking.serverUpdate()
-    else
-        networking.clientUpdate()
-    end
-    print(#pendingSpawns)
-    -- Process spawns
-    for i=#pendingSpawns, 1,-1 do
-        local data = pendingSpawns[i]
-        if data.spawnType == "player" then
-            spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
-        elseif data.spawnType =="projectile" then
-            spawn(RemoteProjectile(data.packet), updateables.remoteProjectiles, "Projectiles")
-        end
-    end
-    if #pendingSpawns>0 then
-        pendingSpawns = {}
-        collectgarbage("collect")
-    end
-end
-
-function networking.playerSend()
-    local plrtosend = updateables.players[1]
-    local sendingData = {type = "playerPacket", id = mySteamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
-    local serialized = Sir.dumps(sendingData)
-    return serialized
-end
-
-function networking.playerUpdate(data)
-
-    if data.id == mySteamID then
-        return
-    end
-    
-    local playerExists = false
-    for i, player in ipairs(updateables.remotePlayers) do
-        if player.steamID == data.id then
-            player:serverUpdate(data.packet)
-            playerExists = true
-            return
-        end
-        
-    end
-    if playerExists == false then
-        for _, pending in ipairs(pendingSpawns) do
-            if data.id == pending.id then
-                return
-            end
-        end
-        if data.id == mySteamID then
-            return
-        end
-        local new = {id = data.id, spawnType = "player"}
-        table.insert(pendingSpawns, new)
-    end
-end
-
-function networking.projectileCreate(data)
-    local new = {packet = data.packet, spawnType = "projectile"}
-    for _, pending in ipairs(pendingSpawns) do
-        if pending == new then
-            return
-        end
-    end
-    table.insert(pendingSpawns, new)
-
-end
-
-function networking.clientUpdate()
+local Client = {}
+function Client.update()
     if connectionID then
         if conIDtoSteamID[connectionID] == nil then
             conIDtoSteamID[connectionID] = tostring(Steam.networkingSockets.getIdentity(connectionID))
         end
 
-        local serialized = networking.playerSend()
+        local serialized = Networking.playerSend()
         local sendmessages = {}
         sendmessages[1] = {conn = connectionID, msg = serialized, flag = method_reliable}
 
@@ -222,9 +110,11 @@ function networking.clientUpdate()
             for _, data in ipairs(messages) do
                 local deserData = Sir.loads(data)
                 if deserData.type == "playerPacket" then
-                    networking.playerUpdate(deserData)
+                    Networking.playerUpdate(deserData)
                 elseif deserData.type == "projectilePacket" then
-                    networking.projectileCreate(deserData)
+                    Networking.projectileCreate(deserData)
+                elseif deserData.type == "closePacket" then
+                    Networking.closeConnection(deserData)
                 end
                 
             end
@@ -236,18 +126,11 @@ function networking.clientUpdate()
 
 end
 
-function networking.addToSendQueue(data)
-    local newdata = data
-    newdata.id = mySteamID
-    
-    table.insert(pendingSends, newdata)
-
-end
-
-function networking.serverUpdate()
+local Server = {}
+function Server.update()
     if listenSocket then
         for i, client in ipairs(clients) do
-            local selfserialized = networking.playerSend()
+            local selfserialized = Networking.playerSend()
 
             local sendmessages = {}
             local playermessage = {conn = client, msg = selfserialized, flag = method_reliable}
@@ -289,11 +172,13 @@ function networking.serverUpdate()
                 local deserData = Sir.loads(data.msg)
                 if deserData.type == "playerPacket" then
                     if conIDtoSteamID[data.conn] == nil then
-                        conIDtoSteamID[data.conn] = data.conn
+                        conIDtoSteamID[data.conn] = deserData.id
                     end
-                    networking.playerUpdate(deserData)
+                    Networking.playerUpdate(deserData)
                 elseif deserData.type == "projectilePacket" then
-                    networking.projectileCreate(deserData)
+                    Networking.projectileCreate(deserData)
+                elseif deserData.type == "closePacket" then
+                    Networking.closeConnection(deserData)
                 end
             end
         end
@@ -303,9 +188,117 @@ function networking.serverUpdate()
 
 end
 
-function networking.quit()
+function Networking.update()
+    -- Incase Networking is updated when not in multiplayer, skip the update
+    if not multiplayer then
+        return
+    end
+    Steam.runCallbacks()
+
+    if server then
+        Server.update()
+    else
+        Client.update()
+    end
+
+    -- Process spawns
+    for i=#pendingSpawns, 1,-1 do
+        local data = pendingSpawns[i]
+        if data.spawnType == "player" then
+            spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
+        elseif data.spawnType =="projectile" then
+            spawn(RemoteProjectile(data.packet), updateables.remoteProjectiles, "Projectiles")
+        end
+    end
+    if #pendingSpawns>0 then
+        pendingSpawns = {}
+        collectgarbage("collect")
+    end
+
+end
+
+function Networking.playerSend()
+    local plrtosend = updateables.players[1]
+    local sendingData = {type = "playerPacket", id = mySteamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
+    local serialized = Sir.dumps(sendingData)
+    return serialized
+
+end
+
+function Networking.playerUpdate(data)
+    if data.id == mySteamID then
+        return
+    end
+    
+    local playerExists = false
+    for i, player in ipairs(updateables.remotePlayers) do
+        if player.steamID == data.id then
+            player:serverUpdate(data.packet)
+            playerExists = true
+            return
+        end
+        
+    end
+    if playerExists == false then
+        for _, pending in ipairs(pendingSpawns) do
+            if data.id == pending.id then
+                return
+            end
+        end
+        if data.id == mySteamID then
+            return
+        end
+        local new = {id = data.id, spawnType = "player"}
+        table.insert(pendingSpawns, new)
+    end
+end
+
+function Networking.projectileCreate(data)
+    local new = {packet = data.packet, spawnType = "projectile"}
+    for _, pending in ipairs(pendingSpawns) do
+        if pending == new then
+            return
+        end
+    end
+    table.insert(pendingSpawns, new)
+
+end
+
+function Networking.closeConnection(data)
+    if server then
+        for i, client in ipairs(clients) do
+            print(client.." "..conIDtoSteamID[client].." "..data.id)
+            if conIDtoSteamID[client] == data.id then
+                table.remove(clients, i)
+                
+            end
+        end
+    end
+    local playerExists = false
+    local playerToRemove
+    for i, player in ipairs(updateables.remotePlayers) do
+        if tostring(player.steamID) == tostring(data.id) then
+            playerToRemove = player
+            playerExists = true
+        end
+    end
+    if playerExists == true then
+        poof(playerToRemove, updateables.remotePlayers, "Game")
+        print("deleted ".. playerToRemove.steamID)
+    end
+end
+
+function Networking.addToSendQueue(data)
+    local newdata = data
+    newdata.id = mySteamID
+    
+    table.insert(pendingSends, newdata)
+
+end
+
+function Networking.quit()
     multiplayer = false
 
 end
 
-return networking
+return Networking

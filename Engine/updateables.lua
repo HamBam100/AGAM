@@ -1,4 +1,4 @@
-updateableContainer = {}
+local updateableContainer = {}
 
 updateableContainer.__index = updateableContainer
 

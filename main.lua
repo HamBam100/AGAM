@@ -94,7 +94,7 @@ function love.update(dt)
         virtualMouseUpdate(updateables.players[1])
 
         if bindPressed(keybinds.space) then
-            spawn(Slime(love.math.random(gameWidth),love.math.random(gameHeight)), updateables.enemies, "Game")
+            spawn(Slime(80 +love.math.random(gameWidth) * 0.8,80 +love.math.random(gameHeight) * 0.8), updateables.enemies, "Game")
         end
 
         if bindSinglePress(keybinds.debug) then

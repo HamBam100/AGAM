@@ -5,7 +5,7 @@ return {
   output = 'dist', -- output location for your game, defaults to $SAVE_DIRECTORY
   version = '0.1', -- 'version' of your game, used to name the folder in output
   love = '12.0', -- version of LÖVE to use, must match github releases
-  ignore = {'build', 'todo', 'build.lua', 'Git Tools'}, -- folders/files to  ignore in your project
+  ignore = {'build', 'todo', 'build.lua', 'Git Tools', 'dist'}, -- folders/files to  ignore in your project
   icon = 'Sprites/Slime.png', -- 256x256px PNG icon for game, will be converted for you
   
   libs = {

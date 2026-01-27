@@ -88,4 +88,16 @@ function Folder:draw()
 
 end
 
+function Folder:insertElement(elemt)
+    table.insert(self.elements, elemt)
+end
+
+function Folder:removeElement(elemt)
+    for i, element in pairs(self.elements) do
+        if element == elemt then
+            table.remove(self.elements, element)
+            break
+        end
+    end
+end
 return Folder

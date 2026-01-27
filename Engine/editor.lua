@@ -1,5 +1,5 @@
 local Editor = Object:extend()
-local numberOfTiles = 20
+local numberOfTiles = 21
 Editor.tilesheet = {}
 
 local currentfile = "walls.lua"
@@ -32,6 +32,17 @@ function Editor:createbutton(start,stop,offset)
 
 end
 
+function Editor:insertIntoFolder(name, elemt)
+    for _, currentFolder in ipairs(self.buttons.tilemap) do
+        if currentFolder.name then
+            if name == currentFolder.name then
+                currentFolder:insertElement(elemt)
+                return
+            end
+        end
+    end
+    print("folder does not exist")
+end
 
 function Editor:createFolders(where) 
     local entries = {
@@ -44,7 +55,19 @@ function Editor:createFolders(where)
     }
 
     for i, entry in ipairs(entries) do
+        
         local buttons = self:createbutton(entry.start,entry.stop,64)
+        if entry.name == "Walls" then
+            print(#tileset)
+            local newbutton = Button(64 * #buttons, 64, 64, 64, 
+            function()
+                random = false
+                self.tiletype = self.tilesheet[21]
+            end, 
+            tileset[21], "tilemap"
+            )
+            table.insert(buttons, newbutton)
+        end
         if entry.extra then
             local button = {}
             button = Button(64 * #buttons, 64, 64, 64, 
@@ -56,6 +79,7 @@ function Editor:createFolders(where)
         table.insert(where, newFolder)
     end
 
+    
 end
 
 function Editor:load()

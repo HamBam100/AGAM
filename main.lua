@@ -138,10 +138,12 @@ function love.draw()
         Render.drawLayers()
 
     end
-    
+
     GameWindow.finish()
 
 end
+
+
 
 function love.resize(w, h)
     GameWindow.resize()

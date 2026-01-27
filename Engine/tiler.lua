@@ -127,8 +127,10 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
 
 end
 
-function Tiler:draw()
-    love.graphics.draw(self.canvas,0,0)
+function Tiler:draw(xpos,ypos)
+    xpos = xpos or 0
+    ypos = ypos or 0
+    love.graphics.draw(self.canvas,xpos,ypos)
 
 end
 

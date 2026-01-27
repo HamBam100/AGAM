@@ -20,18 +20,12 @@ function gameWindow.resize()
     local scaley = h / gameHeight
     local scale = math.min(scalex,scaley)
 
-    
-    print(w)
-    print(h)
-
     gameWindow.translateX = (w - (gameWidth * scale)) / 2    
     gameWindow.translateY = (h - (gameHeight * scale)) / 2
 
     gameWindow.scale = scale
 
 end
-
-
 
 function gameWindow.getMouseX()
     local offsetX = (w - gameWidth * gameWindow.scale) / 2

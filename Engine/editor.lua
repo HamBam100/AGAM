@@ -12,11 +12,10 @@ function Editor:createLayer(i)
 
 end
 
-function Editor:createbutton(start,stop,offset)
+function Editor:createButtonList(start,stop,offset)
     local list = {}
     local count = 1
     for i=start, stop do 
-        
         local button = Button(64 * (count - 1), offset, 64, 64, 
             function()
                 random = false
@@ -42,12 +41,13 @@ function Editor:insertIntoFolder(name, elemt)
         end
     end
     print("folder does not exist")
+
 end
 
 function Editor:createFolders(where) 
     local entries = {
         {name = "Walls", start = 1, stop = 3},
-        {name = "Floors", start = 4, stop = 7, extra = {onclick = function() random = true end, sprite = love.graphics.newImage("Sprites/Tilemap/rndtile.png"),}},
+        {name = "Floors", start = 4, stop = 7},
         {name = "Corners", start = 8, stop = 11},
         {name = "Edges", start = 12, stop = 15},
         {name = "Crowns", start = 16, stop = 19},
@@ -55,34 +55,28 @@ function Editor:createFolders(where)
     }
 
     for i, entry in ipairs(entries) do
-        
-        local buttons = self:createbutton(entry.start,entry.stop,64)
-        if entry.name == "Walls" then
-            print(#tileset)
-            local newbutton = Button(64 * #buttons, 64, 64, 64, 
-            function()
-                random = false
-                self.tiletype = self.tilesheet[21]
-            end, 
-            tileset[21], "tilemap"
-            )
-            table.insert(buttons, newbutton)
-        end
-        if entry.extra then
-            local button = {}
-            button = Button(64 * #buttons, 64, 64, 64, 
-            entry.extra.onclick, entry.extra.sprite)
-            table.insert(buttons, button)
-        
-        end
+        local buttons = self:createButtonList(entry.start,entry.stop,64)
         local newFolder = Folder(i * 64 - 64,0,entry.name,buttons)
         table.insert(where, newFolder)
     end
 
+    local newbutton = Button(64 * 8, 64, 64, 64, 
+        function()
+            random = false
+            self.tiletype = self.tilesheet[21]
+        end, 
+        tileset[21], "tilemap"
+    )
+    self:insertIntoFolder("Walls", newbutton)
+    local newbutton = Button(64 * 8, 64, 64, 64, 
+        function() random = true end, 
+        love.graphics.newImage("Sprites/Tilemap/rndtile.png")
+    )
+    self:insertIntoFolder("Floors", newbutton)
     
 end
 
-function Editor:load()
+function Editor:load(currentfile)
     self.tilemap = {}
 
     self:createLayer(1)
@@ -145,15 +139,15 @@ function Editor:new()
         table.insert(self.tilesheet, newTile)
     end
     self.origin = {}
-    self.origin.x = 64
-    self.origin.y = 64
+    self.origin.x = 0
+    self.origin.y = 0
     self.tilesize = 64
     self.scale = 64
     self.tileSelection = {x = 0, y = 0, mx = 0, my = 0}
     self.tiletype = self.tilesheet[1]
     self.currentLayer = 1
     
-    self:load()
+    self:load(currentfile)
     self.buttons = {}
     self.buttons.tilemap = {}
     self.buttons.entity = {}
@@ -251,7 +245,7 @@ function Editor:update(dt)
     if bindPressed(keybinds.up) then
         self.origin.y = self.origin.y + panspeed * dt
     end
-    if bindPressed(keybinds.save) then
+    if bindSinglePress(keybinds.save) then
         self:save()
     end
 
@@ -275,9 +269,15 @@ function Editor:update(dt)
 
     if bindSinglePress(keybinds.minus) then
         if self.currentLayer > 1 then
+            print(#self.tilemap[self.currentLayer])
+            if #self.tilemap[self.currentLayer]==0 then
+
+                table.remove(self.tilemap, currentLayer)
+            end
             self.currentLayer = self.currentLayer - 1
         end
     end
+
     if bindSinglePress(keybinds.plus) then
         self.currentLayer = self.currentLayer + 1
         if self.currentLayer > #self.tilemap then
@@ -288,12 +288,11 @@ function Editor:update(dt)
 end
 
 function Editor:draw()
-    for i = 1, #self.tilemap do
-        for y, row in pairs(self.tilemap[i]) do
-            for x, currentTile in pairs(self.tilemap[i][y]) do
+    for i, layer in ipairs(self.tilemap) do
+        for y, row in pairs(layer) do
+            for x, currentTile in pairs(row) do
                 if currentTile and currentTile.id then
                     love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
-                    --love.graphics.draw(currentTile.sprite, self.origin.x + (x * self.scale.x) - self.scale.x, self.origin.y + (y * self.scale.y) - self.scale.y)
                 end
             end
         end
@@ -306,14 +305,12 @@ function Editor:draw()
     end
 
     local textoffset = 100
-    love.graphics.print("mx: " .. self.tileSelection.mx,0,60 + textoffset)
-    love.graphics.print("my: " .. self.tileSelection.my,0,80 + textoffset)
-
+    
     love.graphics.print("x: " .. self.tileSelection.x,0,100 + textoffset)
     love.graphics.print("y: " .. self.tileSelection.y,0,120 + textoffset)
 
-    love.graphics.print("self.currentLayer: " .. self.currentLayer,0,140 + textoffset)
-    love.graphics.print("#tilemap: " .. #self.tilemap,0,160 + textoffset)
+    love.graphics.print("Current Layer: " .. self.currentLayer,0,140 + textoffset)
+    love.graphics.print("Layers: " .. #self.tilemap,0,160 + textoffset)
 
     love.graphics.print("Scale: "..self.scale,0,180 + textoffset)
 
@@ -331,9 +328,9 @@ function Editor:draw()
         end
     end
 
-    if self.editorMode == "tile" then
-        for i = #self.buttons, 1, -1 do
-            self.buttons[i]:draw()
+    if self.editorMode == "entity" then
+        for i, button in ipairs(self.buttons.entity) do
+            button:draw(dt)
         end
     end
 
@@ -360,7 +357,6 @@ function Editor:save()
     end
     local data = savedTilemap
 
-    -- local serialized = Lume.serialize(data)
     local serialized = Sir.dumps(data)
     love.filesystem.write(currentfile, serialized)
 

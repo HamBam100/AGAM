@@ -26,8 +26,6 @@ function Scene:removed()
     if self.tilemap then 
         self.tilemap:removed()
     end
-    
-    print("ehllo")
 
 end
 

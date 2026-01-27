@@ -89,15 +89,21 @@ function Folder:draw()
 end
 
 function Folder:insertElement(elemt)
+    elemt.x = 64 * #self.elements
     table.insert(self.elements, elemt)
 end
 
 function Folder:removeElement(elemt)
     for i, element in pairs(self.elements) do
         if element == elemt then
-            table.remove(self.elements, element)
+            table.remove(self.elements, i)
             break
         end
     end
+
+    for i, element in pairs(self.elements) do
+        element.x = 64 * (i - 1)
+    end
+
 end
 return Folder

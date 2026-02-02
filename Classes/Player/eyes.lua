@@ -9,9 +9,8 @@ function Eyes:new(parent)
     self.xv = 0
     self.yv = 0
 
-    self.ox = math.floor((self.parent.ox / 2) - (self.ox / 2))
-    self.oy = math.floor((self.parent.oy /2) - (self.oy / 2))
-
+    self.ox = math.floor((self.parent.ox / 2) + (self.ox / 2))
+    self.oy = math.floor((self.parent.oy / 2) + (self.oy / 2))
 
 end
 
@@ -21,8 +20,8 @@ function Eyes:update()
 
     -- Offset eyes to point towards mouse
     local rotation = math.atan2(mousey - self.y, mousex - self.x) 
-    self.xv = math.cos(rotation) * 5
-    self.yv = math.sin(rotation) * 5
+    self.xv = math.cos(rotation) * 2
+    self.yv = math.sin(rotation) * 2
     self.x = math.floor(self.x + self.xv)
     self.y = math.floor(self.y + self.yv)
     

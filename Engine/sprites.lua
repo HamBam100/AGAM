@@ -16,18 +16,20 @@ tileset = {}
 
 local tilesetwidth = 12
 local tilesetheight = 2
-local tilewidth = 64
-local tileheight = 64
+tileWidth = 32
+tileHeight = 32
+
 for i=0,tilesetheight - 1 do
     for j=0,tilesetwidth - 1 do
         local col = false
         table.insert(tileset, love.graphics.newQuad(
-            j * (tilewidth),
-            i * (tileheight),
-            tilewidth,
-            tileheight,
+            j * (tileWidth),
+            i * (tileHeight),
+            tileWidth,
+            tileHeight,
             tilesetimagewidth,
             tilesetimageheight))
     end
 end
+
 collisionmask = {2,3,8,9,10,11,12,13,14,15,16,17,18,19,21}

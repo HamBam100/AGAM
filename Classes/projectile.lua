@@ -14,7 +14,7 @@ function Projectile:new(i)
     self.ox = 0
     self.oy = 0
     self.r = 0
-    self.radius = 10
+    self.radius = 5
     self.collisionType = "circle"
     
     self.speed = 350

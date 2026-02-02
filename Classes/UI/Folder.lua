@@ -78,7 +78,7 @@ function Folder:draw()
     if self.hover or self.open then
         love.graphics.setColor(0.1,0.1,0.1)
     end
-    love.graphics.printf(self.name,self.x,self.y+32,64,"center")
+    love.graphics.printf(self.name,self.x,self.y+(self.height/3),self.width,"center")
     love.graphics.setColor(1,1,1)
     if self.open then
         for i, element in pairs(self.elements) do
@@ -89,7 +89,7 @@ function Folder:draw()
 end
 
 function Folder:insertElement(elemt)
-    elemt.x = 64 * #self.elements
+    elemt.x = tileWidth * #self.elements
     table.insert(self.elements, elemt)
 end
 
@@ -102,7 +102,7 @@ function Folder:removeElement(elemt)
     end
 
     for i, element in pairs(self.elements) do
-        element.x = 64 * (i - 1)
+        element.x = tileWidth * (i - 1)
     end
 
 end

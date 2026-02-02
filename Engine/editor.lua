@@ -16,7 +16,7 @@ function Editor:createButtonList(start,stop,offset)
     local list = {}
     local count = 1
     for i=start, stop do 
-        local button = Button(64 * (count - 1), offset, 64, 64, 
+        local button = Button(tileWidth * (count - 1), offset, tileWidth, tileHeight, 
             function()
                 random = false
                 self.tiletype = self.tilesheet[i]
@@ -48,19 +48,19 @@ function Editor:createFolders(where)
     local entries = {
         {name = "Walls", start = 1, stop = 3},
         {name = "Floors", start = 4, stop = 7},
-        {name = "Corners", start = 8, stop = 11},
+        {name = "Corner", start = 8, stop = 11},
         {name = "Edges", start = 12, stop = 15},
-        {name = "Crowns", start = 16, stop = 19},
+        {name = "Crown", start = 16, stop = 19},
         {name = "Decals", start = 20, stop = 20}
     }
 
     for i, entry in ipairs(entries) do
-        local buttons = self:createButtonList(entry.start,entry.stop,64)
-        local newFolder = Folder(i * 64 - 64,0,entry.name,buttons)
+        local buttons = self:createButtonList(entry.start,entry.stop,tileHeight)
+        local newFolder = Folder(i * tileWidth - tileWidth,0,entry.name,buttons)
         table.insert(where, newFolder)
     end
 
-    local newbutton = Button(64 * 8, 64, 64, 64, 
+    local newbutton = Button(tileWidth * 8, tileHeight, tileWidth, tileHeight, 
         function()
             random = false
             self.tiletype = self.tilesheet[21]
@@ -68,7 +68,7 @@ function Editor:createFolders(where)
         tileset[21], "tilemap"
     )
     self:insertIntoFolder("Walls", newbutton)
-    local newbutton = Button(64 * 8, 64, 64, 64, 
+    local newbutton = Button(tileWidth * 8, tileHeight, tileWidth, tileHeight, 
         function() random = true end, 
         love.graphics.newImage("Sprites/Tilemap/rndtile.png")
     )
@@ -135,14 +135,13 @@ function Editor:new()
     for i=1, numberOfTiles do
         local newTile = {}
         newTile.id = i
-
         table.insert(self.tilesheet, newTile)
     end
+
     self.origin = {}
     self.origin.x = 0
     self.origin.y = 0
-    self.tilesize = 64
-    self.scale = 64
+    self.scale = tileWidth
     self.tileSelection = {x = 0, y = 0, mx = 0, my = 0}
     self.tiletype = self.tilesheet[1]
     self.currentLayer = 1
@@ -154,7 +153,6 @@ function Editor:new()
     
     entitys = {}
     self:createFolders(self.buttons.tilemap)
-
 
     local brib = PlaceableEntity(256,256,Player)
     table.insert(entitys, brib)
@@ -223,13 +221,11 @@ function Editor:update(dt)
     end
 
     if bindPressed(keybinds.space) then
-        self.scale = 64
+        self.scale = tileWidth
 
         self.origin.x = mousex - self.tileSelection.mx * self.scale
         self.origin.y = mousey - self.tileSelection.my * self.scale
     end
-
-
 
     if bindPressed(keybinds.right) then
         self.origin.x = self.origin.x - panspeed * dt
@@ -292,7 +288,7 @@ function Editor:draw()
         for y, row in pairs(layer) do
             for x, currentTile in pairs(row) do
                 if currentTile and currentTile.id then
-                    love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / 64, self.scale / 64)
+                    love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / tileWidth, self.scale / tileHeight)
                 end
             end
         end

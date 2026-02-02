@@ -7,7 +7,7 @@ function drawHitbox(obj)
         end
         
         love.graphics.line(vertices[i].x, vertices[i].y, vertices[j].x, vertices[j].y)
-        love.graphics.circle("fill", obj.x, obj.y, 5)
+        love.graphics.circle("fill", obj.x, obj.y, 2)
     end
 
 end

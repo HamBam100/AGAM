@@ -28,8 +28,8 @@ function Tiler:new(mapfile)
 
         self.colliders = self:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
         
-        filemaxwidth = filemaxwidth * 64
-        filemaxheight = filemaxheight * 64
+        filemaxwidth = filemaxwidth * tileWidth
+        filemaxheight = filemaxheight * tileHeight
 
         self.canvas = love.graphics.newCanvas(filemaxwidth,filemaxheight)
         love.graphics.setCanvas(self.canvas)
@@ -37,13 +37,13 @@ function Tiler:new(mapfile)
         for i=1, #loadedtilemap do
             for _, tile in ipairs(loadedtilemap[i]) do
                 if tile.id then
-                    love.graphics.draw(tilesetimage, tileset[tile.id], (tile.x * 64) - 64, (tile.y * 64) - 64)
+                    love.graphics.draw(tilesetimage, tileset[tile.id], (tile.x * tileWidth) - tileWidth, (tile.y * tileHeight) - tileHeight)
                 end
             end
         end
 
     else
-        self.canvas = love.graphics.newCanvas(64,64)
+        self.canvas = love.graphics.newCanvas(tileWidth,tileHeight)
         print("invalid file: " .. mapfile)
     end
         
@@ -115,8 +115,7 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                             tilemap[l][y - 1 + j][x - 1 + k].checked = true
                         end
                     end
-                    local tilesize = 64
-                    local collider = makeHitbox((x - 1)* tilesize, (y - 1)* tilesize, ( x - 1 + width) * tilesize, ( y - 1 + height)* tilesize)
+                    local collider = makeHitbox((x - 1)* tileWidth, (y - 1)* tileHeight, ( x - 1 + width) * tileHeight, ( y - 1 + height)* tileHeight)
                     table.insert(createdcolliders, collider)
                 end
             end

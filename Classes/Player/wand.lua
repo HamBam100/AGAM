@@ -10,6 +10,7 @@ function Wand:new(parent)
     self.yv = 0
 
     self.cooldown = {timer = 0, time = 0.1}
+    self.playerOffset = 80
     
 end
 
@@ -20,8 +21,8 @@ function Wand:update(dt)
     
     -- Point and offset wand towards mouse
     self.r = math.atan2(mousey - self.y, mousex - self.x) 
-    self.xv = math.floor(math.cos(self.r) * 140)
-    self.yv = math.floor(math.sin(self.r) * 140)
+    self.xv = math.floor(math.cos(self.r) * self.playerOffset)
+    self.yv = math.floor(math.sin(self.r) * self.playerOffset)
     self.x = math.floor(self.x + self.xv)
     self.y = math.floor(self.y + self.yv)
 
@@ -42,7 +43,7 @@ function Wand:createProj()
 end
 
 function Wand:draw()
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,64,64)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,self.ox)
 
 end
 

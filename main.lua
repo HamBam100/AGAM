@@ -4,8 +4,11 @@ function love.load()
     multiplayer = true
 
     require "Engine.requirments"
+    local font = love.graphics.newFont(11, "mono")
+    font:setFilter("nearest")
+    love.graphics.setFont(font)
 
-    GameWindow.load(1920, 1080)
+    GameWindow.load(640, 360)
 
     virtualMouseStart()
 
@@ -23,8 +26,7 @@ function gameinit()
     Render.createLayer("UI") -- 4
 
     state = "game"
-    debug = false
-
+    debug = true
     updateables = nil
     updateables = {}
 
@@ -142,8 +144,6 @@ function love.draw()
     GameWindow.finish()
 
 end
-
-
 
 function love.resize(w, h)
     GameWindow.resize()

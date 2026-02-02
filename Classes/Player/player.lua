@@ -6,7 +6,7 @@ function Player:new(x,y)
 
     self.xv = 0
     self.yv = 0
-    self.speed = 350
+    self.speed = 180
 
     self.colour = mix(elements["plasma"], elements["earth"])
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
@@ -60,7 +60,7 @@ function Player:draw()
     self.wand:draw()
     
     if debug then
-        printcoords(self.x,self.y,-25,64,1)
+        printcoords(self.x,self.y,-25,tileHeight,1)
         drawHitbox(self)
     end
 

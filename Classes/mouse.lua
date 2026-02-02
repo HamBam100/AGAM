@@ -4,6 +4,8 @@ function Mouse:new()
     self.sprite = Sprite["Cursor"]
     self.x = 0
     self.y = 0
+    self.ox = math.floor(self.sprite:getWidth() / 2)
+    self.oy = math.floor(self.sprite:getHeight() / 2)
     
 end
 
@@ -14,8 +16,7 @@ function Mouse:update()
 end
 
 function Mouse:draw()
-    love.graphics.draw(self.sprite,math.floor(self.x - 32),math.floor(self.y - 32))
-
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),0,1,1,self.ox,self.oy)
 end
 
 return Mouse

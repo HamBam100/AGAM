@@ -63,7 +63,10 @@ end
 function Folder:draw()
     love.graphics.setColor(self.backgroundColour)
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+    
     love.graphics.setColor(self.lineColour)
+    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
+    love.graphics.setColor(1,1,1)
     
     if self.hover or self.open then
         love.graphics.setShader(tintShader)
@@ -71,8 +74,7 @@ function Folder:draw()
     end
 
     love.graphics.draw(self.sprite,self.x, self.y)
-    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(1,1,1)
+    
     love.graphics.setShader()
 
     if self.hover or self.open then

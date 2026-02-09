@@ -78,19 +78,21 @@ function PlaceableEntity:draw(originx, originy, scale)
     local drawx = originx + (self.x * scale/ tileWidth) - scale
     local drawy = originy + (self.y * scale/ tileHeight) - scale
 
+    love.graphics.setColor(self.backgroundColour)
+    love.graphics.rectangle("fill", drawx, drawy, self.width * scale / tileWidth, self.height * scale / tileHeight)
+
+    love.graphics.setColor(self.lineColour)
+    love.graphics.rectangle("line", drawx, drawy, self.width * scale / tileWidth, self.height * scale / tileHeight)
+
+    love.graphics.setColor(1,1,1)
+
     if self.hover then
         love.graphics.setShader(tintShader)
         tintShader:send("targetColour", self.hoverColour)
     end
-    
-    love.graphics.setColor(self.backgroundColour)
-    love.graphics.rectangle("fill", drawx, drawy, self.width * scale / tileWidth, self.height * scale / tileHeight)
-    love.graphics.setColor(self.lineColour)
 
     love.graphics.draw(self.obj.sprite, math.floor(drawx), math.floor(drawy), 0, scale / tileWidth, scale / tileHeight)
-
-    love.graphics.rectangle("line", drawx, drawy, self.width * scale / tileWidth, self.height * scale / tileHeight)
-    love.graphics.setColor(1,1,1)
+    
     love.graphics.setShader()
 
 end

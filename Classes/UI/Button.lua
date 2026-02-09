@@ -46,22 +46,24 @@ function Button:update()
 end
 
 function Button:draw()
+    love.graphics.setColor(self.backgroundColour)
+    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+
+    love.graphics.setColor(self.lineColour)
+    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
+    love.graphics.setColor(1,1,1)
+
     if self.hover then
         love.graphics.setShader(tintShader)
         tintShader:send("targetColour", self.hoverColour)
     end
-    
-    love.graphics.setColor(self.backgroundColour)
-    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(self.lineColour)
+
     if self.version == "tilemap" then
         love.graphics.draw(tilesetimage,self.sprite,self.x, self.y)
     else
         love.graphics.draw(self.sprite,self.x, self.y)
     end
     
-    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
-    love.graphics.setColor(1,1,1)
     love.graphics.setShader()
 
 end

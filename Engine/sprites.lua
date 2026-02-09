@@ -7,7 +7,7 @@ Sprite = {
     ["Cursor"] = love.graphics.newImage("Sprites/Cursor.png"),
 }
 
-local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
+local tilesheetdir = "Sprites/Tilemap/Tilesheet.png"
 tilesetimage = love.graphics.newImage(tilesheetdir)
 
 tilesetimagewidth = tilesetimage:getWidth()

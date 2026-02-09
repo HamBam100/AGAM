@@ -6,11 +6,11 @@ function Slime:new(x, y)
     self.xv = 0
     self.yv = 0
     
-    self.speed = 160
+    self.speed = 70
     self.hp = 1
     self.inv = {i = 0, dur = 0.1}
     
-    self.hitbox = makeHitbox(0,0,64,64,self)
+    self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
 
 end
 

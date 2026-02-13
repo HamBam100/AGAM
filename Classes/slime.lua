@@ -66,10 +66,10 @@ function Slime:draw()
     if self.inv.i > 0 then
         love.graphics.setShader(flashShader)
     end
-
+    love.graphics.setColor(1,1,1,0.9)
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1,1,self.ox, self.oy)
     love.graphics.setShader()
-   
+    love.graphics.setColor(1,1,1,1)
     if debug then
         drawHitbox(self)
         love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)

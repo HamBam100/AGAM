@@ -35,10 +35,7 @@ function RPlayer:draw()
     self.eyes:draw()
     self.wand:draw()
     
-    if debug then
-        printcoords(self.x,self.y,-25,64,1)
-        drawHitbox(self)
-    end
+
 end
 
 --self:serverUpdate(playerPacket)

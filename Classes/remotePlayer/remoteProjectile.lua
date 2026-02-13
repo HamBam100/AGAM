@@ -10,7 +10,7 @@ function RProjectile:new(packet)
     self.ox = 0
     self.oy = 0
     self.r = 0
-    self.radius = 10
+    self.radius = 5
     self.collisionType = "circle"
     
     self.speed = 350
@@ -34,10 +34,7 @@ function RProjectile:draw()
     love.graphics.setColor(0.2, 1, 0.3)
     love.graphics.circle("line",math.floor(self.x),math.floor(self.y),self.radius)
 
-    if debug then
-        drawHitbox(self)
-        printcoords(self.x,self.y,-10,20,0)
-    end
+
     love.graphics.setColor(1, 1, 1)
 end
 

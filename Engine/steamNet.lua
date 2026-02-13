@@ -70,6 +70,22 @@ function Steam.networkingSockets.onConnectionChanged(data)
     elseif state == "ProblemDetectedLocally" then
         print("oopsy, local problem")
         Steam.networkingSockets.closeConnection(conn)
+
+        for i, player in ipairs(updateables.remotePlayers) do
+            poof(player, updateables.remotePlayers, "Game")
+            print("deleted ".. player.steamID)
+        end
+
+        local connectionID
+        local pollGroup
+        local clients
+
+        local mySteamID
+        local conIDtoSteamID = {}
+
+        local pendingSpawns = {}
+        local pendingSends = {}
+        Networking.start()
     end
 
 end

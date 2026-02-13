@@ -9,6 +9,8 @@ function REyes:new(parent)
 
     self.r = 0
     
+    self.ox = math.floor((self.parent.ox / 2) + (self.ox / 2))
+    self.oy = math.floor((self.parent.oy / 2) + (self.oy / 2))
 end
 
 function REyes:update() --Use wand packet since it will be the same r value for both eyes and wand
@@ -16,8 +18,8 @@ function REyes:update() --Use wand packet since it will be the same r value for 
     self.y = self.parent.y - 30
 
     -- Offset REyes to point towards mouse
-    self.xv = math.cos(self.r) * 5
-    self.yv = math.sin(self.r) * 5
+    self.xv = math.cos(self.r) * 2
+    self.yv = math.sin(self.r) * 2
     self.x = math.floor(self.x + self.xv)
     self.y = math.floor(self.y + self.yv)
     

@@ -1,8 +1,8 @@
-local RPlayer = Body2d:extend()
+local RPlayer = Player:extend()
 
 function RPlayer:new(ID)
     
-    self.super.new(self,0,0,Sprite["Player"])
+    RPlayer.super.new(self,100,100)
     self.steamID = tostring(ID)
     self.xv = 0
     self.yv = 0
@@ -22,20 +22,6 @@ function RPlayer:update(dt)
     self.wand:update()
     self.eyes:update()
     
-end
-
-function RPlayer:draw()
-    love.graphics.setShader(tintPlayerShader)
-    tintPlayerShader:send("targetColour", self.colour)
-
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r,1,1,self.ox,self.oy)
-
-    love.graphics.setShader()
-
-    self.eyes:draw()
-    self.wand:draw()
-    
-
 end
 
 --self:serverUpdate(playerPacket)

@@ -1,6 +1,11 @@
 degtorad = math.rad
-
 radtodeg = math.deg
+
+function randomFloat(min, max, precicion)
+    precicion = 10^precicion
+    return (love.math.random(min*precicion, max*precicion) / precicion) 
+end
+
 
 function lerp(a,b,t)
     local interp = a * (1-t) + b * t
@@ -40,7 +45,7 @@ end
 --Removes an object from the Game
 function poof(obj, array, layer, i)
     if obj.removed then
-        obj:removed()
+        obj:removed() 
     end
     Render.removeObjectFromLayer(layer, obj)
     array:remove(obj)
@@ -53,6 +58,35 @@ function spawn(class, array, layer)
     Render.addObjectToLayer(layer, obj)
     table.insert(array,obj)
 
+end
+
+function getSafeArea(offset)
+    local random = randomFloat(0,1,10)
+    local cumlative = 0
+    local selectedArea
+    for i, area in ipairs(level.safeArea) do
+        cumlative = cumlative + area.chance
+        if cumlative > random then
+            selectedArea = area
+            break
+        end
+    end
+    randomx=love.math.random(selectedArea.x1,selectedArea.x2)
+    randomy=love.math.random(selectedArea.y1,selectedArea.y2)
+    if randomx > selectedArea.x2 - offset then 
+        randomx = randomx - offset
+    end
+    if randomx < selectedArea.x1 + offset then 
+        randomx = randomx + offset
+    end
+    if randomy > selectedArea.y2 - offset then 
+        randomy = randomy - offset
+    end
+    if randomy > selectedArea.y1 + offset then 
+        randomy = randomy + offset
+    end
+
+    return randomx, randomy
 end
 
 function torgb(clr)

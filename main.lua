@@ -27,7 +27,7 @@ function gameinit()
     Render.createLayer("UI") -- 4
 
     state = "game"
-    debug = true
+    debug = false
     updateables = nil
     updateables = {}
 
@@ -36,7 +36,7 @@ function gameinit()
         level = nil
     end
     collectgarbage("collect")
-    
+    multiplayer = true
     if multiplayer then
         Networking.start()
     end
@@ -52,6 +52,9 @@ function gameinit()
     level = Scene("walls.lua")
     Render.addObjectToLayer("Background", level)
 
+    if multiplayer then
+        spawn(RemotePlayer(100), updateables.remotePlayers, "Game")
+    end
 end
 
 function editorinit()
@@ -97,7 +100,8 @@ function love.update(dt)
         virtualMouseUpdate(updateables.players[1])
 
         if bindPressed(keybinds.space) then
-            spawn(Slime(80 +love.math.random(gameWidth) * 0.8,80 +love.math.random(gameHeight) * 0.8), updateables.enemies, "Game")
+            local x,y = getSafeArea(16)
+            spawn(Slime(x, y), updateables.enemies, "Game")
         end
 
         if bindSinglePress(keybinds.debug) then
@@ -127,13 +131,16 @@ function love.draw()
         
         level:draw()
         Render.drawLayers()
-        
-        love.graphics.print("FPS: "..love.timer.getFPS(),10,10)
-        love.graphics.print("Slime: "..#updateables.enemies,10,20)
-        love.graphics.print(state,10,30)
-        love.graphics.print("DPI Scale: " .. love.window.getDPIScale(), 10, 40)
-        
-        love.graphics.print("Memory: " .. math.floor(collectgarbage("count")) .. " KB", 10, 50)
+
+        debugtext = {
+            {name = "FPS: ", data = love.timer.getFPS()},
+            {name = "Slime: ", data = #updateables.enemies},
+            {name = "State: ", data = state}    
+        }
+        for i, text in ipairs(debugtext) do
+            love.graphics.print(text.name..text.data,10,i*11)
+        end
+
     end
 
     if state == "editor" then
@@ -153,6 +160,9 @@ end
 function love.keypressed(k)
     if k == "f" then
         love.window.setFullscreen(not love.window.getFullscreen())
+    end
+    if k == "i" then
+        debug = not debug
     end
 
     if k == "[" then

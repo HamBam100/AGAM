@@ -38,6 +38,8 @@ function PlaceableEntity:update(originx, originy, scale, i)
     local drawy = originy + (self.y * scale/ tileHeight) - scale
 
     local previousClickState = self.clicked
+    self.clicked = false
+    self.mousebutton = bindPressed(keybinds.shoot)
 
     self.hover = false
     
@@ -46,30 +48,36 @@ function PlaceableEntity:update(originx, originy, scale, i)
         print("other: "..drawx + self.width * scale / tileWidth)
         self.hover = true
         globalhover = true
+        if self.mousebutton then
+            self.clicked = true
+            self.held = true
+        end
     end
 
-    if self.hover then
-        self.clicked = false
-        
-        if bindPressed(keybinds.shoot) then 
-            self.clicked = true
-        end
+    local mouse_world_x = (mousex + scale - originx) * (tileWidth / scale)
+    local mouse_world_y = (mousey + scale - originy) * (tileHeight / scale)
 
-        if self.clicked and previousClickState == false then
-            self.mox = self.x - mousex
-            self.moy = self.y - mousey
+    if self.hover then
+        
+        if previousClickState == false then
+            self.mox = (self.x - mouse_world_x)
+            self.moy = (self.y - mouse_world_y)
         end
 
         if bindPressed(keybinds.shootalt) then 
             print("removed")
             table.remove(entitys, i)
         end
-
+        
+    elseif self.mousebutton and self.held then
+        self.held = true
+    else
+        self.held = false
     end
 
-    if self.clicked == true then
-        self.x = mousex + self.mox
-        self.y = mousey + self.moy
+    if self.held then 
+        self.x = mouse_world_x + self.mox 
+        self.y = mouse_world_y + self.moy
     end
 
 end

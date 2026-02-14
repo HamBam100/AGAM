@@ -1,8 +1,10 @@
 local Slime = Body2d:extend()
 
 function Slime:new(x, y)
-    self.super.new(self,x,y,Sprite["Slime"])
+    Slime.super.new(self,x,y,Sprite["Slime"])
 
+    self.x= self.x --+ self.sprite:getWidth()/2
+    self.y= self.y --+ self.sprite:getHeight()/2
     self.xv = 0
     self.yv = 0
     

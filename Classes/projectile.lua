@@ -39,11 +39,6 @@ end
 
 function Projectile:draw()
     love.graphics.circle("line",math.floor(self.x),math.floor(self.y),self.radius)
-
-    if debug then
-        --drawHitbox(self)
-        printcoords(self.x,self.y,-10,20,0)
-    end
     
 end
 

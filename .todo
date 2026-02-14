@@ -16,7 +16,7 @@ General:
     ☐ Add enemy sync
     ☐ Test player numbers greater than 2
 
-    ☐ Add spawn zones creation to tiler, using the aabb merging
+    ✔ Add spawn zones creation to tiler, using the aabb merging @done(26-02-14 15:17)
 
 Game Machanics:
     Elements:

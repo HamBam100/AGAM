@@ -27,7 +27,7 @@ function gameinit()
     Render.createLayer("UI") -- 4
 
     state = "game"
-    debug = false
+    debug = true
     updateables = nil
     updateables = {}
 

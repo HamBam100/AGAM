@@ -26,11 +26,10 @@ function Projectile:update(dt)
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
     
+    
     if self.x > gameWidth or self.x < 0 or self.y > gameHeight or self.y < 0 then
         poof(self, updateables.projectiles, "Projectiles")
-    end 
-
-    if touchingWall(self) then
+    elseif touchingWall(self) then
         poof(self, updateables.projectiles, "Projectiles")
 
     end

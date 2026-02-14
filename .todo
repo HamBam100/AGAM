@@ -4,10 +4,10 @@ General:
     ✔ Add folder class @done(25-12-22 16:39)
     ☐ Add partical system
     ✔ Extend classes from similar classes classic -> body2d -> enemy -> slime @done(25-12-22 17:23)
-    ☐ Create general enemy class to extend from
+    ✔ Create general enemy class to extend from @done(26-02-15 01:07)
     ☐ Create Boss Class
     ✔ Add more collision types box + circle, circle + circle, sat + circle @done(26-01-10 16:18)
-    ☐ Save custom names in editor
+    ☐ Save custom file names in editor
     ☐ Browse and load all levels in editor
     ☐ Add settings menu
     ☐ Animator for sprites

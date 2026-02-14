@@ -25,7 +25,10 @@
         Wand = require "Classes.Player.wand"
         Eyes = require "Classes.Player.eyes"
 
-    Slime = require "Classes.slime"
+    --Enemy componets
+        Enemy = require "Classes.Enemies.enemy"
+        Slime = require "Classes.Enemies.slime"
+
     Projectile = require "Classes.projectile"
     Mouse = require "Classes.mouse"
 

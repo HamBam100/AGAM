@@ -1,27 +1,26 @@
-local Slime = Body2d:extend()
+local Enemy = Body2d:extend()
 
-function Slime:new(x, y)
-    Slime.super.new(self,x,y,Sprite["Slime"])
+function Enemy:new(x, y, sprite)
+    sprite = sprite or Sprite["Slime"]
+    Enemy.super.new(self,x,y,sprite)
 
-    self.x= self.x --+ self.sprite:getWidth()/2
-    self.y= self.y --+ self.sprite:getHeight()/2
     self.xv = 0
     self.yv = 0
     
     self.speed = 70
     self.hp = 1
-    self.inv = {i = 0, dur = 0.1}
+    self.inv = {cooldown = 0, duration = 0.1}
     
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
 
 end
 
-function Slime:update(dt)
+function Enemy:update(dt)
     self.xv = 0
     self.yv = 0
 
-    if self.inv.i > 0 then
-        self.inv.i = self.inv.i - (1 * dt)
+    if self.inv.cooldown > 0 then
+        self.inv.cooldown = self.inv.cooldown - (1 * dt)
     end
 
     local closestPlayer =  {x=mousex,y=mousey} --or updateables.players[1]
@@ -56,7 +55,7 @@ function Slime:update(dt)
     for j, p in ipairs(updateables.projectiles) do
         if collide(self,p) then
             -- self.hp = self.hp - 1
-            self.inv.i = self.inv.dur
+            self.inv.cooldown = self.inv.duration
             poof(self, updateables.enemies, "Game")
             return
         end
@@ -64,8 +63,8 @@ function Slime:update(dt)
 
 end
 
-function Slime:draw()
-    if self.inv.i > 0 then
+function Enemy:draw()
+    if self.inv.cooldown > 0 then
         love.graphics.setShader(flashShader)
     end
     love.graphics.setColor(1,1,1,0.9)
@@ -79,8 +78,8 @@ function Slime:draw()
 
 end
 
-function Slime:removed()
+function Enemy:removed()
     
 end
 
-return Slime
+return Enemy

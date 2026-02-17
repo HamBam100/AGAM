@@ -6,7 +6,7 @@ function love.load()
 
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
-    font:setFilter("nearest")
+    font:setFilter("nearest", "nearest")
     love.graphics.setFont(font)
 
     GameWindow.load(640, 360)
@@ -36,25 +36,32 @@ function gameinit()
         level = nil
     end
     collectgarbage("collect")
+
     multiplayer = true
     if multiplayer then
         Networking.start()
     end
+
     updateables.players = createUpdateableContainer()
     updateables.enemies = createUpdateableContainer()
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
     
+    level = Scene("walls.lua")
+    Render.addObjectToLayer("Background", level)
+    
     spawn(Player(256,256), updateables.players, "Game")
     -- spawn(Slime(), updateables.enemies, "Game")
     spawn(Mouse(), updateables.mouse, "UI")
 
-    level = Scene("walls.lua")
-    Render.addObjectToLayer("Background", level)
+    local x,y = getSafeArea(16)
+    spawn(Slime(x, y), updateables.enemies, "Game")
+    
 
     if multiplayer then
         spawn(RemotePlayer(100), updateables.remotePlayers, "Game")
     end
+    
 end
 
 function editorinit()
@@ -174,7 +181,7 @@ function love.keypressed(k)
     end
     
     if k == "o" then
-        love.window.setMode(620, 480, {resizable=true, vsync=0, msaa = 0})
+        love.window.setMode(620, 480, {resizable=true, vsync=false, msaa = 0})
     end
 
     if k == "u" then

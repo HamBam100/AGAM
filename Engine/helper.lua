@@ -24,6 +24,15 @@ function round(a,b)
 
 end
 
+function countArray(arr)
+    local cnt = 0
+    for _ in pairs(arr) do
+        cnt = cnt + 1
+    end
+    
+    return cnt
+end
+
 function printcoords(x,y,offsetx,offsety,rounded)
     love.graphics.print("x: "..round(x,rounded).." y: "..round(y,rounded),x+offsetx,y+offsety)
 

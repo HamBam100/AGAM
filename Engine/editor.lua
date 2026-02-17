@@ -80,7 +80,7 @@ function Editor:load(currentfile)
     self.tilemap = {}
 
     self:createLayer(1)
-    if love.filesystem.exists(currentfile) then
+    if love.filesystem.getInfo(currentfile) then
         local file = love.filesystem.read(currentfile)
         local loadedtilemap = Sir.loads(file)
 
@@ -88,14 +88,16 @@ function Editor:load(currentfile)
         for i=1, #loadedtilemap do
             self:createLayer(i)
             self.currentLayer = i
-            for j = #loadedtilemap[i], 1, -1 do
-                local tile = loadedtilemap[i][j]
-                if tile and tile.id then
-                    self.tiletype = self.tilesheet[tile.id]
-                    
+            if loadedtilemap and loadedtilemap[i] then
+                for j = #loadedtilemap[i], 1, -1 do
+                    local tile = loadedtilemap[i][j]
+                    if tile and tile.id then
+                        self.tiletype = self.tilesheet[tile.id]
+                        
 
 
-                    self:add(tile.x, tile.y)
+                        self:add(tile.x, tile.y)
+                    end
                 end
             end
         end
@@ -265,10 +267,10 @@ function Editor:update(dt)
 
     if bindSinglePress(keybinds.minus) then
         if self.currentLayer > 1 then
-            print(#self.tilemap[self.currentLayer])
-            if #self.tilemap[self.currentLayer]==0 then
+            print(countArray(self.tilemap[self.currentLayer]))
+            if countArray(self.tilemap[self.currentLayer])==0 then
 
-                table.remove(self.tilemap, currentLayer)
+                table.remove(self.tilemap, self.currentLayer)
             end
             self.currentLayer = self.currentLayer - 1
         end
@@ -280,7 +282,7 @@ function Editor:update(dt)
             self:createLayer(self.currentLayer)
         end
     end
-    
+
 end
 
 function Editor:draw()
@@ -320,13 +322,13 @@ function Editor:draw()
 
     if self.editorMode == "tile" then
         for i, button in ipairs(self.buttons.tilemap) do
-            button:draw(dt)
+            button:draw()
         end
     end
 
     if self.editorMode == "entity" then
         for i, button in ipairs(self.buttons.entity) do
-            button:draw(dt)
+            button:draw()
         end
     end
 

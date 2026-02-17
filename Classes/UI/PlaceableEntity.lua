@@ -29,8 +29,6 @@ function PlaceableEntity:new(x,y,obj)
         self.backgroundColour[i] = self.lineColour[i] * 0.8
     end
 
-    self.func = func
-
 end
 
 function PlaceableEntity:update(originx, originy, scale, i)

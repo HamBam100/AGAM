@@ -79,7 +79,7 @@ end
 
 function collideBasicBoxCircle(a,b)
     if a.collisionType == "circle" then
-        return collideBoxCircle(b,a)
+        return collideBasicBoxCircle(b,a)
     end
     local box = updateBox(a)
 

@@ -3,7 +3,7 @@ Editor = require "Engine.editor"
 local Tiler = Object:extend()
 
 function Tiler:new(mapfile)
-    if love.filesystem.exists(mapfile) then
+    if love.filesystem.getInfo(mapfile) then
 
         self.x = 0
         self.y = 0
@@ -11,17 +11,20 @@ function Tiler:new(mapfile)
         local file = love.filesystem.read(mapfile)
         local loadedtilemap = Sir.loads(file)
 
-        filemaxwidth = 1
-        filemaxheight = 1
+        local filemaxwidth = 1
+        local filemaxheight = 1
+        
         
         for i=1, #loadedtilemap do
-            for _, tile in ipairs(loadedtilemap[i]) do
-                if tile.x > filemaxwidth then
-                    filemaxwidth = tile.x
-                end
+            if loadedtilemap and loadedtilemap[i] then
+                for _, tile in ipairs(loadedtilemap[i]) do
+                    if tile.x > filemaxwidth then
+                        filemaxwidth = tile.x
+                    end
 
-                if tile.y > filemaxheight then
-                    filemaxheight = tile.y
+                    if tile.y > filemaxheight then
+                        filemaxheight = tile.y
+                    end
                 end
             end
         end
@@ -37,9 +40,11 @@ function Tiler:new(mapfile)
         love.graphics.setCanvas(self.canvas)
 
         for i=1, #loadedtilemap do
-            for _, tile in ipairs(loadedtilemap[i]) do
-                if tile.id then
-                    love.graphics.draw(tilesetimage, tileset[tile.id], (tile.x * tileWidth) - tileWidth, (tile.y * tileHeight) - tileHeight)
+            if loadedtilemap and loadedtilemap[i] then
+                for _, tile in ipairs(loadedtilemap[i]) do
+                    if tile.id then
+                        love.graphics.draw(tilesetimage, tileset[tile.id], (tile.x * tileWidth) - tileWidth, (tile.y * tileHeight) - tileHeight)
+                    end
                 end
             end
         end

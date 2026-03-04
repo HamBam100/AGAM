@@ -30,6 +30,7 @@ function gameinit()
     debug = true
     updateables = nil
     updateables = {}
+    timers = {}
 
     if level then
         level:removed()
@@ -81,6 +82,7 @@ function editorinit()
     
     updateables = nil
     updateables = {}
+    timers = {}
 
     if level then
         level:removed()
@@ -98,6 +100,10 @@ function love.update(dt)
     
     mousex, mousey = GameWindow.getMousePosition()
 
+
+    for timer in ipairs(timers) do
+        timer:update(dt)
+    end
     --Scene:update(dt)
     if state == "game" then
         if multiplayer then

@@ -1,14 +1,5 @@
 function drawHitbox(obj)
-    local vertices = makeVertices(obj)
-    for i = 1, #vertices do 
-        local j = i+1
-        if i == #vertices then
-            j = 1
-        end
-        
-        love.graphics.line(vertices[i].x, vertices[i].y, vertices[j].x, vertices[j].y)
-        love.graphics.circle("fill", obj.x, obj.y, 2)
-    end
+    love.graphics.polygon("line", fromXY_XYToXYXY(makeVertices(obj)))
 
 end
 
@@ -17,6 +8,64 @@ function xy(x,y)
     this.x = x
     this.y = y
     return this
+
+end
+
+function fromXY_XYToXYXY(vertices)
+    local newVertices = {}
+
+    for i=1, #vertices do
+        table.insert(newVertices, vertices[i].x)
+        table.insert(newVertices, vertices[i].y)
+    end
+
+    return newVertices
+
+end
+
+function fromXYXYTo_XY_XY(vertices)
+    local newVertices = {}
+
+    for i=1, #vertices, 2 do
+        table.insert(newVertices, xy(vertices[i],vertices[i+1]))
+    end
+
+    return newVertices
+
+end
+
+function splitPolygons(polygon)
+    local newPolygonList = {}
+
+    local badformatPolygon = love.math.triangulate(fromXY_XYToXYXY(polygon))
+    for i=1, #badformatPolygon do
+        local newVertice = fromXYXYTo_XY_XY(badformatPolygon[i])
+        table.insert(newPolygonList, newVertice)
+    end
+
+    return newPolygonList
+
+end
+
+function centroid(polygon) -- from https://stackoverflow.com/questions/75699024/finding-the-centroid-of-a-polygon-in-python
+    local x, y = 0, 0
+    local n = #polygon
+    local signed_area = 0
+    for i=1,n do
+        local x0, y0 = polygon[i].x, polygon[i].y
+        local x1, y1 = polygon[(i % n) + 1].x, polygon[(i % n) + 1].y
+        --shoelace formula
+        local area = (x0 * y1) - (x1 * y0)
+        signed_area = signed_area + area
+        x = x + ((x0 + x1) * area)
+        y = y + ((y0 + y1) * area)
+    end
+    signed_area = signed_area * 0.5
+    x = x / (6 * signed_area)
+    y = y / (6 * signed_area)
+    
+    print(x)
+    return x, y
 
 end
 
@@ -42,6 +91,28 @@ function makeHitbox(x1,y1,x2,y2,obj)
     hitbox.x2 = x2 - ox --right
     hitbox.y2 = y2 - oy --bottom
 
+    return hitbox
+
+end
+
+function makeHitpoly(poly, obj)
+    local hitbox = poly
+    
+    -- Initialize to first point, not zero!
+    local minx = poly[1].x
+    local miny = poly[1].y
+    local maxx = poly[1].x
+    local maxy = poly[1].y
+    
+    for i = 1, #poly do
+        if poly[i].x < minx then minx = poly[i].x end
+        if poly[i].x > maxx then maxx = poly[i].x end
+        if poly[i].y < miny then miny = poly[i].y end
+        if poly[i].y > maxy then maxy = poly[i].y end
+    end
+    
+    obj.ox, obj.oy = centroid(poly)
+    
     return hitbox
 
 end
@@ -96,12 +167,23 @@ function collideBasicBoxCircle(a,b)
 end
 
 function makeVertices(obj)
-    local hitbox = updateBox(obj)
-    local vertices = {
-    xy(hitbox.x1,hitbox.y1),
-    xy(hitbox.x2,hitbox.y1),
-    xy(hitbox.x2,hitbox.y2),
-    xy(hitbox.x1,hitbox.y2)}
+    local vertices = {}
+    if obj.collisionType == "rectangle" then
+        local hitbox = updateBox(obj)
+
+        vertices = {
+        xy(hitbox.x1,hitbox.y1),
+        xy(hitbox.x2,hitbox.y1),
+        xy(hitbox.x2,hitbox.y2),
+        xy(hitbox.x1,hitbox.y2)}
+    else
+        
+        for i=1, #obj.hitbox do
+            vertices[i] = {}
+            vertices[i].x = obj.hitbox[i].x + obj.x - obj.ox
+            vertices[i].y = obj.hitbox[i].y + obj.y - obj.oy
+        end
+    end
 
     if obj.r ~= 0 then
         local pivotX = (obj.x or 0)
@@ -268,25 +350,102 @@ function collideSATBoxCircle(objA, objB)
 end
 
 function collide(a,b)
-    if a.collisionType == "circle" or b.collisionType == "circle" then
-        if a.collisionType == "circle" and b.collisionType == "circle" then
+    local aIsConcave = false
+    local bIsConcave = false
+
+    local aIsCircle = a.collisionType == "circle"
+    local bIsCircle = b.collisionType == "circle"
+
+    local aIsRectangle = a.collisionType == "rectangle" and a.r == 0
+    local bIsRectangle = b.collisionType == "rectangle" and b.r == 0
+
+    local aIsSat = not (aIsCircle or aIsRectangle) 
+    local bIsSat = not (bIsCircle or bIsRectangle) 
+
+    if aIsSat then
+        aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(makeVertices(a)))
+    end
+
+    if bIsSat then
+        bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(makeVertices(b)))
+    end
+
+    if aIsCircle or bIsCircle then
+        if aIsCircle and bIsCircle then
             return collideCircle(a,b)
+        elseif (aIsCircle and bIsRectangle) or (bIsCircle and aIsRectangle)   then
+            return collideBasicBoxCircle(a,b)
         else
-            if a.r ==0 or b.r == 0 then
-                return collideBasicBoxCircle(a,b)
+            if aIsConcave or bIsConcave then
+                local theCircle
+                local theConcave
+                if aIsCircle then
+                    theCircle = a
+                    theConcave = b
+                elseif bIsCircle then
+                    theCircle = b
+                    theConcave = a
+                end
+
+                local polygons = splitPolygons(theConcave.hitbox)
+                
+                for _, polygon in ipairs(polygons) do
+                    local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
+                    if collideSATBoxCircle(concavePoly,theCircle) then
+                        return true
+                    end
+                end
+                return false
+
             else
                 return collideSATBoxCircle(a,b)
-                
             end
         end
-    elseif a.r == 0 and b.r == 0 then
-        -- mode = "Basic"
+    elseif aIsRectangle and bIsRectangle then
         return collideBasic(a, b)
-        
+    end
+
+    if aIsConcave or bIsConcave then
+        if aIsConcave and bIsConcave then
+            local polygonsa = splitPolygons(a.hitbox)
+            local polygonsb = splitPolygons(b.hitbox)
+
+            for _, polygona in ipairs(polygonsa) do
+                local concavePolya = {x = a.x, y = a.y, r = a.r, hitbox = polygona, collisionType = a.collisionType, ox = a.ox, oy = a.oy}
+                for _, polygonb in ipairs(polygonsb) do
+                    local concavePolyb = {x = b.x, y = b.y, r = b.r, hitbox = polygonb, collisionType = b.collisionType, ox = b.ox, oy = b.oy}
+                    if collideSAT(concavePolya,concavePolyb) then
+                        return true
+                    end
+                end
+            end
+            return false
+        else
+            
+            local theConvex
+            local theConcave
+            if aIsConcave then
+                theConvex = b
+                theConcave = a
+
+            elseif bIsConcave then
+                theConvex = a
+                theConcave = b
+
+            end
+
+            local polygons = splitPolygons(theConcave.hitbox)
+            
+            for _, polygon in ipairs(polygons) do
+                local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
+                if collideSAT(concavePoly,theConvex) then
+                    return true
+                end
+            end
+            return false
+        end
     else
-        -- mode = "SAT"
         return collideSAT(a, b)
-        
     end
 
 end
@@ -308,6 +467,8 @@ function touchingWall(a)
         wall.hitbox = level.colliders[i]
         wall.x = 0
         wall.y = 0
+        wall.collisionType = "rectangle"
+        wall.r = 0
         if collide(wall,a) then
             return true
         end

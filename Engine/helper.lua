@@ -4,6 +4,7 @@ radtodeg = math.deg
 function randomFloat(min, max, precicion)
     precicion = 10^precicion
     return (love.math.random(min*precicion, max*precicion) / precicion) 
+
 end
 
 
@@ -31,6 +32,18 @@ function countArray(arr)
     end
     
     return cnt
+
+end
+
+function removeFromTable(obj,tbl)
+    for i, current in ipairs(tbl) do
+       if current == obj then
+        table.remove(tbl, i)
+        return
+       end
+    end
+    print("failed to remove object, in 'removeFromTable(obj,table)'")
+
 end
 
 function printcoords(x,y,offsetx,offsety,rounded)
@@ -96,6 +109,7 @@ function getSafeArea(offset)
     end
 
     return randomx, randomy
+    
 end
 
 function torgb(clr)

@@ -100,8 +100,7 @@ function love.update(dt)
     
     mousex, mousey = GameWindow.getMousePosition()
 
-
-    for timer in ipairs(timers) do
+    for _, timer in ipairs(timers) do
         timer:update(dt)
     end
     --Scene:update(dt)

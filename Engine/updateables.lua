@@ -10,15 +10,15 @@ function updateableContainer:update(dt)
 end
 
 function updateableContainer:remove(obj)
-    for i, current in ipairs(self) do
-       if current == obj then
-        table.remove(self, i)
-        return
-       end
+    local fail = removeFromTable(obj,self)
+    if fail then
+        print("failed to remove object, in 'updateableContainer:remove(obj)'")
+        print(self)
+        print(updateables.projectiles)
+        print(#updateables.projectiles)
     end
-    print("failed to remove object")
+    
 end
-
 
 function createUpdateableContainer()
     local container = {}

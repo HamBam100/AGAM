@@ -8,6 +8,12 @@ function Slime:new(x, y)
     self.speed = 90
     self.range = 60
     self.hp = 4
+
+    self.past = {}
+    self.past.x = self.x
+    self.past.y = self.y
+    resolveWall(self)
+    
 end
 
 function Slime:update(dt)
@@ -20,7 +26,6 @@ function Slime:update(dt)
         self.inv.cooldown = self.inv.cooldown - (1 * dt)
     end
 
-    self.past = {}
     self.past.x = self.x
     self.past.y = self.y
     

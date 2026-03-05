@@ -9,7 +9,8 @@
     require "Engine.shaders"
     require "Engine.updateables"
     require "Engine.sprites"
-    
+
+    Timer = require "Engine.timer"
     Networking = require "Engine.steamNet"
     Tiler = require "Engine.tiler"
     Scene = require "Engine.scene"
@@ -17,6 +18,8 @@
     Render = require "Engine.render"
     Keybinds = require "Engine.keybinds"
     GameWindow = require "Engine.gameWindow"
+    Particle = require "Engine.ParticalSystem.particle"
+    AttachedEmitter = require "Engine.ParticalSystem.attachedEmitter"
 
 -- Classes
     Body2d = require "Classes.body2d"

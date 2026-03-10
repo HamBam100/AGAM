@@ -10,6 +10,8 @@ function Player:new(x,y)
 
     self.colour = mix(elements["plasma"], elements["earth"])
     self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
+    -- self.hitbox = makeHitpoly({{x=1,y=1},{x=60,y=7},{x=11,y=80}},self)
+    -- self.collisionType="sat"
     self.eyes = Eyes(self)
     self.wand = Wand(self)
 

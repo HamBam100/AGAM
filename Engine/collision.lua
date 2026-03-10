@@ -359,6 +359,14 @@ function collide(a,b)
     local aIsRectangle = a.collisionType == "rectangle" and a.r == 0
     local bIsRectangle = b.collisionType == "rectangle" and b.r == 0
 
+    -- print("A "..a.collisionType)
+    -- print("A "..a.r)
+    -- print("B "..b.collisionType)
+    -- print("B "..b.r)
+
+    -- print(aIsRectangle)
+    -- print(bIsRectangle)
+
     local aIsSat = not (aIsCircle or aIsRectangle) 
     local bIsSat = not (bIsCircle or bIsRectangle) 
 
@@ -402,9 +410,10 @@ function collide(a,b)
             end
         end
     elseif aIsRectangle and bIsRectangle then
+        
         return collideBasic(a, b)
     end
-
+    
     if aIsConcave or bIsConcave then
         if aIsConcave and bIsConcave then
             local polygonsa = splitPolygons(a.hitbox)
@@ -461,18 +470,20 @@ function wasHori(a, b)
 end
 
 function touchingWall(a)
-    for i=1, #level.colliders do
-        local wall = {}
+    if level.colliders then
+        for i=1, #level.colliders do
+            local wall = {}
 
-        wall.hitbox = level.colliders[i]
-        wall.x = 0
-        wall.y = 0
-        wall.collisionType = "rectangle"
-        wall.r = 0
-        if collide(wall,a) then
-            return true
+            wall.hitbox = level.colliders[i]
+            wall.x = 0
+            wall.y = 0
+            wall.r = 0
+            wall.collisionType = "rectangle"
+            if collide(wall,a) then
+                return true
+            end
+
         end
-
     end
     return false
 
@@ -486,7 +497,10 @@ function resolveWall(a)
             wall.hitbox = level.colliders[i]
             wall.x = 0
             wall.y = 0
-            if collideBasic(a, wall) then
+            wall.r = 0
+            wall.collisionType = "rectangle"
+            wall.collisionType = "rectangle"
+            if collide(a, wall) then
                 local wallLength = wall.hitbox.x2 - wall.hitbox.x1
                 local wallHeight = wall.hitbox.y2 - wall.hitbox.y1
 

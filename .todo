@@ -1,5 +1,12 @@
 alt-enter to create box, alt-d to make complete
 
+
+
+
+Urgent:
+    ☐ add support for isVert and isHori with all collision
+    ☐ merge tilemap layers collision
+
 General:
     ✔ Add folder class @done(25-12-22 16:39)
     ☐ Add partical system

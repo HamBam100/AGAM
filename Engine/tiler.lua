@@ -29,9 +29,9 @@ function Tiler:new(mapfile)
             end
         end
 
-        self.colliders = self:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
+        self.colliders = self:generateCollision(loadedtilemap, filemaxwidth, filemaxheight) or nil
         
-        self.safeArea = self:generateSafeArea(loadedtilemap, filemaxwidth, filemaxheight)
+        self.safeArea = self:generateSafeArea(loadedtilemap, filemaxwidth, filemaxheight) or nil
 
         filemaxwidth = filemaxwidth * tileWidth
         filemaxheight = filemaxheight * tileHeight

@@ -79,6 +79,8 @@ function Slime:jump(dt)
         target.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
         target.ox = self.ox
         target.oy = self.oy
+        target.r = self.r
+        target.collisionType = self.collisionType
         
 
         local accuracy = 5

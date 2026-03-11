@@ -7,7 +7,6 @@ function randomFloat(min, max, precicion)
 
 end
 
-
 function lerp(a,b,t)
     local interp = a * (1-t) + b * t
     return interp
@@ -84,7 +83,6 @@ end
 
 function getSafeArea(offset)
     if level and level.safeArea then
-        print(5)
         local random = randomFloat(0,1,10)
         local cumlative = 0
         local selectedArea

@@ -9,7 +9,7 @@ function Body2d:new(x, y, sprite, r)
     self.oy = math.floor(self.sprite:getHeight() / 2)
 
     self.r = r or 0
-    self.collisionType = "rectangle"
+    self.collisionType = colTypes.rectangle
     
 end
 

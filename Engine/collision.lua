@@ -1,3 +1,5 @@
+colTypes = {rectangle = "rectangle", circle = "circle", sat = "sat"}
+
 function drawHitbox(obj)
     love.graphics.polygon("line", fromXY_XYToXYXY(makeVertices(obj)))
 
@@ -32,6 +34,34 @@ function fromXYXYTo_XY_XY(vertices)
 
     return newVertices
 
+end
+
+function findMinVert(verts,cntby)
+    cntby = cntby or 1
+    local newverts = fromXY_XYToXYXY(verts)
+    local min = newverts[cntby]
+
+    for i=1, #newverts, cntby do
+        if newverts[i] < min then
+            min = newverts[i]
+        end
+    end
+
+    return min
+end
+
+function findMaxVert(verts,cntby)
+    cntby = cntby or 1
+    local newverts = fromXY_XYToXYXY(verts)
+    local max = newverts[cntby]
+
+    for i=1, #newverts, cntby do
+        if newverts[i] > max then
+            max = newverts[i]
+        end
+    end
+
+    return max
 end
 
 function splitPolygons(polygon)
@@ -149,7 +179,7 @@ function collideCircle(a,b)
 end
 
 function collideBasicBoxCircle(a,b)
-    if a.collisionType == "circle" then
+    if a.collisionType == colTypes.circle then
         return collideBasicBoxCircle(b,a)
     end
     local box = updateBox(a)
@@ -168,7 +198,7 @@ end
 
 function makeVertices(obj)
     local vertices = {}
-    if obj.collisionType == "rectangle" then
+    if obj.collisionType == colTypes.rectangle then
         local hitbox = updateBox(obj)
 
         vertices = {
@@ -280,7 +310,7 @@ function collideSAT(objA, objB)
 end
 
 function collideSATBoxCircle(objA, objB)
-    if objA.collisionType == "circle" then
+    if objA.collisionType == colTypes.circle then
         return collideSATBoxCircle(objB,objA)
     end
     local polygonA = makePolygon(objA)
@@ -353,11 +383,11 @@ function collide(a,b)
     local aIsConcave = false
     local bIsConcave = false
 
-    local aIsCircle = a.collisionType == "circle"
-    local bIsCircle = b.collisionType == "circle"
+    local aIsCircle = a.collisionType == colTypes.circle
+    local bIsCircle = b.collisionType == colTypes.circle
 
-    local aIsRectangle = a.collisionType == "rectangle" and a.r == 0
-    local bIsRectangle = b.collisionType == "rectangle" and b.r == 0
+    local aIsRectangle = a.collisionType == colTypes.rectangle and a.r == 0
+    local bIsRectangle = b.collisionType == colTypes.rectangle and b.r == 0
 
     -- print("A "..a.collisionType)
     -- print("A "..a.r)
@@ -478,7 +508,7 @@ function touchingWall(a)
             wall.x = 0
             wall.y = 0
             wall.r = 0
-            wall.collisionType = "rectangle"
+            wall.collisionType = colTypes.rectangle
             if collide(wall,a) then
                 return true
             end
@@ -498,8 +528,8 @@ function resolveWall(a)
             wall.x = 0
             wall.y = 0
             wall.r = 0
-            wall.collisionType = "rectangle"
-            wall.collisionType = "rectangle"
+            wall.collisionType = colTypes.rectangle
+
             if collide(a, wall) then
                 local wallLength = wall.hitbox.x2 - wall.hitbox.x1
                 local wallHeight = wall.hitbox.y2 - wall.hitbox.y1

@@ -7,18 +7,22 @@ function Player:new(x,y)
     self.xv = 0
     self.yv = 0
     self.speed = 180
-
+    
     self.colour = mix(elements["plasma"], elements["earth"])
-    self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
-    -- self.hitbox = makeHitpoly({{x=1,y=1},{x=60,y=7},{x=11,y=80}},self)
+    self.hitbox = makeHitbox(xy(0, 0), xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
+    -- self.hitbox = makeHitpoly({xy(50,0), xy(62,35), xy(100,35), xy(69,57), xy(81,95), xy(50,73), xy(19,95), xy(31,57), xy(0,35), xy(38,35)},self)
     -- self.collisionType="sat"
     self.eyes = Eyes(self)
     self.wand = Wand(self)
 
+    -- self.r = degtorad(45)
+    self.past = {}
+    self.past.x = self.x
+    self.past.y = self.y
+
 end
 
 function Player:update(dt)
-    
     self.xv = 0
     self.yv = 0
 
@@ -35,7 +39,7 @@ function Player:update(dt)
         self.xv = self.xv + (self.speed * dt)
     end
     
-    self.past = {}
+
     self.past.x = self.x
     self.past.y = self.y
 
@@ -46,7 +50,7 @@ function Player:update(dt)
 
     self.wand:update(dt)
     self.eyes:update()
-    
+
 end
 
 function Player:draw()

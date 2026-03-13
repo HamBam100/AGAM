@@ -1,7 +1,7 @@
 colTypes = {rectangle = "rectangle", circle = "circle", sat = "sat"}
 
 function drawHitbox(obj)
-    love.graphics.polygon("line", fromXY_XYToXYXY(makeVertices(obj)))
+    love.graphics.polygon("line", fromXY_XYToXYXY(updateVertices(obj)))
 
 end
 
@@ -36,12 +36,22 @@ function fromXYXYTo_XY_XY(vertices)
 
 end
 
-function findMinVert(verts,cntby)
-    cntby = cntby or 1
-    local newverts = fromXY_XYToXYXY(verts)
-    local min = newverts[cntby]
+function boxTox1x2y1y2(a)
+    local updated = updateVertices(a)
+    local box = {}
+    box.x1 = updated[1].x
+    box.y1 = updated[1].y
+    box.x2 = updated[3].x
+    box.y2 = updated[3].y
+    return box
+end
 
-    for i=1, #newverts, cntby do
+function findMinVert(verts,start)
+    start = start or 1
+    local newverts = fromXY_XYToXYXY(verts)
+    local min = newverts[start]
+
+    for i=start, #newverts, 2 do
         if newverts[i] < min then
             min = newverts[i]
         end
@@ -50,12 +60,12 @@ function findMinVert(verts,cntby)
     return min
 end
 
-function findMaxVert(verts,cntby)
-    cntby = cntby or 1
+function findMaxVert(verts,start)
+    start = start or 1
     local newverts = fromXY_XYToXYXY(verts)
-    local max = newverts[cntby]
+    local max = newverts[start]
 
-    for i=1, #newverts, cntby do
+    for i=start, #newverts, 2 do
         if newverts[i] > max then
             max = newverts[i]
         end
@@ -94,7 +104,7 @@ function centroid(polygon) -- from https://stackoverflow.com/questions/75699024/
     x = x / (6 * signed_area)
     y = y / (6 * signed_area)
     
-    print(x)
+
     return x, y
 
 end
@@ -110,59 +120,49 @@ function rotatePoint(px, py, ox, oy, angle)
 
 end
 
-function makeHitbox(x1,y1,x2,y2,obj)
+function rotateVertices(vert, obj)
+
+    local vertices = vert
+
+    if obj.r ~= 0 then
+        local pivotX = (obj.x or 0)
+        local pivotY = (obj.y or 0)
+        for i=1, #vertices do
+            vertices[i].x, vertices[i].y = rotatePoint(vertices[i].x,vertices[i].y,pivotX,pivotY,obj.r)
+        end
+    end
+
+    return vertices
+end
+
+function makeHitbox(point1,point2, obj)
     local hitbox = {}
-    local obj = obj or {}
+    obj = obj or {ox=0,oy=0}
+
     local ox = obj.ox or 0
     local oy = obj.oy or 0
-    
-    hitbox.x1 = x1 - ox --left
-    hitbox.y1 = y1 - oy --top
-    hitbox.x2 = x2 - ox --right
-    hitbox.y2 = y2 - oy --bottom
+
+    hitbox = {{x=point1.x - ox, y=point1.y - oy}, {x=point2.x - ox, y=point1.y - oy}, {x=point2.x - ox, y=point2.y - oy}, {x=point1.x - ox, y=point2.y - oy}}
 
     return hitbox
 
 end
 
-function makeHitpoly(poly, obj)
-    local hitbox = poly
-    
-    -- Initialize to first point, not zero!
-    local minx = poly[1].x
-    local miny = poly[1].y
-    local maxx = poly[1].x
-    local maxy = poly[1].y
-    
-    for i = 1, #poly do
-        if poly[i].x < minx then minx = poly[i].x end
-        if poly[i].x > maxx then maxx = poly[i].x end
-        if poly[i].y < miny then miny = poly[i].y end
-        if poly[i].y > maxy then maxy = poly[i].y end
+function makeHitpoly(poly)
+    local newox, newoy = centroid(poly)
+    for i=1, #poly do
+        poly[i].x = poly[i].x - newox
+        poly[i].y = poly[i].y - newoy
     end
-    
-    obj.ox, obj.oy = centroid(poly)
-    
-    return hitbox
 
-end
-
-function updateBox(obj)
-    local box = {}
-
-    box.y1 = obj.y + obj.hitbox.y1
-    box.y2 = obj.y + obj.hitbox.y2
-
-    box.x1 = obj.x + obj.hitbox.x1
-    box.x2 = obj.x + obj.hitbox.x2
-
-    return box
+    return poly
 
 end
 
 function collideBasic(a,b)
-    local box1 = updateBox(a)
-    local box2 = updateBox(b)
+    local box1 = boxTox1x2y1y2(a)
+    local box2 = boxTox1x2y1y2(b)
+
     if box1.x1 >= box2.x2 or box1.x2 <= box2.x1 or box1.y1 >= box2.y2 or box1.y2 <= box2.y1 then
         return false
     end
@@ -182,7 +182,8 @@ function collideBasicBoxCircle(a,b)
     if a.collisionType == colTypes.circle then
         return collideBasicBoxCircle(b,a)
     end
-    local box = updateBox(a)
+
+    local box = boxTox1x2y1y2(a)
 
     local closestX = math.max(box.x1, math.min(b.x, box.x2))
     local closestY = math.max(box.y1, math.min(b.y, box.y2))
@@ -196,32 +197,22 @@ function collideBasicBoxCircle(a,b)
 
 end
 
-function makeVertices(obj)
+function updateVertices(obj)
     local vertices = {}
-    if obj.collisionType == colTypes.rectangle then
-        local hitbox = updateBox(obj)
 
-        vertices = {
-        xy(hitbox.x1,hitbox.y1),
-        xy(hitbox.x2,hitbox.y1),
-        xy(hitbox.x2,hitbox.y2),
-        xy(hitbox.x1,hitbox.y2)}
-    else
-        
-        for i=1, #obj.hitbox do
-            vertices[i] = {}
-            vertices[i].x = obj.hitbox[i].x + obj.x - obj.ox
-            vertices[i].y = obj.hitbox[i].y + obj.y - obj.oy
-        end
+    obj.x = obj.x or 0
+    obj.y = obj.y or 0
+    obj.ox = obj.ox or 0
+    obj.oy = obj.oy or 0
+    obj.r = obj.r or 0
+
+    for i=1, #obj.hitbox do
+        vertices[i] = {}
+        vertices[i].x = obj.hitbox[i].x + obj.x
+        vertices[i].y = obj.hitbox[i].y + obj.y
     end
 
-    if obj.r ~= 0 then
-        local pivotX = (obj.x or 0)
-        local pivotY = (obj.y or 0)
-        for i=1, #vertices do
-            vertices[i].x, vertices[i].y = rotatePoint(vertices[i].x,vertices[i].y,pivotX,pivotY,obj.r)
-        end
-    end
+    vertices = rotateVertices(vertices, obj)
 
     return vertices
 
@@ -241,19 +232,42 @@ function makeEdges(vertices)
     end
     return edges
 
-end 
+end
 
 function makePolygon(obj)
     local a = {}
-    a.vertex = makeVertices(obj)
+    a.vertex = updateVertices(obj)
     a.edge = makeEdges(a.vertex)
     return a
 
 end
 
+function project(verticies, axis)
+    local min
+    local max
+
+    for i=1, #verticies do
+
+        local dot = verticies[i].x *
+            axis.x +
+            verticies[i].y *
+            axis.y
+
+            if max == nil or dot > max then
+                max = dot
+            end
+            if min == nil or dot < min then
+                min = dot
+            end
+
+    end
+
+    return min, max
+end
+
 function collideSAT(objA, objB)
-    polygonA = makePolygon(objA)
-    polygonB = makePolygon(objB)
+    local polygonA = makePolygon(objA)
+    local polygonB = makePolygon(objB)
     local perpendicularStack = {}
 
     for i = 1, #polygonA.edge,1 do
@@ -267,38 +281,11 @@ function collideSAT(objA, objB)
     end
 
     for i = 1, #perpendicularStack, 1 do 
-        local amin = nil
-        local amax = nil
-        local bmin = nil
-        local bmax = nil
-        for j = 1, #polygonA.vertex, 1 do
-        local dot = polygonA.vertex[j].x *
-            perpendicularStack[i].x +
-            polygonA.vertex[j].y *
-            perpendicularStack[i].y
-        
-            if amax == nil or dot > amax then
-                amax = dot
-            end
-            if amin == nil or dot < amin then
-                amin = dot
-            end
 
-        end
+        local axis = perpendicularStack[i]
+        local amin, amax = project(polygonA.vertex, axis)
+        local bmin, bmax = project(polygonB.vertex, axis)
 
-        for j = 1, #polygonB.vertex, 1 do
-        local dot = polygonB.vertex[j].x *
-            perpendicularStack[i].x +
-            polygonB.vertex[j].y *
-            perpendicularStack[i].y
-        
-            if bmax == nil or dot > bmax then
-                bmax = dot
-            end
-            if bmin == nil or dot < bmin then
-                bmin = dot
-            end
-        end
         if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then 
             return false
         end
@@ -317,14 +304,12 @@ function collideSATBoxCircle(objA, objB)
 
     local perpendicularStack = {}
 
-    -- Add normals from polygon edges
     for i = 1, #polygonA.edge do
         local e = polygonA.edge[i]
         local perpendicularLine = xy(-e.y, e.x)
         table.insert(perpendicularStack, perpendicularLine)
     end
 
-    -- find closest vertex on polygon to circle center
     local cx, cy = objB.x, objB.y
     local closestIdx = 1
     local closestDist = nil
@@ -340,36 +325,24 @@ function collideSATBoxCircle(objA, objB)
     end
     local v = polygonA.vertex[closestIdx]
     local axis = xy(v.x - cx, v.y - cy)
-    -- avoid zero-length axis
+
     if not (axis.x == 0 and axis.y == 0) then
         table.insert(perpendicularStack, axis)
     end
 
-
-    -- Test overlaps on all axes
     for i = 1, #perpendicularStack do
         local axis = perpendicularStack[i]
 
-        local amin, amax = nil, nil
-        -- project polygon (polygonA)
-        for j = 1, #polygonA.vertex do
-            local v = polygonA.vertex[j]
-            local dot = v.x * axis.x + v.y * axis.y
-            if amax == nil or dot > amax then amax = dot end
-            if amin == nil or dot < amin then amin = dot end
-        end
+        local amin, amax = project(polygonA.vertex, axis)
 
         local bmin, bmax = nil, nil
 
-        -- project circle onto axis: center projection +/- radius * |axis|
         local centerDot = objB.x * axis.x + objB.y * axis.y
         local axisLen = math.sqrt(axis.x * axis.x + axis.y * axis.y)
         local r = objB.radius * axisLen
         bmin = centerDot - r
         bmax = centerDot + r
 
-
-        -- overlap check
         if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then
             return false
         end
@@ -389,23 +362,15 @@ function collide(a,b)
     local aIsRectangle = a.collisionType == colTypes.rectangle and a.r == 0
     local bIsRectangle = b.collisionType == colTypes.rectangle and b.r == 0
 
-    -- print("A "..a.collisionType)
-    -- print("A "..a.r)
-    -- print("B "..b.collisionType)
-    -- print("B "..b.r)
-
-    -- print(aIsRectangle)
-    -- print(bIsRectangle)
-
     local aIsSat = not (aIsCircle or aIsRectangle) 
     local bIsSat = not (bIsCircle or bIsRectangle) 
 
     if aIsSat then
-        aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(makeVertices(a)))
+        aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))
     end
 
     if bIsSat then
-        bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(makeVertices(b)))
+        bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(b)))
     end
 
     if aIsCircle or bIsCircle then
@@ -426,7 +391,7 @@ function collide(a,b)
                 end
 
                 local polygons = splitPolygons(theConcave.hitbox)
-                
+
                 for _, polygon in ipairs(polygons) do
                     local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
                     if collideSATBoxCircle(concavePoly,theCircle) then
@@ -440,10 +405,10 @@ function collide(a,b)
             end
         end
     elseif aIsRectangle and bIsRectangle then
-        
+
         return collideBasic(a, b)
     end
-    
+
     if aIsConcave or bIsConcave then
         if aIsConcave and bIsConcave then
             local polygonsa = splitPolygons(a.hitbox)
@@ -460,7 +425,7 @@ function collide(a,b)
             end
             return false
         else
-            
+
             local theConvex
             local theConcave
             if aIsConcave then
@@ -474,7 +439,7 @@ function collide(a,b)
             end
 
             local polygons = splitPolygons(theConcave.hitbox)
-            
+
             for _, polygon in ipairs(polygons) do
                 local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
                 if collideSAT(concavePoly,theConvex) then
@@ -490,12 +455,16 @@ function collide(a,b)
 end
 
 function wasVert(a, b)
-    return a.past.x + a.hitbox.x1 < b.x + b.hitbox.x2 and a.past.x + a.hitbox.x2 > b.x + b.hitbox.x1
+    local boxb = boxTox1x2y1y2(b)
+
+    return a.past.x + a.hitbox[1].x < b.x + boxb.x2 and a.past.x + a.hitbox[3].x > b.x + boxb.x1
 
 end
 
 function wasHori(a, b)
-    return a.past.y + a.hitbox.y1 < b.y + b.hitbox.y2 and a.past.y + a.hitbox.y2 > b.y + b.hitbox.y1
+    local boxb = boxTox1x2y1y2(b)
+
+    return a.past.y + a.hitbox[1].y < b.y + boxb.y2 and a.past.y + a.hitbox[3].y > b.y + boxb.y1
 
 end
 
@@ -519,11 +488,51 @@ function touchingWall(a)
 
 end
 
-function resolveWall(a)
+function resolveWallBasic(a)
+    if level.colliders then
+        local wall = {}
+        wall.x = 0
+        wall.y = 0
+        wall.r = 0
+        wall.collisionType = colTypes.rectangle
+        for i=1, #level.colliders do
+
+            wall.hitbox = level.colliders[i]
+
+            if collide(a, wall) then
+                local box = boxTox1x2y1y2(a)
+                local wallbox = boxTox1x2y1y2(wall)
+
+                local wallLength = wallbox.x2 - wallbox.x1
+                local wallHeight = wallbox.y2 - wallbox.y1
+
+                if wasVert(a, wall) then
+                    if a.y < wallbox.y1 + wallHeight/2 then
+                        a.y = a.y + (wallbox.y1 - box.y2)
+                    else
+                        a.y = a.y + (wallbox.y2 - box.y1)
+                    end
+
+                elseif wasHori(a, wall) then
+                    if a.x < wallbox.x1 + wallLength/2 then
+                        a.x = a.x + (wallbox.x1 - box.x2)
+                    else
+                        a.x = a.x + (wallbox.x2 - box.x1)
+                    end
+
+                end
+            end
+
+        end
+    end
+
+end
+
+function resolveWallSAT(a)
     if level.colliders then
         for i=1, #level.colliders do
+
             local wall = {}
-            
             wall.hitbox = level.colliders[i]
             wall.x = 0
             wall.y = 0
@@ -531,27 +540,161 @@ function resolveWall(a)
             wall.collisionType = colTypes.rectangle
 
             if collide(a, wall) then
-                local wallLength = wall.hitbox.x2 - wall.hitbox.x1
-                local wallHeight = wall.hitbox.y2 - wall.hitbox.y1
+                local mtv = SATmtv(a, wall)
+                if mtv then
+                    a.x = a.x - mtv.x
+                    a.y = a.y - mtv.y
+                end
 
-                local playerLength = a.hitbox.x2 - a.hitbox.x1
-                local playerHeight = a.hitbox.y2 - a.hitbox.y1
-                if wasVert(a, wall) then
-                    if a.y < wall.hitbox.y1 + wallHeight/2 then
-                        a.y = wall.hitbox.y1 - a.hitbox.y2
-                    else
-                        a.y = wall.hitbox.y2 + a.hitbox.y2
-                    end
-                elseif wasHori(a, wall) then
-                    if a.x < wall.hitbox.x1 + wallLength/2 then
-                        a.x = wall.hitbox.x1 - a.hitbox.x2
-                    else
-                        a.x = wall.hitbox.x2 - a.hitbox.x1
+            end
+
+        end
+    end
+end
+
+function resolveWall(a)
+    local IsConcave = false
+
+    local IsCircle = a.collisionType == colTypes.circle
+
+    local IsRectangle = a.collisionType == colTypes.rectangle and a.r == 0
+
+
+    local IsSat = not (IsCircle or IsRectangle) 
+
+
+    if IsSat then
+        IsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))
+    end
+
+    if IsRectangle then
+        resolveWallBasic(a)
+    elseif IsSat then
+        if IsConcave then
+            local polygons = splitPolygons(a.hitbox)
+
+            for _, polygon in ipairs(polygons) do
+                local concavePoly = {x = a.x, y = a.y, r = a.r, hitbox = polygon, collisionType = a.collisionType, ox = a.ox, oy = a.oy}
+
+
+                if level.colliders then
+                    for i=1, #level.colliders do
+
+                        local wall = {}
+                        wall.hitbox = level.colliders[i]
+                        wall.x = 0
+                        wall.y = 0
+                        wall.r = 0
+                        wall.collisionType = colTypes.rectangle
+
+                        if collide(concavePoly, wall) then
+                            local mtv = SATmtv(concavePoly, wall)
+                            if mtv then
+                                a.x = a.x - mtv.x
+                                a.y = a.y - mtv.y
+                            end
+
+                        end
+
                     end
                 end
             end
+        else
+            resolveWallSAT(a)
         end
     end
-    return
 
+end
+
+function getOverlap(a,b)
+    return math.min(a.max, b.max) - math.max(a.min, b.min)
+
+end
+
+function polygonCenter(vertices)
+    local cx, cy = 0, 0
+    for i = 1, #vertices do
+        cx = cx + vertices[i].x
+        cy = cy + vertices[i].y
+    end
+    cx = cx / #vertices
+    cy = cy / #vertices
+    return cx, cy
+
+end
+
+function SATmtv(objA, objB) --https://web.archive.org/web/20240423192531/https://www.codezealot.org/archives/55/#sat-mtv
+
+    local overlap
+    local smallest
+
+    local polygonA = makePolygon(objA)
+    local polygonB = makePolygon(objB)
+    local perpendicularStack = {}
+
+    local function addAxis(e)
+        local axis = xy(-e.y, e.x)
+        local len = math.sqrt(axis.x * axis.x + axis.y * axis.y)
+        if len ~= 0 then
+            axis.x = axis.x / len
+            axis.y = axis.y / len
+            table.insert(perpendicularStack, axis)
+        end
+    end
+
+    for i = 1, #polygonA.edge,1 do
+        addAxis(polygonA.edge[i])
+    end
+
+    for i = 1, #polygonB.edge,1 do
+        addAxis(polygonB.edge[i])
+    end
+
+    for i = 1, #polygonA.edge,1 do
+            local axis = xy(-polygonA.edge[i].y, polygonA.edge[i].x)
+            local len = math.sqrt(axis.x * axis.x + axis.y * axis.y)
+            axis.x = axis.x / len
+            axis.y = axis.y / len
+            local perpendicularLine = axis
+            table.insert(perpendicularStack, perpendicularLine)
+    end
+
+    for i = 1, #polygonB.edge,1 do
+        local axis = xy(-polygonB.edge[i].y, polygonB.edge[i].x)
+        local len = math.sqrt(axis.x * axis.x + axis.y * axis.y)
+        axis.x = axis.x / len
+        axis.y = axis.y / len
+        local perpendicularLine = axis
+        table.insert(perpendicularStack, perpendicularLine)
+    end
+
+    for i = 1, #perpendicularStack, 1 do 
+        local axis = perpendicularStack[i]
+        local amin, amax = project(polygonA.vertex, axis)
+        local bmin, bmax = project(polygonB.vertex, axis)
+
+        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then 
+            return false
+        else
+            local oa = {min = amin, max = amax}
+            local ob = {min = bmin, max = bmax}
+            local o = getOverlap(oa,ob)
+            if overlap == nil or o < overlap then
+                overlap = o
+                smallest = perpendicularStack[i]
+            end
+        end
+
+    end
+
+    local ax, ay = polygonCenter(polygonA.vertex)
+    local bx, by = polygonCenter(polygonB.vertex)
+    local dirx = bx - ax
+    local diry = by - ay
+
+    if dirx * smallest.x + diry * smallest.y < 0 then
+        smallest = {x = -smallest.x, y = -smallest.y}
+    end
+
+    return {x = smallest.x * overlap, y = smallest.y * overlap}
 end

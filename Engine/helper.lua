@@ -85,14 +85,22 @@ function getSafeArea(offset)
     if level and level.safeArea then
         local random = randomFloat(0,1,10)
         local cumlative = 0
-        local selectedArea
-        for i, area in ipairs(level.safeArea) do
+        local preupdate = {}
+        local selectedArea = {}
+        for _, area in ipairs(level.safeArea) do
             cumlative = cumlative + area.chance
             if cumlative > random then
-                selectedArea = area
+                selectedArea.hitbox = area
                 break
             end
         end
+
+        selectedArea.x = 0
+        selectedArea.y = 0
+        selectedArea.r = 0
+        selectedArea.collisionType = colTypes.rectangle
+        
+        selectedArea = boxTox1x2y1y2(selectedArea)
         randomx=love.math.random(selectedArea.x1,selectedArea.x2)
         randomy=love.math.random(selectedArea.y1,selectedArea.y2)
         if randomx > selectedArea.x2 - offset then 

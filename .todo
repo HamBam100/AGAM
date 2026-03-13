@@ -4,7 +4,7 @@ alt-enter to create box, alt-d to make complete
 
 
 Urgent:
-    ☐ add support for isVert and isHori with all collision
+    ✔ add support for isVert and isHori with all collision @done(26-03-13 19:34)
     ☐ merge tilemap layers collision
 
 General:

@@ -122,8 +122,9 @@ function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
                             tilemap[l][y - 1 + j][x - 1 + k].checked = true
                         end
                     end
-                    local collider = makeHitbox((x - 1)* tileWidth, (y - 1)* tileHeight, ( x - 1 + width) * tileHeight, ( y - 1 + height)* tileHeight)
-                    
+
+                    local collider = makeHitbox(xy((x - 1) * tileWidth, (y - 1) * tileHeight), xy((x - 1 + width) * tileWidth, (y - 1 + height) * tileHeight))
+
                     table.insert(createdcolliders, collider)
                 end
             end
@@ -215,8 +216,9 @@ function Tiler:generateSafeArea(loadedtilemap, filemaxwidth, filemaxheight)
                         tilemap[y - 1 + j][x - 1 + k].checked = true
                     end
                 end
-                local area = makeHitbox((x - 1)* tileWidth, (y - 1)* tileHeight, ( x - 1 + width) * tileHeight, ( y - 1 + height)* tileHeight)
-                area.area = width*height
+                local area = makeHitbox(xy((x - 1) * tileWidth, (y - 1) * tileHeight), xy((x - 1 + width) * tileWidth, (y - 1 + height) * tileHeight))
+
+                area.area = width * height
                 table.insert(createdAreas, area)
                 end
             end

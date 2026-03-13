@@ -10,8 +10,7 @@ function Enemy:new(x, y, sprite)
     self.speed = 70
     self.hp = 1
     self.inv = {cooldown = 0, duration = 0.1}
-    
-    self.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
+    self.hitbox = makeHitbox(xy(0, 0), xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
 
 end
 

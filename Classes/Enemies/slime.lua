@@ -44,8 +44,8 @@ function Slime:update(dt)
     
 
     if self.inv.cooldown <= 0 then
-        for j, p in ipairs(updateables.projectiles) do
-            if collide(self,p) then
+        for _, p in ipairs(updateables.projectiles) do
+            if collide(self, p) then
                 self.hp = self.hp - 1
                 self.inv.cooldown = self.inv.duration
                 
@@ -76,7 +76,7 @@ function Slime:jump(dt)
         local yv = math.sin(rotation)
 
         local target = {x = 0, y = 0}
-        target.hitbox = makeHitbox(0,0,self.sprite:getWidth(),self.sprite:getHeight(),self)
+        target.hitbox = makeHitbox(xy(0, 0), xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
         target.ox = self.ox
         target.oy = self.oy
         target.r = self.r

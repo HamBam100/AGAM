@@ -47,29 +47,28 @@ function gameinit()
     updateables.enemies = createUpdateableContainer()
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
-    
+
     level = Scene("walls.lua")
     Render.addObjectToLayer("Background", level)
-    
+
     spawn(Player(256,256), updateables.players, "Game")
-    -- spawn(Slime(), updateables.enemies, "Game")
+
     spawn(Mouse(), updateables.mouse, "UI")
 
     local x,y = getSafeArea(16)
     spawn(Slime(x, y), updateables.enemies, "Game")
-    
 
     if multiplayer then
         spawn(RemotePlayer(100), updateables.remotePlayers, "Game")
     end
-    
+
 end
 
 function editorinit()
     Networking.quit()
 
     Render.reset()
-    
+
     love.mouse.setVisible(true)
 
     Render.createLayer("Background") -- 1
@@ -79,7 +78,7 @@ function editorinit()
 
     state = "editor"
     debug = false
-    
+
     updateables = nil
     updateables = {}
     timers = {}
@@ -97,7 +96,7 @@ function editorinit()
 end
 
 function love.update(dt)
-    
+
     mousex, mousey = GameWindow.getMousePosition()
 
     for _, timer in ipairs(timers) do
@@ -120,16 +119,16 @@ function love.update(dt)
             debug = not debug
         end
 
-        for i, update in pairs(updateables) do
+        for _, update in pairs(updateables) do
             update:update(dt)
         end
-        
+
         Render.sortitems()
-    end 
+    end
 
     if state == "editor" then
 
-        for i, update in pairs(updateables) do
+        for _, update in pairs(updateables) do
             update:update(dt)
         end
 
@@ -140,14 +139,16 @@ end
 function love.draw()
     GameWindow.start()
     if state == "game" then
-        
+
         level:draw()
         Render.drawLayers()
 
         debugtext = {
             {name = "FPS: ", data = love.timer.getFPS()},
             {name = "Slime: ", data = #updateables.enemies},
-            {name = "State: ", data = state}    
+            {name = "State: ", data = state},
+            {name = "x: ", data = updateables.players[1].x},
+            {name = "y: ", data = updateables.players[1].y}    
         }
         for i, text in ipairs(debugtext) do
             love.graphics.print(text.name..text.data,10,i*11)
@@ -184,7 +185,7 @@ function love.keypressed(k)
     if k == "]" then
         editorinit()
     end
-    
+
     if k == "o" then
         love.window.setMode(620, 480, {resizable=true, vsync=false, msaa = 0})
     end

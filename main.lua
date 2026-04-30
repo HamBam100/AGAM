@@ -52,15 +52,12 @@ function gameinit()
     Render.addObjectToLayer("Background", level)
 
     spawn(Player(256,256), updateables.players, "Game")
+    localPlayer = updateables.players[1]
 
     spawn(Mouse(), updateables.mouse, "UI")
 
     local x,y = getSafeArea(16)
     spawn(Slime(x, y), updateables.enemies, "Game")
-
-    if multiplayer then
-        spawn(RemotePlayer(100), updateables.remotePlayers, "Game")
-    end
 
 end
 
@@ -108,7 +105,7 @@ function love.update(dt)
             Networking.update()
         end
 
-        virtualMouseUpdate(updateables.players[1])
+        virtualMouseUpdate(localPlayer)
 
         if bindPressed(keybinds.space) then
             local x,y = getSafeArea(16)
@@ -147,8 +144,8 @@ function love.draw()
             {name = "FPS: ", data = love.timer.getFPS()},
             {name = "Slime: ", data = #updateables.enemies},
             {name = "State: ", data = state},
-            {name = "x: ", data = updateables.players[1].x},
-            {name = "y: ", data = updateables.players[1].y}    
+            {name = "x: ", data = localPlayer.x},
+            {name = "y: ", data = localPlayer.y}    
         }
         for i, text in ipairs(debugtext) do
             love.graphics.print(text.name..text.data,10,i*11)

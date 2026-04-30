@@ -234,7 +234,7 @@ function Networking.update()
 end
 
 function Networking.playerSend()
-    local plrtosend = updateables.players[1]
+    local plrtosend = localPlayer
     local sendingData = {type = "playerPacket", id = mySteamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
     local serialized = Sir.dumps(sendingData)
     return serialized

@@ -40,9 +40,6 @@ function Slime:update(dt)
         self:jump(dt)
     end
 
-
-    
-
     if self.inv.cooldown <= 0 then
         for _, p in ipairs(updateables.projectiles) do
             if collide(self, p) then
@@ -53,15 +50,16 @@ function Slime:update(dt)
             end
         end
     end
-    
+
     if not self.jumping then
         resolveWall(self)
     end
+    
 end
 
 function Slime:jump(dt)
     if not self.jumping then
-        local closestPlayer =  {x=mousex,y=mousey} --or updateables.players[1]
+        local closestPlayer =  {x=mousex,y=mousey} --or localPlayer
         local smallestDistance = getDistance(self, closestPlayer)
         for i, currentPlayer in ipairs(updateables.players) do
             if getDistance(self, currentPlayer) < smallestDistance then
@@ -94,7 +92,7 @@ function Slime:jump(dt)
             target.x = target.x + (xv * self.range) / accuracy 
             target.y = target.y + (yv * self.range) / accuracy
             resolveWall(target)
-            if collide(self,updateables.players[1]) then
+            if collide(self, localPlayer) then
                 break
             end
         end

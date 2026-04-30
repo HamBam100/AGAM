@@ -455,16 +455,38 @@ function collide(a,b)
 end
 
 function wasVert(a, b)
-    local boxb = boxTox1x2y1y2(b)
+    if not a.past or not a.past.x or not a.past.y then
+        a.past = {x = a.x, y = a.y}
+    end
+    
+    if not b.past or not b.past.x or not b.past.y then
+        b.past = {x = b.x, y = b.y}
+    end
 
-    return a.past.x + a.hitbox[1].x < b.x + boxb.x2 and a.past.x + a.hitbox[3].x > b.x + boxb.x1
+    local apast = {x = a.past.x, y = a.past.y, ox = a.ox, oy = a.oy, hitbox = a.hitbox}
+    local bpast = {x = b.past.x, y = b.past.y, ox = b.ox, oy = b.oy, hitbox = b.hitbox}
+    local boxa = boxTox1x2y1y2(apast)
+    local boxb = boxTox1x2y1y2(bpast)
+
+    return boxa.x1 < boxb.x2 and boxa.x2 > boxb.x1
 
 end
 
 function wasHori(a, b)
-    local boxb = boxTox1x2y1y2(b)
+    if not a.past or not a.past.x or not a.past.y then
+        a.past = {x = a.x, y = a.y}
+    end
+    
+    if not b.past or not b.past.x or not b.past.y then
+        b.past = {x = b.x, y = b.y}
+    end
 
-    return a.past.y + a.hitbox[1].y < b.y + boxb.y2 and a.past.y + a.hitbox[3].y > b.y + boxb.y1
+    local apast = {x = a.past.x, y = a.past.y, ox = a.ox, oy = a.oy, hitbox = a.hitbox}
+    local bpast = {x = b.past.x, y = b.past.y, ox = b.ox, oy = b.oy, hitbox = b.hitbox}
+    local boxa = boxTox1x2y1y2(apast)
+    local boxb = boxTox1x2y1y2(bpast)
+
+    return boxa.y1 <  boxb.y2 and boxa.y2 > boxb.y1
 
 end
 
@@ -488,6 +510,32 @@ function touchingWall(a)
 
 end
 
+function resolveBasic(a, b)
+    if collide(a, b) then
+        local aBox = boxTox1x2y1y2(a)
+        local bBox = boxTox1x2y1y2(b)
+
+        local bBoxLength = bBox.x2 - bBox.x1
+        local bBoxHeight = bBox.y2 - bBox.y1
+
+        if wasVert(a, b) then
+            if a.y < bBox.y1 + bBoxHeight/2 then
+                a.y = a.y + (bBox.y1 - aBox.y2)
+            else
+                a.y = a.y + (bBox.y2 - aBox.y1)
+            end
+
+        elseif wasHori(a, b) then
+            if a.x < bBox.x1 + bBoxLength/2 then
+                a.x = a.x + (bBox.x1 - aBox.x2)
+            else
+                a.x = a.x + (bBox.x2 - aBox.x1)
+            end
+
+        end
+    end
+end
+
 function resolveWallBasic(a)
     if level.colliders then
         local wall = {}
@@ -496,36 +544,23 @@ function resolveWallBasic(a)
         wall.r = 0
         wall.collisionType = colTypes.rectangle
         for i=1, #level.colliders do
-
             wall.hitbox = level.colliders[i]
 
-            if collide(a, wall) then
-                local box = boxTox1x2y1y2(a)
-                local wallbox = boxTox1x2y1y2(wall)
-
-                local wallLength = wallbox.x2 - wallbox.x1
-                local wallHeight = wallbox.y2 - wallbox.y1
-
-                if wasVert(a, wall) then
-                    if a.y < wallbox.y1 + wallHeight/2 then
-                        a.y = a.y + (wallbox.y1 - box.y2)
-                    else
-                        a.y = a.y + (wallbox.y2 - box.y1)
-                    end
-
-                elseif wasHori(a, wall) then
-                    if a.x < wallbox.x1 + wallLength/2 then
-                        a.x = a.x + (wallbox.x1 - box.x2)
-                    else
-                        a.x = a.x + (wallbox.x2 - box.x1)
-                    end
-
-                end
-            end
-
+            resolveBasic(a, wall)
         end
     end
 
+end
+
+function resolveSAT(a, b)
+    if collide(a, b) then
+        local mtv = SATmtv(a, b)
+        if mtv then
+            a.x = a.x - mtv.x
+            a.y = a.y - mtv.y
+        end
+
+    end
 end
 
 function resolveWallSAT(a)
@@ -539,14 +574,7 @@ function resolveWallSAT(a)
             wall.r = 0
             wall.collisionType = colTypes.rectangle
 
-            if collide(a, wall) then
-                local mtv = SATmtv(a, wall)
-                if mtv then
-                    a.x = a.x - mtv.x
-                    a.y = a.y - mtv.y
-                end
-
-            end
+            resolveSAT(a, wall)
 
         end
     end

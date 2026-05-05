@@ -587,9 +587,7 @@ function resolveWall(a)
 
     local IsRectangle = a.collisionType == colTypes.rectangle and a.r == 0
 
-
     local IsSat = not (IsCircle or IsRectangle) 
-
 
     if IsSat then
         IsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))

@@ -4,8 +4,11 @@ alt-enter to create box, alt-d to make complete
 
 
 Urgent:
+    ☐ Change collide() into a getCollisionType() function (Returning SAT, Basic, BasicCircle, SATCircle), that can be used on all collision checks such as resolveWall() and collide()
+    
     ✔ add support for isVert and isHori with all collision @done(26-03-13 19:34)
     ☐ merge tilemap layers collision
+    
 
 General:
     ✔ Add folder class @done(25-12-22 16:39)

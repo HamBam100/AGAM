@@ -194,6 +194,10 @@ function love.keypressed(k)
         Networking.quit()
     end
 
+    if k == "escape" then
+        love.event.quit()
+    end
+
 end
 
 function love.quit()

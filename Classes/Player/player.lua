@@ -14,7 +14,8 @@ function Player:new(x,y)
     -- self.collisionType="sat"
     self.eyes = Eyes(self)
     self.wand = Wand(self)
-
+    self.attributes = {}
+    -- table.insert(self.attributes, Shield(self))
     -- self.r = degtorad(45)
     self.past = {}
     self.past.x = self.x
@@ -50,6 +51,9 @@ function Player:update(dt)
 
     self.wand:update(dt)
     self.eyes:update()
+    for _, attribute in ipairs(self.attributes) do
+        attribute:update(dt)
+    end
 
 end
 
@@ -64,10 +68,16 @@ function Player:draw()
 
     self.eyes:draw()
     self.wand:draw()
+
+    for _, attribute in ipairs(self.attributes) do
+        attribute:draw()
+    end
+    
     
     if debug then
         printcoords(self.x,self.y,-25,tileHeight,1)
         drawHitbox(self)
+
     end
 
 end

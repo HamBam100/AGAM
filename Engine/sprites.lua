@@ -5,6 +5,7 @@ Sprite = {
     ["Eyes"] = love.graphics.newImage("Sprites/Player Eyes.png"),
     ["Folder"] = love.graphics.newImage("Sprites/Folder.png"),
     ["Cursor"] = love.graphics.newImage("Sprites/Cursor.png"),
+    ["Shield"] = love.graphics.newImage("Sprites/Shield.png")
 }
 
 local tilesheetdir = "Sprites/Tilemap/tilesheet.png"

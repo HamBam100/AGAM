@@ -27,6 +27,7 @@
         Player = require "Classes.Player.player"
         Wand = require "Classes.Player.wand"
         Eyes = require "Classes.Player.eyes"
+        Shield = require "Classes.Player.shield"
 
     --Enemy componets
         Enemy = require "Classes.Enemies.enemy"

@@ -27,6 +27,9 @@ function Player:update(dt)
     self.xv = 0
     self.yv = 0
 
+    self.past.x = self.x
+    self.past.y = self.y
+
     if bindPressed(keybinds.up) then
         self.yv = self.yv - (self.speed * dt)
     end
@@ -39,10 +42,6 @@ function Player:update(dt)
     if bindPressed(keybinds.right) then
         self.xv = self.xv + (self.speed * dt)
     end
-    
-
-    self.past.x = self.x
-    self.past.y = self.y
 
     self.x = self.x + self.xv
     self.y = self.y + self.yv

@@ -1,5 +1,197 @@
 colTypes = {rectangle = "rectangle", circle = "circle", sat = "sat"}
 
+local collisionMethods = {}
+
+collisionMethods["Basic"] = function(a,b)
+    local box1 = boxTox1x2y1y2(a)
+    local box2 = boxTox1x2y1y2(b)
+
+    if box1.x1 >= box2.x2 or box1.x2 <= box2.x1 or box1.y1 >= box2.y2 or box1.y2 <= box2.y1 then
+        return false
+    end
+    return true
+    
+end
+
+collisionMethods["BasicBoxCircle"] = function(a,b)
+    if a.collisionType == colTypes.circle then
+        return collisionMethods["BasicBoxCircle"](b,a)
+    end
+
+    local box = boxTox1x2y1y2(a)
+
+    local closestX = math.max(box.x1, math.min(b.x, box.x2))
+    local closestY = math.max(box.y1, math.min(b.y, box.y2))
+
+    local corner = {x = closestX, y = closestY}
+
+    if getDistance(corner,b) > b.radius then
+        return false
+    end
+    return true
+
+end
+
+collisionMethods["Circle"] = function(a,b)
+    if getDistance(a,b) > a.radius + b.radius then
+        return false
+    end
+    return true
+    
+end
+
+collisionMethods["SAT"] = function(a,b)
+    local polygonA = makePolygon(a)
+    local polygonB = makePolygon(b)
+    local perpendicularStack = {}
+
+    for i = 1, #polygonA.edge,1 do
+        local perpendicularLine = xy(-polygonA.edge[i].y, polygonA.edge[i].x)
+        table.insert(perpendicularStack, perpendicularLine)
+    end
+
+    for i = 1, #polygonB.edge,1 do
+        local perpendicularLine = xy(-polygonB.edge[i].y, polygonB.edge[i].x)
+        table.insert(perpendicularStack, perpendicularLine)
+    end
+
+    for i = 1, #perpendicularStack, 1 do 
+
+        local axis = perpendicularStack[i]
+        local amin, amax = project(polygonA.vertex, axis)
+        local bmin, bmax = project(polygonB.vertex, axis)
+
+        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then 
+            return false
+        end
+
+    end
+
+    return true
+
+end
+
+collisionMethods["SATBoxCircle"] = function(a,b)
+    if a.collisionType == colTypes.circle then
+        return collisionMethods["SATBoxCircle"](b,a)
+    end
+    local polygonA = makePolygon(a)
+
+    local perpendicularStack = {}
+
+    for i = 1, #polygonA.edge do
+        local e = polygonA.edge[i]
+        local perpendicularLine = xy(-e.y, e.x)
+        table.insert(perpendicularStack, perpendicularLine)
+    end
+
+    local cx, cy = b.x, b.y
+    local closestIdx = 1
+    local closestDist = nil
+    for i = 1, #polygonA.vertex do
+        local v = polygonA.vertex[i]
+        local dx = v.x - cx
+        local dy = v.y - cy
+        local d = dx*dx + dy*dy
+        if closestDist == nil or d < closestDist then
+            closestDist = d
+            closestIdx = i
+        end
+    end
+    local v = polygonA.vertex[closestIdx]
+    local axis = xy(v.x - cx, v.y - cy)
+
+    if not (axis.x == 0 and axis.y == 0) then
+        table.insert(perpendicularStack, axis)
+    end
+
+    for i = 1, #perpendicularStack do
+        local axis = perpendicularStack[i]
+
+        local amin, amax = project(polygonA.vertex, axis)
+
+        local bmin, bmax = nil, nil
+
+        local centerDot = b.x * axis.x + b.y * axis.y
+        local axisLen = math.sqrt(axis.x * axis.x + axis.y * axis.y)
+        local r = b.radius * axisLen
+        bmin = centerDot - r
+        bmax = centerDot + r
+
+        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then
+            return false
+        end
+    end
+
+    return true
+
+end
+
+collisionMethods["SATConcaveCircle"] = function(a,b)
+    local theCircle
+    local theConcave
+
+    if a.collisionType == colTypes.circle then
+        theCircle = a
+        theConcave = b
+    else
+        theCircle = b
+        theConcave = a
+    end
+
+    local polygons = splitPolygons(theConcave.hitbox)
+
+    for _, polygon in ipairs(polygons) do
+        local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
+        if collisionMethods["SATBoxCircle"](concavePoly,theCircle) then
+            return true
+        end
+    end
+
+    return false
+
+end
+
+collisionMethods["SATConcaveConcave"] = function(a,b)
+    local polygonsa = splitPolygons(a.hitbox)
+    local polygonsb = splitPolygons(b.hitbox)
+
+    for _, polygona in ipairs(polygonsa) do
+        local concavePolya = {x = a.x, y = a.y, r = a.r, hitbox = polygona, collisionType = a.collisionType, ox = a.ox, oy = a.oy}
+        for _, polygonb in ipairs(polygonsb) do
+            local concavePolyb = {x = b.x, y = b.y, r = b.r, hitbox = polygonb, collisionType = b.collisionType, ox = b.ox, oy = b.oy}
+            if collisionMethods["SAT"](concavePolya,concavePolyb) then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+collisionMethods["SATConcaveConvex"] = function(a,b)
+    local theConvex
+    local theConcave
+    if not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a))) then
+        theConvex = b
+        theConcave = a
+
+    else
+        theConvex = a
+        theConcave = b
+
+    end
+
+    local polygons = splitPolygons(theConcave.hitbox)
+
+    for _, polygon in ipairs(polygons) do
+        local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
+        if collisionMethods["SAT"](concavePoly,theConvex) then
+            return true
+        end
+    end
+    return false
+end
+
 function drawHitbox(obj)
     love.graphics.polygon("line", fromXY_XYToXYXY(updateVertices(obj)))
 
@@ -159,44 +351,6 @@ function makeHitpoly(poly)
 
 end
 
-function collideBasic(a,b)
-    local box1 = boxTox1x2y1y2(a)
-    local box2 = boxTox1x2y1y2(b)
-
-    if box1.x1 >= box2.x2 or box1.x2 <= box2.x1 or box1.y1 >= box2.y2 or box1.y2 <= box2.y1 then
-        return false
-    end
-    return true
-
-end
-
-function collideCircle(a,b)
-    if getDistance(a,b) > a.radius + b.radius then
-        return false
-    end
-    return true
-
-end
-
-function collideBasicBoxCircle(a,b)
-    if a.collisionType == colTypes.circle then
-        return collideBasicBoxCircle(b,a)
-    end
-
-    local box = boxTox1x2y1y2(a)
-
-    local closestX = math.max(box.x1, math.min(b.x, box.x2))
-    local closestY = math.max(box.y1, math.min(b.y, box.y2))
-
-    local corner = {x = closestX, y = closestY}
-
-    if getDistance(corner,b) > b.radius then
-        return false
-    end
-    return true
-
-end
-
 function updateVertices(obj)
     local vertices = {}
 
@@ -265,94 +419,10 @@ function project(verticies, axis)
     return min, max
 end
 
-function collideSAT(objA, objB)
-    local polygonA = makePolygon(objA)
-    local polygonB = makePolygon(objB)
-    local perpendicularStack = {}
-
-    for i = 1, #polygonA.edge,1 do
-        local perpendicularLine = xy(-polygonA.edge[i].y, polygonA.edge[i].x)
-        table.insert(perpendicularStack, perpendicularLine)
-    end
-
-    for i = 1, #polygonB.edge,1 do
-        local perpendicularLine = xy(-polygonB.edge[i].y, polygonB.edge[i].x)
-        table.insert(perpendicularStack, perpendicularLine)
-    end
-
-    for i = 1, #perpendicularStack, 1 do 
-
-        local axis = perpendicularStack[i]
-        local amin, amax = project(polygonA.vertex, axis)
-        local bmin, bmax = project(polygonB.vertex, axis)
-
-        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then 
-            return false
-        end
-
-    end
-
-    return true
-
-end
-
-function collideSATBoxCircle(objA, objB)
-    if objA.collisionType == colTypes.circle then
-        return collideSATBoxCircle(objB,objA)
-    end
-    local polygonA = makePolygon(objA)
-
-    local perpendicularStack = {}
-
-    for i = 1, #polygonA.edge do
-        local e = polygonA.edge[i]
-        local perpendicularLine = xy(-e.y, e.x)
-        table.insert(perpendicularStack, perpendicularLine)
-    end
-
-    local cx, cy = objB.x, objB.y
-    local closestIdx = 1
-    local closestDist = nil
-    for i = 1, #polygonA.vertex do
-        local v = polygonA.vertex[i]
-        local dx = v.x - cx
-        local dy = v.y - cy
-        local d = dx*dx + dy*dy
-        if closestDist == nil or d < closestDist then
-            closestDist = d
-            closestIdx = i
-        end
-    end
-    local v = polygonA.vertex[closestIdx]
-    local axis = xy(v.x - cx, v.y - cy)
-
-    if not (axis.x == 0 and axis.y == 0) then
-        table.insert(perpendicularStack, axis)
-    end
-
-    for i = 1, #perpendicularStack do
-        local axis = perpendicularStack[i]
-
-        local amin, amax = project(polygonA.vertex, axis)
-
-        local bmin, bmax = nil, nil
-
-        local centerDot = objB.x * axis.x + objB.y * axis.y
-        local axisLen = math.sqrt(axis.x * axis.x + axis.y * axis.y)
-        local r = objB.radius * axisLen
-        bmin = centerDot - r
-        bmax = centerDot + r
-
-        if not((amin <= bmax and amin >= bmin) or (bmin <= amax and bmin >= amin)) then
-            return false
-        end
-    end
-
-    return true
-
-end
-
-function collide(a,b)
+-- Terrible nightmare evil nested if else statment
+function getCollisionType(a,b)
+    local foundCollisionType
+    
     local aIsConcave = false
     local bIsConcave = false
 
@@ -365,93 +435,58 @@ function collide(a,b)
     local aIsSat = not (aIsCircle or aIsRectangle) 
     local bIsSat = not (bIsCircle or bIsRectangle) 
 
-    if aIsSat then
-        aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))
-    end
+   
+    if aIsSat or bIsSat then
+        if aIsSat then
+            aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))
+        end
 
-    if bIsSat then
-        bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(b)))
+        if bIsSat then
+            bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(b)))
+        end
+    elseif aIsRectangle and bIsRectangle then
+        foundCollisionType = "Basic"
+        return foundCollisionType
     end
 
     if aIsCircle or bIsCircle then
-        if aIsCircle and bIsCircle then
-            return collideCircle(a,b)
-        elseif (aIsCircle and bIsRectangle) or (bIsCircle and aIsRectangle)   then
-            return collideBasicBoxCircle(a,b)
+        if (aIsCircle and bIsRectangle) or (bIsCircle and aIsRectangle)   then
+            foundCollisionType = "BasicBoxCircle"
+            return foundCollisionType
         else
-            if aIsConcave or bIsConcave then
-                local theCircle
-                local theConcave
-                if aIsCircle then
-                    theCircle = a
-                    theConcave = b
-                elseif bIsCircle then
-                    theCircle = b
-                    theConcave = a
-                end
-
-                local polygons = splitPolygons(theConcave.hitbox)
-
-                for _, polygon in ipairs(polygons) do
-                    local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
-                    if collideSATBoxCircle(concavePoly,theCircle) then
-                        return true
-                    end
-                end
-                return false
+            if aIsConcave or bIsConcave then   
+                foundCollisionType = "SATConcaveCircle"
+                return foundCollisionType
 
             else
-                return collideSATBoxCircle(a,b)
+                foundCollisionType = "SATBoxCircle"
+                return foundCollisionType
             end
         end
-    elseif aIsRectangle and bIsRectangle then
 
-        return collideBasic(a, b)
+        foundCollisionType = "Circle"
+        return foundCollisionType
     end
 
     if aIsConcave or bIsConcave then
         if aIsConcave and bIsConcave then
-            local polygonsa = splitPolygons(a.hitbox)
-            local polygonsb = splitPolygons(b.hitbox)
+            foundCollisionType = "SATConcaveConcave"
+            return foundCollisionType
 
-            for _, polygona in ipairs(polygonsa) do
-                local concavePolya = {x = a.x, y = a.y, r = a.r, hitbox = polygona, collisionType = a.collisionType, ox = a.ox, oy = a.oy}
-                for _, polygonb in ipairs(polygonsb) do
-                    local concavePolyb = {x = b.x, y = b.y, r = b.r, hitbox = polygonb, collisionType = b.collisionType, ox = b.ox, oy = b.oy}
-                    if collideSAT(concavePolya,concavePolyb) then
-                        return true
-                    end
-                end
-            end
-            return false
         else
-
-            local theConvex
-            local theConcave
-            if aIsConcave then
-                theConvex = b
-                theConcave = a
-
-            elseif bIsConcave then
-                theConvex = a
-                theConcave = b
-
-            end
-
-            local polygons = splitPolygons(theConcave.hitbox)
-
-            for _, polygon in ipairs(polygons) do
-                local concavePoly = {x = theConcave.x, y = theConcave.y, r = theConcave.r, hitbox = polygon, collisionType = theConcave.collisionType, ox = theConcave.ox, oy = theConcave.oy}
-                if collideSAT(concavePoly,theConvex) then
-                    return true
-                end
-            end
-            return false
+            foundCollisionType = "SATConcaveConvex"
+            return foundCollisionType
         end
     else
-        return collideSAT(a, b)
+        foundCollisionType = "SAT"
+        return foundCollisionType
     end
 
+end
+
+function collide(a,b)
+    local newCollisionType = getCollisionType(a,b)
+    return collisionMethods[newCollisionType](a,b)
 end
 
 function wasVert(a, b)

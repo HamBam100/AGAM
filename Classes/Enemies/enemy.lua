@@ -11,12 +11,16 @@ function Enemy:new(x, y, sprite)
     self.hp = 1
     self.inv = {cooldown = 0, duration = 0.1}
     self.hitbox = makeHitbox(xy(0, 0), xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
+    -- self.r = degtorad(45)
 
 end
 
 function Enemy:update(dt)
     self.xv = 0
     self.yv = 0
+
+    self.past.x = self.x
+    self.past.y = self.y
 
     if self.inv.cooldown > 0 then
         self.inv.cooldown = self.inv.cooldown - (1 * dt)
@@ -39,17 +43,13 @@ function Enemy:update(dt)
     
         self.xv = xv
         self.yv = yv
+        
     end
-
-    self.past = {}
-    self.past.x = self.x
-    self.past.y = self.y
 
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
 
     resolveWall(self)
-    
     
     for j, p in ipairs(updateables.projectiles) do
         if collide(self,p) then

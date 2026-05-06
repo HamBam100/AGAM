@@ -9,25 +9,23 @@ function Slime:new(x, y)
     self.range = 60
     self.hp = 4
 
-    self.past = {}
-    self.past.x = self.x
-    self.past.y = self.y
     resolveWall(self)
     
 end
 
 function Slime:update(dt)
 
+    self.past.x = self.x
+    self.past.y = self.y
+
     if self.hp <= 0 then
         poof(self, updateables.enemies, "Game")
+        return
     end
 
     if self.inv.cooldown > 0 then
         self.inv.cooldown = self.inv.cooldown - (1 * dt)
     end
-
-    self.past.x = self.x
-    self.past.y = self.y
     
     if not self.jumping then
         if self.jumpTimer.cooldown > 0 then

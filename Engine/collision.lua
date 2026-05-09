@@ -436,7 +436,10 @@ function getCollisionType(a,b)
     local bIsSat = not (bIsCircle or bIsRectangle) 
 
    
-    if aIsSat or bIsSat then
+    if aIsRectangle and bIsRectangle then
+        foundCollisionType = "Basic"
+
+    elseif aIsSat or bIsSat then
         if aIsSat then
             aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))
         end
@@ -444,44 +447,31 @@ function getCollisionType(a,b)
         if bIsSat then
             bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(b)))
         end
-    elseif aIsRectangle and bIsRectangle then
-        foundCollisionType = "Basic"
-        return foundCollisionType
-    end
 
-    if aIsCircle or bIsCircle then
+    elseif aIsCircle or bIsCircle then
+        foundCollisionType = "Circle"
         if (aIsCircle and bIsRectangle) or (bIsCircle and aIsRectangle)   then
             foundCollisionType = "BasicBoxCircle"
-            return foundCollisionType
         else
             if aIsConcave or bIsConcave then   
                 foundCollisionType = "SATConcaveCircle"
-                return foundCollisionType
-
             else
                 foundCollisionType = "SATBoxCircle"
-                return foundCollisionType
             end
         end
 
-        foundCollisionType = "Circle"
-        return foundCollisionType
-    end
-
-    if aIsConcave or bIsConcave then
+    elseif aIsConcave or bIsConcave then
         if aIsConcave and bIsConcave then
             foundCollisionType = "SATConcaveConcave"
-            return foundCollisionType
-
         else
             foundCollisionType = "SATConcaveConvex"
-            return foundCollisionType
         end
     else
         foundCollisionType = "SAT"
-        return foundCollisionType
     end
 
+    return foundCollisionType
+    
 end
 
 function collide(a,b)

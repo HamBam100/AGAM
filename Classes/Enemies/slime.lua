@@ -4,12 +4,18 @@ function Slime:new(x, y)
     Slime.super.new(self,x,y,Sprite["Slime"])
 
     self.jumpTimer = {cooldown = 0, duration = 1.2}
+    self.easeOutTimer = {cooldown = 0, duration = 0.8}
+    self.easeOut = false
     self.jumping = false
     self.speed = 90
     self.range = 60
     self.hp = 4
 
     resolveWall(self)
+    self.anim = {}
+    self.anim.start = 1
+    self.anim.stop = 0.5
+    self.anim.current = self.anim.start
     
 end
 
@@ -28,12 +34,18 @@ function Slime:update(dt)
     end
     
     if not self.jumping then
+        
         if self.jumpTimer.cooldown > 0 then
             self.jumpTimer.cooldown = self.jumpTimer.cooldown - (1 * dt)
+            self.anim.current = easeInBack(self.anim.stop, self.anim.start, (self.jumpTimer.cooldown / self.jumpTimer.duration))
         else
             self.jumpTimer.cooldown = self.jumpTimer.duration
+            self.easeOutTimer.cooldown = self.easeOutTimer.duration
+            self.easeOut = true
+
             self:jump(dt)
         end
+        
     else
         self:jump(dt)
     end
@@ -95,14 +107,21 @@ function Slime:jump(dt)
             end
         end
 
-        
-        
-
         self.target = {x = target.x, y = target.y}
 
         self.jumping = true
     end
 
+    if self.easeOut == true then
+        if self.easeOutTimer.cooldown > 0 then
+            self.easeOutTimer.cooldown = self.easeOutTimer.cooldown - (1 * dt)
+            self.anim.current = easeInBack(self.anim.start, self.anim.stop, (self.easeOutTimer.cooldown / self.easeOutTimer.duration))
+        else
+            self.anim.current = self.anim.start
+
+            self.easeOut = false
+        end
+    end
     local rotation = math.atan2(self.target.y - self.y, self.target.x - self.x) 
 
     self.xv = math.cos(rotation)
@@ -125,8 +144,13 @@ function Slime:draw()
     if self.inv.cooldown > 0 then
         love.graphics.setShader(flashShader)
     end
+
+    -- if not self.jumping and self.jumpTimer.cooldown > 0 then
+    --     love.graphics.setShader(tintShader)
+    --     tintShader:send("targetColour", colour.white)
+    -- end
     love.graphics.setColor(1,1,1,0.9)
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1,1,self.ox, self.oy)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
     love.graphics.setShader()
     love.graphics.setColor(1,1,1,1)
     if debug then

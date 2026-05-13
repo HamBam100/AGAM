@@ -2,7 +2,7 @@ function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
     love.graphics.setLineStyle("rough")
 
-    multiplayer = true
+    multiplayer = false
 
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
@@ -38,7 +38,6 @@ function gameinit()
     end
     collectgarbage("collect")
 
-    multiplayer = true
     if multiplayer then
         Networking.start()
     end
@@ -188,10 +187,12 @@ function love.keypressed(k)
     end
 
     if k == "u" then
-        Networking.addToSendQueue({type = "closePacket", packet = {}})
-        Networking.update()
+        if multiplayer then
+            Networking.addToSendQueue({type = "closePacket", packet = {}})
+            Networking.update()
 
-        Networking.quit()
+            Networking.quit()
+        end
     end
 
     if k == "escape" then
@@ -201,9 +202,10 @@ function love.keypressed(k)
 end
 
 function love.quit()
-    Networking.addToSendQueue({type = "closePacket", packet = {}})
-    Networking.update()
+    if multiplayer then
+        Networking.addToSendQueue({type = "closePacket", packet = {}})
+        Networking.update()
 
-    Networking.quit()
-
+        Networking.quit()
+    end
 end

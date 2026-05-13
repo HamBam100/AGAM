@@ -2,6 +2,10 @@ alt-enter to create box, alt-d to make complete
 
 Urgent:
     ☐ merge tilemap layers collision
+    uid generator
+    raycaster
+    better tilemap collison generator
+
 
 General:
     ☐ Add partical system

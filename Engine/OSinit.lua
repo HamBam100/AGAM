@@ -12,5 +12,9 @@ elseif OS == "Linux" then
     package.cpath = package.cpath .. ';' .. dir .. '/Steam/Linux/?.so'
 end
 
-Steam = require "luasteam"
-Steam.init()
+
+
+if multiplayer then
+    Steam = require "luasteam"
+    Steam.init()
+end

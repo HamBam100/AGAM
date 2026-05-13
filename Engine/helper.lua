@@ -13,6 +13,15 @@ function lerp(a,b,t)
 
 end
 
+
+function easeInBack(a,b,t)
+    local c1 = 1.70158
+    local c3 = c1 + 1
+    local tweened = c3 * t * t * t - c1 * t * t
+    return lerp(a,b,tweened)
+
+end
+
 function round(a,b)
     place = b or 0
     place = 10^(place)

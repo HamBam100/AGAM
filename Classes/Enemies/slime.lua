@@ -3,6 +3,7 @@ local Slime = Enemy:extend()
 function Slime:new(x, y)
     Slime.super.new(self,x,y,Sprite["Slime"])
 
+    self.prepareTimer = {cooldown = 0, duration = 1.0}
     self.jumpTimer = {cooldown = 0, duration = 1.2}
     self.easeOutTimer = {cooldown = 0, duration = 0.8}
     self.easeOut = false

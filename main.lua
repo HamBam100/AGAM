@@ -61,7 +61,9 @@ function gameinit()
 end
 
 function editorinit()
-    Networking.quit()
+    if multiplayer then
+        Networking.quit()
+    end
 
     Render.reset()
 

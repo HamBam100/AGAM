@@ -3,10 +3,18 @@ local Slime = Enemy:extend()
 function Slime:new(x, y)
     Slime.super.new(self,x,y,Sprite["Slime"])
 
-    self.prepareTimer = {cooldown = 0, duration = 1.0}
-    self.jumpTimer = {cooldown = 0, duration = 1.2}
-    self.easeOutTimer = {cooldown = 0, duration = 0.8}
-    self.easeOut = false
+    self.timingEnabled = true
+    self.timing = Timing({
+        {0.4,       --Prepare
+        function () end,
+        function () end},
+        {1.2,       --Ease In
+        function(progress) self.anim.current = easeInBack(self.anim.stop, self.anim.start, progress) end, 
+        function() self.jumpingStart = true  end},
+        {0.8,       --Ease Out
+        function (progress) self.anim.current = easeInBack(self.anim.start, self.anim.stop, progress) end,
+        function () self.anim.current = self.anim.start self.timingEnabled = false end}     
+    })
     self.jumping = false
     self.speed = 90
     self.range = 60
@@ -34,21 +42,14 @@ function Slime:update(dt)
         self.inv.cooldown = self.inv.cooldown - (1 * dt)
     end
     
-    if not self.jumping then
-        
-        if self.jumpTimer.cooldown > 0 then
-            self.jumpTimer.cooldown = self.jumpTimer.cooldown - (1 * dt)
-            self.anim.current = easeInBack(self.anim.stop, self.anim.start, (self.jumpTimer.cooldown / self.jumpTimer.duration))
-        else
-            self.jumpTimer.cooldown = self.jumpTimer.duration
-            self.easeOutTimer.cooldown = self.easeOutTimer.duration
-            self.easeOut = true
-
-            self:jump(dt)
-        end
-        
+    if not (self.jumping or self.jumpingStart) then
+        self.timingEnabled = true
     else
         self:jump(dt)
+    end
+
+    if self.timingEnabled then
+        self.timing:update(dt)
     end
 
     if self.inv.cooldown <= 0 then
@@ -69,7 +70,7 @@ function Slime:update(dt)
 end
 
 function Slime:jump(dt)
-    if not self.jumping then
+    if self.jumpingStart then
         local closestPlayer =  {x=mousex,y=mousey} --or localPlayer
         local smallestDistance = getDistance(self, closestPlayer)
         for i, currentPlayer in ipairs(updateables.players) do
@@ -111,18 +112,9 @@ function Slime:jump(dt)
         self.target = {x = target.x, y = target.y}
 
         self.jumping = true
+        self.jumpingStart = false
     end
 
-    if self.easeOut == true then
-        if self.easeOutTimer.cooldown > 0 then
-            self.easeOutTimer.cooldown = self.easeOutTimer.cooldown - (1 * dt)
-            self.anim.current = easeInBack(self.anim.start, self.anim.stop, (self.easeOutTimer.cooldown / self.easeOutTimer.duration))
-        else
-            self.anim.current = self.anim.start
-
-            self.easeOut = false
-        end
-    end
     local rotation = math.atan2(self.target.y - self.y, self.target.x - self.x) 
 
     self.xv = math.cos(rotation)
@@ -157,8 +149,10 @@ function Slime:draw()
     if debug then
         drawHitbox(self)
         -- love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
-        love.graphics.circle("line",self.target.x,self.target.y, 5)
-        love.graphics.line(self.target.x,self.target.y,self.x,self.y)
+        if self.target then
+            love.graphics.circle("line",self.target.x,self.target.y, 5)
+            love.graphics.line(self.target.x,self.target.y,self.x,self.y)
+        end
     end
 
 end

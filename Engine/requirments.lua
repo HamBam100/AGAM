@@ -11,6 +11,7 @@
     require "Engine.sprites"
 
     Timer = require "Engine.timer"
+    Timing = require "Engine.timing"
     if multiplayer then
         Networking = require "Engine.steamNet"
     end

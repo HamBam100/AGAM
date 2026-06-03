@@ -2,7 +2,7 @@ local Player = Body2d:extend()
 
 function Player:new(x,y)
     
-    Player.super.new(self,x,y,Sprite.player)
+    Player.super.new(self,x,y,Sprite["Player"])
 
     self.xv = 0
     self.yv = 0

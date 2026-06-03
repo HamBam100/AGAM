@@ -3,7 +3,7 @@ UIElement = require "Classes.UI.UIElement"
 local Folder = UIElement:extend()
 
 function Folder:new(x,y,name,elements)
-    self.sprite = Sprite.folder
+    self.sprite = Sprite["Folder"]
     Folder.super.new(self, x, y, self.sprite:getWidth(), self.sprite:getHeight())
     self.type = "folder"
     self.hover = false

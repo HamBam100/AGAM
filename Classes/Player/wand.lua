@@ -4,7 +4,7 @@ function Wand:new(parent)
     -- Provides object with the variables of player
     self.parent = parent
 
-    Wand.super.new(self,parent.x,parent.y,Sprite.wand)
+    Wand.super.new(self,parent.x,parent.y,Sprite["Wand"])
 
     self.xv = 0
     self.yv = 0

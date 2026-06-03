@@ -1,7 +1,7 @@
 local Slime = Enemy:extend()
 
 function Slime:new(x, y)
-    Slime.super.new(self,x,y,Sprite.slime)
+    Slime.super.new(self,x,y,Sprite["Slime"])
 
     self.timingEnabled = true
     self.timing = Timing({
@@ -25,6 +25,8 @@ function Slime:new(x, y)
     self.anim.start = 1
     self.anim.stop = 0.5
     self.anim.current = self.anim.start
+
+    self.spriteFlash = makeFlashSprite("Sprites/Slime.png")
     
 end
 
@@ -136,21 +138,17 @@ end
 function Slime:draw()
 
     love.graphics.setColor(1,1,1,0.9)
-    local old = love.graphics.getBlendMode()
 
     if self.inv.cooldown > 0 then
         love.graphics.setColor(1,1,1,1)
-        love.graphics.setBlendMode("add")
-        for _ = 1, 20 do
-            love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
-        end
+        love.graphics.draw(self.spriteFlash,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
+        
     else
         love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
     end
 
     love.graphics.setColor(1,1,1,1)
 
-    love.graphics.setBlendMode(old)
     if debug then
         drawHitbox(self)
         -- love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)

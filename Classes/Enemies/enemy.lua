@@ -1,7 +1,7 @@
 local Enemy = Body2d:extend()
 
 function Enemy:new(x, y, sprite)
-    sprite = sprite or Sprite.slime
+    sprite = sprite or Sprite["Slime"]
     Enemy.super.new(self,x,y,sprite)
 
     self.xv = 0

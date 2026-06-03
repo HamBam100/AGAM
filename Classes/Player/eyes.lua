@@ -2,7 +2,7 @@ local Eyes = Body2d:extend()
 
 function Eyes:new(parent)
     -- Provides object with the variables of player
-    Eyes.super.new(self,64,64,Sprite["Eyes"])
+    Eyes.super.new(self,64,64,Sprite.eyes)
     self.parent = parent
     self.xv = 0
     self.yv = 0

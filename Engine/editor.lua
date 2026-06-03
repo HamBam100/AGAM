@@ -82,7 +82,7 @@ function Editor:load(currentfile)
     self:createLayer(1)
     if love.filesystem.getInfo(currentfile) then
         local file = love.filesystem.read(currentfile)
-        local loadedtilemap = Sir.loads(file)
+        local loadedtilemap = Lume.deserialize(file)
 
 
         for i=1, #loadedtilemap do
@@ -355,7 +355,7 @@ function Editor:save()
     end
     local data = savedTilemap
 
-    local serialized = Sir.dumps(data)
+    local serialized = Lume.serialize(data)
     love.filesystem.write(currentfile, serialized)
 
 end

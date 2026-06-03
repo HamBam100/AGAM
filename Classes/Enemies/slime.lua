@@ -1,7 +1,7 @@
 local Slime = Enemy:extend()
 
 function Slime:new(x, y)
-    Slime.super.new(self,x,y,Sprite["Slime"])
+    Slime.super.new(self,x,y,Sprite.slime)
 
     self.timingEnabled = true
     self.timing = Timing({
@@ -135,7 +135,7 @@ end
 
 function Slime:draw()
     if self.inv.cooldown > 0 then
-        love.graphics.setShader(flashShader)
+
     end
 
     -- if not self.jumping and self.jumpTimer.cooldown > 0 then
@@ -144,7 +144,7 @@ function Slime:draw()
     -- end
     love.graphics.setColor(1,1,1,0.9)
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
-    love.graphics.setShader()
+
     love.graphics.setColor(1,1,1,1)
     if debug then
         drawHitbox(self)

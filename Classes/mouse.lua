@@ -1,7 +1,7 @@
 local Mouse = Object:extend()
 
 function Mouse:new()
-    self.sprite = Sprite["Cursor"]
+    self.sprite = Sprite.cursor
     self.x = 0
     self.y = 0
     self.ox = math.floor(self.sprite:getWidth() / 2)

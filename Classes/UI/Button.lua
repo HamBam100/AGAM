@@ -54,8 +54,7 @@ function Button:draw()
     love.graphics.setColor(1,1,1)
 
     if self.hover then
-        love.graphics.setShader(tintShader)
-        tintShader:send("targetColour", self.hoverColour)
+
     end
 
     if self.version == "tilemap" then
@@ -64,7 +63,7 @@ function Button:draw()
         love.graphics.draw(self.sprite,self.x, self.y)
     end
     
-    love.graphics.setShader()
+
 
 end
 

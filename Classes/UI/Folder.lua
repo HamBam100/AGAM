@@ -3,7 +3,7 @@ UIElement = require "Classes.UI.UIElement"
 local Folder = UIElement:extend()
 
 function Folder:new(x,y,name,elements)
-    self.sprite = Sprite["Folder"]
+    self.sprite = Sprite.folder
     Folder.super.new(self, x, y, self.sprite:getWidth(), self.sprite:getHeight())
     self.type = "folder"
     self.hover = false
@@ -69,13 +69,12 @@ function Folder:draw()
     love.graphics.setColor(1,1,1)
     
     if self.hover or self.open then
-        love.graphics.setShader(tintShader)
-        tintShader:send("targetColour", self.hoverColour)
+
     end
 
     love.graphics.draw(self.sprite,self.x, self.y)
     
-    love.graphics.setShader()
+
 
     if self.hover or self.open then
         love.graphics.setColor(0.1,0.1,0.1)

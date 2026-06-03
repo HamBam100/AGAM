@@ -93,13 +93,11 @@ function PlaceableEntity:draw(originx, originy, scale)
     love.graphics.setColor(1,1,1)
 
     if self.hover then
-        love.graphics.setShader(tintShader)
-        tintShader:send("targetColour", self.hoverColour)
+
     end
 
     love.graphics.draw(self.obj.sprite, math.floor(drawx), math.floor(drawy), 0, scale / tileWidth, scale / tileHeight)
-    
-    love.graphics.setShader()
+
 
 end
 

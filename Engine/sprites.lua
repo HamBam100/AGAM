@@ -1,12 +1,12 @@
 Sprite = {
-    ["Slime"] = love.graphics.newImage("Sprites/Slime.png"),
-    ["Player"] = love.graphics.newImage("Sprites/Player.png"),
-    ["Wand"] = love.graphics.newImage("Sprites/Magic Staff.png"),
-    ["Eyes"] = love.graphics.newImage("Sprites/Player Eyes.png"),
-    ["Folder"] = love.graphics.newImage("Sprites/Folder.png"),
-    ["Cursor"] = love.graphics.newImage("Sprites/Cursor.png"),
-    ["Shield"] = love.graphics.newImage("Sprites/Shield.png")
+
 }
+Sprite.slime = love.graphics.newImage("Sprites/Slime.png")
+Sprite.player = love.graphics.newImage("Sprites/Player.png")
+Sprite.wand = love.graphics.newImage("Sprites/Magic Staff.png")
+Sprite.eyes = love.graphics.newImage("Sprites/Player Eyes.png")
+Sprite.cursor = love.graphics.newImage("Sprites/Cursor.png")
+Sprite.folder = love.graphics.newImage("Sprites/Folder.png")
 
 local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
 tilesetimage = love.graphics.newImage(tilesheetdir)

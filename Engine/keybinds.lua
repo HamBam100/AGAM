@@ -1,12 +1,12 @@
 keybinds = {}
 
-keybinds.up = {"keybd:w", "keybd:up", "gamepad:dpup", "analog:lefty:up"}
-keybinds.down = {"keybd:s", "keybd:down", "gamepad:dpdown", "analog:lefty:down"}
+keybinds.up = {"keybd:w", "keybd:up", "gamepad:dpup", "analog:lefty:down"}
+keybinds.down = {"keybd:s", "keybd:down", "gamepad:dpdown", "analog:lefty:up"}
 keybinds.left = {"keybd:a", "keybd:left", "gamepad:dpleft", "analog:leftx:left"}
 keybinds.right = {"keybd:d", "keybd:right", "gamepad:dpright", "analog:leftx:right"}
 keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
 keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
-keybinds.save = {"keybd:e"}
+keybinds.save = {"keybd:e", "gamepad:b"}
 keybinds.space = {"keybd:space", "gamepad:a"}
 keybinds.scrollup = {"wheel:up"}
 keybinds.scrolldown = {"wheel:down"}
@@ -29,39 +29,39 @@ function bindPressed(bind)
         local bindType = string.sub(bind[i], 1, 6)
         local inputType = string.sub(bind[i], 7)
 
-        if bindType == "mouse:" then
+        -- if bindType == "mouse:" then
 
-            local button = tonumber(inputType)
+        --     local button = tonumber(inputType)
 
-            if love.mouse.isDown(button) then
-                inputMode = "keyboard"
-                keyIsDown = true
-                break
-            end
-        end
+        --     if love.mouse.isDown(button) then
+        --         inputMode = "keyboard"
+        --         keyIsDown = true
+        --         break
+        --     end
+        -- end
 
-        if bindType == "wheel:" then
+        -- if bindType == "wheel:" then
             
-            local direction = inputType
+        --     local direction = inputType
 
-            if wheel[direction] then
-                wheel = {up = false, down = false}
-                inputMode = "keyboard"
-                keyIsDown = true
-                break
-            end
-        end
+        --     if wheel[direction] then
+        --         wheel = {up = false, down = false}
+        --         inputMode = "keyboard"
+        --         keyIsDown = true
+        --         break
+        --     end
+        -- end
 
-        if bindType == "keybd:" then
+        -- if bindType == "keybd:" then
 
-            local button = inputType
+        --     local button = inputType
             
-            if love.keyboard.isDown(button) then
-                inputMode = "keyboard"
-                keyIsDown = true
-                break
-            end
-        end
+        --     if love.keyboard.isDown(button) then
+        --         inputMode = "keyboard"
+        --         keyIsDown = true
+        --         break
+        --     end
+        -- end
         
         if joyStick then
 
@@ -143,17 +143,18 @@ function virtualMouseUpdate(obj)
         obj = obj or {x=0,y=0}
         local axisx = joyStick:getGamepadAxis("rightx")
         local axisy = joyStick:getGamepadAxis("righty")
-        if (axisx < 0.5 and axisx > -0.5) and (axisy < 0.5 and axisy > -0.5) then
+        axisy = axisy * -1
+        if (axisx < 0.1 and axisx > -0.1) and (axisy < 0.1 and axisy > -0.1) then
             axisx = previousAxisx
             axisy = previousAxisy
 
         end
 
-        mousex = obj.x + axisx * 100
-        mousey = obj.y + axisy * 100
+        mousex = mousex + (axisx * 20)
+        mousey = mousey + (axisy * 20)
 
-        previousAxisx = axisx
-        previousAxisy = axisy
+        previousAxisx = 0
+        previousAxisy = 0
 
     end
 

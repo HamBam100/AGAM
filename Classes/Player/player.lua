@@ -2,7 +2,7 @@ local Player = Body2d:extend()
 
 function Player:new(x,y)
     
-    Player.super.new(self,x,y,Sprite["Player"])
+    Player.super.new(self,x,y,Sprite.player)
 
     self.xv = 0
     self.yv = 0
@@ -58,12 +58,8 @@ end
 
 function Player:draw()
 
-    love.graphics.setShader(tintPlayerShader)
-    tintPlayerShader:send("targetColour", self.colour)
-
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r,1,1,self.ox,self.oy)
 
-    love.graphics.setShader()
 
     self.eyes:draw()
     self.wand:draw()

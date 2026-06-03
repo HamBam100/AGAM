@@ -1,15 +1,17 @@
+-- local nest = require("nest").init({ console = "3ds" })
+
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
     love.graphics.setLineStyle("rough")
 
     multiplayer = false
 
+    mousex, mousey = 0, 0
+    gameWidth, gameHeight = 640, 360
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
     font:setFilter("nearest", "nearest")
     love.graphics.setFont(font)
-
-    GameWindow.load(640, 360)
 
     virtualMouseStart()
 
@@ -19,7 +21,7 @@ end
 
 function gameinit()
     Render.reset()
-    love.mouse.setVisible(false)
+    -- love.mouse.setVisible(false)
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
@@ -27,7 +29,7 @@ function gameinit()
     Render.createLayer("UI") -- 4
 
     state = "game"
-    debug = true
+    debug = false
     updateables = nil
     updateables = {}
     timers = {}
@@ -35,11 +37,6 @@ function gameinit()
     if level then
         level:removed()
         level = nil
-    end
-    collectgarbage("collect")
-
-    if multiplayer then
-        Networking.start()
     end
 
     updateables.players = createUpdateableContainer()
@@ -50,7 +47,7 @@ function gameinit()
     level = Scene("walls.lua")
     Render.addObjectToLayer("Background", level)
 
-    spawn(Player(256,256), updateables.players, "Game")
+    spawn(Player(100,100), updateables.players, "Game")
     localPlayer = updateables.players[1]
 
     spawn(Mouse(), updateables.mouse, "UI")
@@ -61,18 +58,14 @@ function gameinit()
 end
 
 function editorinit()
-    if multiplayer then
-        Networking.quit()
-    end
-
     Render.reset()
 
-    love.mouse.setVisible(true)
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
     Render.createLayer("Projectiles") -- 3
     Render.createLayer("UI") -- 4
+    Render.createLayer("Mouse") -- 5
 
     state = "editor"
     debug = false
@@ -85,27 +78,20 @@ function editorinit()
         level:removed()
         level = nil
     end
-    collectgarbage("collect")
 
     updateables.ui = createUpdateableContainer()
 
     spawn(Editor(), updateables.ui, "UI")
-
+    spawn(Mouse(), updateables.ui, "Mouse")
 end
 
 function love.update(dt)
-
-    mousex, mousey = GameWindow.getMousePosition()
 
     for _, timer in ipairs(timers) do
         timer:update(dt)
     end
     --Scene:update(dt)
     if state == "game" then
-        if multiplayer then
-            Networking.update()
-        end
-
         virtualMouseUpdate(localPlayer)
 
         if bindPressed(keybinds.space) then
@@ -125,17 +111,18 @@ function love.update(dt)
     end
 
     if state == "editor" then
-
+    virtualMouseUpdate(localPlayer)
         for _, update in pairs(updateables) do
             update:update(dt)
         end
 
     end
 
+
 end
 
 function love.draw()
-    GameWindow.start()
+
     if state == "game" then
 
         level:draw()
@@ -153,61 +140,30 @@ function love.draw()
         end
 
     end
-
+    
     if state == "editor" then
 
         Render.drawLayers()
 
     end
 
-    GameWindow.finish()
-
 end
+function love.gamepadpressed(joystick, button)
+    if button == "leftshoulder" then
+        gameinit()
+    end
 
-function love.resize(w, h)
-    GameWindow.resize()
+    if button == "rightshoulder" then
+        editorinit()
+    end
 end
 
 function love.keypressed(k)
-    if k == "f" then
-        love.window.setFullscreen(not love.window.getFullscreen())
-    end
-    if k == "i" then
-        debug = not debug
-    end
-
     if k == "[" then
         gameinit()
     end
 
     if k == "]" then
         editorinit()
-    end
-
-    if k == "o" then
-        love.window.setMode(620, 480, {resizable=true, vsync=false, msaa = 0})
-    end
-
-    if k == "u" then
-        if multiplayer then
-            Networking.addToSendQueue({type = "closePacket", packet = {}})
-            Networking.update()
-
-            Networking.quit()
-        end
-    end
-
-    if k == "escape" then
-        love.event.quit()
-    end
-
-end
-
-function love.quit()
-    if multiplayer then
-        Networking.addToSendQueue({type = "closePacket", packet = {}})
-        Networking.update()
-
-        Networking.quit()
     end
 end

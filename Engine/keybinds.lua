@@ -1,24 +1,62 @@
 keybinds = {}
 
-keybinds.up = {"keybd:w", "keybd:up", "gamepad:dpup", "analog:lefty:down"}
-keybinds.down = {"keybd:s", "keybd:down", "gamepad:dpdown", "analog:lefty:up"}
-keybinds.left = {"keybd:a", "keybd:left", "gamepad:dpleft", "analog:leftx:left"}
-keybinds.right = {"keybd:d", "keybd:right", "gamepad:dpright", "analog:leftx:right"}
-keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
-keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
-keybinds.save = {"keybd:e", "gamepad:b"}
-keybinds.space = {"keybd:space", "gamepad:a"}
-keybinds.scrollup = {"wheel:up"}
-keybinds.scrolldown = {"wheel:down"}
-keybinds.minus = {"keybd:-"}
-keybinds.plus = {"keybd:="}
-keybinds.one = {"keybd:1"}
-keybinds.two = {"keybd:2"}
-keybinds.debug = {"keybd:p"}
+    local analogleftyup = "analog:lefty:up"
+    local analogleftydown = "analog:lefty:down"
+    local analogrightyup = "analog:righty:up"
+    local analogrightdown = "analog:righty:down"
 
-inputMode = "keyboard"
+    local gamepada = "gamepad:a"
+    local gamepadb = "gamepad:b"
+    local gamepadx = "gamepad:x"
+    local gamepady = "gamepad:y"
 
-wheel = {up = false, down = false}
+    local gamepadleftshoulder = "gamepad:leftshoulder"
+    local gamepadrightshoulder = "gamepad:rightshoulder"
+
+    local analogtriggerleftdown = "analog:triggerleft:down"
+    local analogtriggerrightdown = "analog:triggerright:down"
+    
+
+if love._os == "Windows" then
+
+else
+    analogleftyup = "analog:lefty:down"
+    analogleftydown = "analog:lefty:up"
+    analogrightyup = "analog:righty:down"
+    analogrightdown = "analog:righty:up"
+
+    gamepada = "gamepad:b"
+    gamepadb = "gamepad:a"
+    gamepadx = "gamepad:y"
+    gamepady = "gamepad:x"
+
+    gamepadleftshoulder = "analog:triggerleft:down"
+    gamepadrightshoulder = "analog:triggerright:down"
+
+    analogtriggerleftdown = "gamepad:leftshoulder"
+    analogtriggerrightdown = "gamepad:rightshoulder"
+end
+
+keybinds.up = {"gamepad:dpup", analogleftyup}
+keybinds.down = {"gamepad:dpdown", analogleftydown}
+
+keybinds.left = {"gamepad:dpleft", "analog:leftx:left"}
+keybinds.right = {"gamepad:dpright", "analog:leftx:right"}
+keybinds.shoot = {gamepadx, analogtriggerrightdown}
+keybinds.shootalt = {gamepady, analogtriggerleftdown}
+keybinds.save = {gamepadb}
+keybinds.space = {gamepada}
+keybinds.scrollup = {}
+keybinds.scrolldown = {}
+keybinds.minus = {}
+keybinds.plus = {}
+keybinds.one = {}
+keybinds.two = {}
+keybinds.lb = {gamepadleftshoulder}
+keybinds.rb = {gamepadrightshoulder}
+keybinds.debug = {}
+
+inputMode = "gamepad"
 
 function bindPressed(bind)
     keyIsDown = false
@@ -29,85 +67,47 @@ function bindPressed(bind)
         local bindType = string.sub(bind[i], 1, 6)
         local inputType = string.sub(bind[i], 7)
 
-        -- if bindType == "mouse:" then
+        if string.sub(bind[i], 1, 8) == "gamepad:" then
 
-        --     local button = tonumber(inputType)
-
-        --     if love.mouse.isDown(button) then
-        --         inputMode = "keyboard"
-        --         keyIsDown = true
-        --         break
-        --     end
-        -- end
-
-        -- if bindType == "wheel:" then
+            local button = string.sub(bind[i], 9, -1)
             
-        --     local direction = inputType
+            if joyStick:isGamepadDown(button) then
+                inputMode = "gamepad"
+                keyIsDown = true
+                break
+            end
+        end
 
-        --     if wheel[direction] then
-        --         wheel = {up = false, down = false}
-        --         inputMode = "keyboard"
-        --         keyIsDown = true
-        --         break
-        --     end
-        -- end
+        if string.sub(bind[i], 1, 7) == "analog:" then
+            local newbind = string.sub(bind[i], 8)
 
-        -- if bindType == "keybd:" then
+            local _, bindend = string.find(newbind, ":")
 
-        --     local button = inputType
+            local axis = string.sub(newbind, 1, bindend - 1)
+            local dir = string.sub(newbind, bindend + 1)
             
-        --     if love.keyboard.isDown(button) then
-        --         inputMode = "keyboard"
-        --         keyIsDown = true
-        --         break
-        --     end
-        -- end
-        
-        if joyStick then
+            axis = joyStick:getGamepadAxis(axis)
 
-            if string.sub(bind[i], 1, 8) == "gamepad:" then
-
-                local button = string.sub(bind[i], 9, -1)
-                
-                if joyStick:isGamepadDown(button) then
-                    inputMode = "gamepad"
-                    keyIsDown = true
-                    break
-                end
+            if dir == "up" and axis < -0.5 then
+                keyIsDown = true
+                break
             end
 
-            if string.sub(bind[i], 1, 7) == "analog:" then
-                local newbind = string.sub(bind[i], 8)
-
-                local _, bindend = string.find(newbind, ":")
-
-                local axis = string.sub(newbind, 1, bindend - 1)
-                local dir = string.sub(newbind, bindend + 1)
-                
-                axis = joyStick:getGamepadAxis(axis)
-
-                if dir == "up" and axis < -0.5 then
-                    keyIsDown = true
-                    break
-                end
-
-                if dir == "down" and axis > 0.5 then
-                    keyIsDown = true
-                    break
-                end
-
-                if dir == "left" and axis < -0.5 then
-                    keyIsDown = true
-                    break
-                end
-
-                if dir == "right" and axis > 0.5 then
-                    keyIsDown = true
-                    break
-                end
-                    
+            if dir == "down" and axis > 0.5 then
+                keyIsDown = true
+                break
             end
 
+            if dir == "left" and axis < -0.5 then
+                keyIsDown = true
+                break
+            end
+
+            if dir == "right" and axis > 0.5 then
+                keyIsDown = true
+                break
+            end
+                
         end
 
     end
@@ -127,7 +127,6 @@ function bindHeld(bind)
 
 end
 
-
 function bindSinglePress(bind)
     return bindPressed(bind) and not bindHeld(bind)
 end
@@ -138,37 +137,33 @@ function virtualMouseStart()
 
 end
 
-function virtualMouseUpdate(obj)
+function virtualMouseUpdate(obj, dt)
     if joyStick and inputMode == "gamepad" then
         obj = obj or {x=0,y=0}
         local axisx = joyStick:getGamepadAxis("rightx")
         local axisy = joyStick:getGamepadAxis("righty")
-        axisy = axisy * -1
+
+        if love._os == "Windows" then
+
+        else
+            axisy = axisy * -1
+        end
+        
         if (axisx < 0.1 and axisx > -0.1) and (axisy < 0.1 and axisy > -0.1) then
             axisx = previousAxisx
             axisy = previousAxisy
 
         end
 
-        mousex = mousex + (axisx * 20)
-        mousey = mousey + (axisy * 20)
+        mousex = mousex + (axisx * 600 * dt)
+        mousey = mousey + (axisy * 600 * dt)
 
+        mousex = math.max(0, math.min(topScreenWidth, mousex)) 
+        mousey = math.max(0, math.min(topScreenHeight, mousey)) 
+        
         previousAxisx = 0
         previousAxisy = 0
 
-    end
-
-end
-
-function love.wheelmoved(x, y)
-    if y > 0 then
-        wheel.up = true
-        return
-    end
-
-    if y < 0 then
-        wheel.down = true
-        return
     end
 
 end
@@ -177,13 +172,6 @@ function love.joystickadded(detectedJoyStick)
     joyStick = detectedJoyStick
     inputMode = "gamepad"
     print("added")
-
-end
-
-function love.joystickremoved(detectedJoyStick)
-    joyStick = nil
-    inputMode = "keyboard"
-    print("removed")
 
 end
 

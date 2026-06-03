@@ -11,7 +11,7 @@
     require "Engine.sprites"
 
     Timing = require "Engine.timing"
-
+    Timer = require "Engine.timer"
     Tiler = require "Engine.tiler"
     Scene = require "Engine.scene"
     Layer = require "Engine.layers"

@@ -63,10 +63,11 @@ function Enemy:update(dt)
 end
 
 function Enemy:draw()
-    if self.inv.cooldown > 0 then
-        love.graphics.setShader(flashShader)
-    end
+    
     love.graphics.setColor(1,1,1,0.9)
+    if self.inv.cooldown > 0 then
+
+    end
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1,1,self.ox, self.oy)
     love.graphics.setShader()
     love.graphics.setColor(1,1,1,1)

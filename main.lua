@@ -1,4 +1,6 @@
--- local nest = require("nest").init({ console = "3ds" })
+if love._os == "Windows" then
+    nest = require("nest").init({ console = "3ds" })
+end
 
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
@@ -6,8 +8,12 @@ function love.load()
 
     multiplayer = false
 
-    mousex, mousey = 0, 0
     gameWidth, gameHeight = 640, 360
+
+    topScreenWidth, topScreenHeight = 400, 240
+    bottomScreenWidth, bottomScreenHeight = 320, 240
+
+    mousex, mousey = topScreenWidth / 2, topScreenHeight / 2
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
     font:setFilter("nearest", "nearest")
@@ -20,6 +26,7 @@ function love.load()
 end
 
 function gameinit()
+    mousex, mousey = topScreenWidth / 2, topScreenHeight / 2
     Render.reset()
     -- love.mouse.setVisible(false)
 
@@ -30,6 +37,7 @@ function gameinit()
 
     state = "game"
     debug = false
+
     updateables = nil
     updateables = {}
     timers = {}
@@ -38,13 +46,14 @@ function gameinit()
         level:removed()
         level = nil
     end
+    collectgarbage("collect")
 
     updateables.players = createUpdateableContainer()
     updateables.enemies = createUpdateableContainer()
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
 
-    level = Scene("walls.lua")
+    level = Scene("wallsLume.lua")
     Render.addObjectToLayer("Background", level)
 
     spawn(Player(100,100), updateables.players, "Game")
@@ -58,8 +67,8 @@ function gameinit()
 end
 
 function editorinit()
+    mousex, mousey = topScreenWidth / 2, topScreenHeight / 2
     Render.reset()
-
 
     Render.createLayer("Background") -- 1
     Render.createLayer("Game", true) -- 2
@@ -78,6 +87,7 @@ function editorinit()
         level:removed()
         level = nil
     end
+    collectgarbage("collect")
 
     updateables.ui = createUpdateableContainer()
 
@@ -87,12 +97,21 @@ end
 
 function love.update(dt)
 
+    if bindPressed(keybinds.lb) and not bindHeld(keybinds.lb) then
+        gameinit()
+    end
+
+    if bindPressed(keybinds.rb) and not bindHeld(keybinds.rb) then
+        editorinit()
+    end
+    
     for _, timer in ipairs(timers) do
         timer:update(dt)
     end
-    --Scene:update(dt)
+    -- Scene:update(dt)
     if state == "game" then
-        virtualMouseUpdate(localPlayer)
+        
+        virtualMouseUpdate(localPlayer, dt)
 
         if bindPressed(keybinds.space) then
             local x,y = getSafeArea(16)
@@ -111,20 +130,19 @@ function love.update(dt)
     end
 
     if state == "editor" then
-    virtualMouseUpdate(localPlayer)
+    virtualMouseUpdate(localPlayer, dt)
+
         for _, update in pairs(updateables) do
             update:update(dt)
         end
 
     end
 
-
 end
 
-function love.draw()
-
+function love.draw(screen)
     if state == "game" then
-
+        
         level:draw()
         Render.drawLayers()
 
@@ -140,30 +158,15 @@ function love.draw()
         end
 
     end
-    
-    if state == "editor" then
 
+    if state == "editor" then
         Render.drawLayers()
 
     end
-
-end
-function love.gamepadpressed(joystick, button)
-    if button == "leftshoulder" then
-        gameinit()
+    if screen ~= "bottom" then
+        love.graphics.rectangle("line",0.5,0.5,topScreenWidth - 1,topScreenHeight - 1)
+    else
+        love.graphics.rectangle("line",0.5,0.5,bottomScreenWidth - 1,bottomScreenHeight - 1)
     end
 
-    if button == "rightshoulder" then
-        editorinit()
-    end
-end
-
-function love.keypressed(k)
-    if k == "[" then
-        gameinit()
-    end
-
-    if k == "]" then
-        editorinit()
-    end
 end

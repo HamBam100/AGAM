@@ -134,18 +134,23 @@ function Slime:jump(dt)
 end
 
 function Slime:draw()
-    if self.inv.cooldown > 0 then
 
+    love.graphics.setColor(1,1,1,0.9)
+    local old = love.graphics.getBlendMode()
+
+    if self.inv.cooldown > 0 then
+        love.graphics.setColor(1,1,1,1)
+        love.graphics.setBlendMode("add")
+        for _ = 1, 20 do
+            love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
+        end
+    else
+        love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
     end
 
-    -- if not self.jumping and self.jumpTimer.cooldown > 0 then
-    --     love.graphics.setShader(tintShader)
-    --     tintShader:send("targetColour", colour.white)
-    -- end
-    love.graphics.setColor(1,1,1,0.9)
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
-
     love.graphics.setColor(1,1,1,1)
+
+    love.graphics.setBlendMode(old)
     if debug then
         drawHitbox(self)
         -- love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)

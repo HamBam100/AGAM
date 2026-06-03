@@ -2,7 +2,7 @@ local Editor = Object:extend()
 local numberOfTiles = 21
 Editor.tilesheet = {}
 
-local currentfile = "walls.lua"
+local currentfile = "wallsLume.lua"
 
 local count = 0
 local panspeed = 800

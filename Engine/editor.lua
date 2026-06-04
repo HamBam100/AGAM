@@ -229,25 +229,25 @@ function Editor:update(dt)
         self.origin.y = mousey - self.tileSelection.my * self.scale
     end
 
-    if bindPressed(keybinds.right) then
+    if bindPressed(keybinds.analogright) then
         self.origin.x = self.origin.x - panspeed * dt
     end
 
-    if bindPressed(keybinds.left) then
+    if bindPressed(keybinds.analogleft) then
         self.origin.x = self.origin.x + panspeed * dt
     end
 
-    if bindPressed(keybinds.down) then
+    if bindPressed(keybinds.analogdown) then
         self.origin.y = self.origin.y - panspeed * dt
     end
-    if bindPressed(keybinds.up) then
+    if bindPressed(keybinds.analogup) then
         self.origin.y = self.origin.y + panspeed * dt
     end
     if bindSinglePress(keybinds.save) then
         self:save()
     end
 
-    if bindPressed(keybinds.scrollup) then
+    if bindSinglePress(keybinds.dpadup) then
         if self.scale < 256 then
             self.scale = self.scale + 4
 
@@ -256,7 +256,7 @@ function Editor:update(dt)
         end
     end
 
-    if bindPressed(keybinds.scrolldown) then
+    if bindSinglePress(keybinds.dpaddown) then
         if self.scale > 4 then
             self.scale = self.scale - 4
 
@@ -265,7 +265,7 @@ function Editor:update(dt)
         end
     end
 
-    if bindSinglePress(keybinds.minus) then
+    if bindSinglePress(keybinds.dpadleft) then
         if self.currentLayer > 1 then
             print(countArray(self.tilemap[self.currentLayer]))
             if countArray(self.tilemap[self.currentLayer])==0 then
@@ -276,7 +276,7 @@ function Editor:update(dt)
         end
     end
 
-    if bindSinglePress(keybinds.plus) then
+    if bindSinglePress(keybinds.dpadright) then
         self.currentLayer = self.currentLayer + 1
         if self.currentLayer > #self.tilemap then
             self:createLayer(self.currentLayer)

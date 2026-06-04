@@ -17,7 +17,7 @@
     Layer = require "Engine.layers"
     Render = require "Engine.render"
     Keybinds = require "Engine.keybinds"
-    -- GameWindow = require "Engine.gameWindow"
+    GameWindow = require "Engine.gameWindow"
 
 
 -- Classes

@@ -166,3 +166,7 @@ function mix(clr1, clr2)
     return mixed
 
 end
+
+function constraint(value, min, max)
+    return math.max(min, math.min(max, value)) 
+end

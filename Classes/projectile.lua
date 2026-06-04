@@ -18,9 +18,6 @@ function Projectile:new(i)
     self.collisionType = colTypes.circle
     
     self.speed = 350
-    if multiplayer then
-        Networking.addToSendQueue({type = "projectilePacket", packet = {x = self.x, y = self.y, xv = self.xv, yv = self.yv}})
-    end
 
 end
 

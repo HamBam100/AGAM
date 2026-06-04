@@ -3,6 +3,7 @@ Editor = require "Engine.editor"
 local Tiler = Object:extend()
 
 function Tiler:new(mapfile)
+    local oldcanvas = love.graphics.getCanvas()
     if love.filesystem.getInfo(mapfile) then
 
         self.x = 0
@@ -10,7 +11,7 @@ function Tiler:new(mapfile)
             
         local file = love.filesystem.read(mapfile)
         -- local loadedtilemap = Sir.loads(file)
-        local loadedtilemap =Lume.deserialize(file)
+        local loadedtilemap = Lume.deserialize(file)
 
         local filemaxwidth = 1
         local filemaxheight = 1
@@ -38,6 +39,7 @@ function Tiler:new(mapfile)
         filemaxheight = filemaxheight * tileHeight
 
         self.canvas = love.graphics.newCanvas(filemaxwidth,filemaxheight)
+        
         love.graphics.setCanvas(self.canvas)
 
         for i=1, #loadedtilemap do
@@ -55,7 +57,7 @@ function Tiler:new(mapfile)
         print("invalid file: " .. mapfile)
     end
         
-    love.graphics.setCanvas()
+    love.graphics.setCanvas(oldcanvas)
 
 end
 

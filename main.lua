@@ -12,9 +12,13 @@ function love.load()
 
     topScreenWidth, topScreenHeight = 400, 240
     bottomScreenWidth, bottomScreenHeight = 320, 240
+    
 
-    mousex, mousey = topScreenWidth / 2, topScreenHeight / 2
+    mousex, mousey = gameWidth / 2, gameHeight / 2
+
     require "Engine.requirments"
+    GameWindow.load(gameWidth, gameHeight)
+
     local font = love.graphics.newFont(11, "mono")
     font:setFilter("nearest", "nearest")
     love.graphics.setFont(font)
@@ -26,7 +30,7 @@ function love.load()
 end
 
 function gameinit()
-    mousex, mousey = topScreenWidth / 2, topScreenHeight / 2
+    mousex, mousey = gameWidth / 2, gameHeight / 2
     Render.reset()
     -- love.mouse.setVisible(false)
 
@@ -67,7 +71,7 @@ function gameinit()
 end
 
 function editorinit()
-    mousex, mousey = topScreenWidth / 2, topScreenHeight / 2
+    mousex, mousey = gameWidth / 2, gameHeight / 2
     Render.reset()
 
     Render.createLayer("Background") -- 1
@@ -141,6 +145,7 @@ function love.update(dt)
 end
 
 function love.draw(screen)
+    GameWindow.start()
     if state == "game" then
         
         level:draw()
@@ -163,10 +168,13 @@ function love.draw(screen)
         Render.drawLayers()
 
     end
+    
+    GameWindow.finish(screen)
     if screen ~= "bottom" then
         love.graphics.rectangle("line",0.5,0.5,topScreenWidth - 1,topScreenHeight - 1)
     else
         love.graphics.rectangle("line",0.5,0.5,bottomScreenWidth - 1,bottomScreenHeight - 1)
     end
-
+    
+    love.graphics.print(love.graphics.getStats().texturememory / 1048576, 100)
 end

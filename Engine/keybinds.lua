@@ -39,17 +39,23 @@ end
 
 keybinds.up = {"gamepad:dpup", analogleftyup}
 keybinds.down = {"gamepad:dpdown", analogleftydown}
-
 keybinds.left = {"gamepad:dpleft", "analog:leftx:left"}
 keybinds.right = {"gamepad:dpright", "analog:leftx:right"}
+
+keybinds.dpadup = {"gamepad:dpup"}
+keybinds.dpaddown = {"gamepad:dpdown"}
+keybinds.dpadleft = {"gamepad:dpleft"}
+keybinds.dpadright = {"gamepad:dpright"}
+
+keybinds.analogup = {analogleftyup}
+keybinds.analogdown = {analogleftydown}
+keybinds.analogleft = {"analog:leftx:left"}
+keybinds.analogright = {"analog:leftx:right"}
+
 keybinds.shoot = {gamepadx, analogtriggerrightdown}
 keybinds.shootalt = {gamepady, analogtriggerleftdown}
 keybinds.save = {gamepadb}
 keybinds.space = {gamepada}
-keybinds.scrollup = {}
-keybinds.scrolldown = {}
-keybinds.minus = {}
-keybinds.plus = {}
 keybinds.one = {}
 keybinds.two = {}
 keybinds.lb = {gamepadleftshoulder}
@@ -158,8 +164,8 @@ function virtualMouseUpdate(obj, dt)
         mousex = mousex + (axisx * 600 * dt)
         mousey = mousey + (axisy * 600 * dt)
 
-        mousex = math.max(0, math.min(topScreenWidth, mousex)) 
-        mousey = math.max(0, math.min(topScreenHeight, mousey)) 
+        mousex = constraint(mousex, 0, gameWidth)
+        mousey = constraint(mousey, 0, gameHeight)
         
         previousAxisx = 0
         previousAxisy = 0

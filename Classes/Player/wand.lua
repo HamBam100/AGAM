@@ -10,7 +10,12 @@ function Wand:new(parent)
     self.yv = 0
 
     self.cooldown = {timer = 0, time = 0.1}
-    self.playerOffset = 80
+    self.playerOffset = 70
+
+    self.v = 0
+    self.stiffness = 400
+    self.damping = 20
+    self.targetr = self.r
     
 end
 
@@ -20,11 +25,17 @@ function Wand:update(dt)
     self.y = p.y
     
     -- Point and offset wand towards mouse
-    self.r = math.atan2(mousey - self.y, mousex - self.x) 
-    self.xv = math.floor(math.cos(self.r) * self.playerOffset)
-    self.yv = math.floor(math.sin(self.r) * self.playerOffset)
+    self.targetr = math.atan2(mousey - self.y, mousex - self.x) 
+    self.xv = math.floor(math.cos(self.targetr) * self.playerOffset)
+    self.yv = math.floor(math.sin(self.targetr) * self.playerOffset)
     self.x = math.floor(self.x + self.xv)
     self.y = math.floor(self.y + self.yv)
+
+    local difference = self.targetr - self.r
+    difference = (difference + math.pi) % (2*math.pi) - math.pi
+
+    self.r, self.v = springDamper(self.r, self.v, self.r + difference, 0, self.stiffness, self.damping, dt)
+    self.r = self.r % (math.pi * 2)
 
     if bindPressed(keybinds.shoot) and self.cooldown.timer <= 0 then
         self:createProj()
@@ -43,7 +54,7 @@ function Wand:createProj()
 end
 
 function Wand:draw()
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,self.ox)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,self.ox, self.oy)
 
 end
 

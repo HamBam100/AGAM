@@ -7,8 +7,8 @@ function Projectile:new(i)
     local xv = math.cos(rotation)
     local yv = math.sin(rotation)
     
-    self.x = i.x
-    self.y = i.y
+    self.x = i.x + math.cos(i.r) * i.oy
+    self.y = i.y + math.sin(i.r) * i.oy
     self.xv = xv
     self.yv = yv
     self.ox = 0

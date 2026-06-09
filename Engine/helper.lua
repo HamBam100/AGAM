@@ -13,6 +13,13 @@ function lerp(a,b,t)
 
 end
 
+--https://theorangeduck.com/page/spring-roll-call#springdamper
+function springDamper(x, v, g, q, stiff, damp, dt)
+
+    local newv = v + dt * stiff * (g - x) + dt * damp * (q - v)
+    local newx = x + dt * newv
+    return newx, newv
+end
 
 function easeInBack(a,b,t)
     local c1 = 1.70158

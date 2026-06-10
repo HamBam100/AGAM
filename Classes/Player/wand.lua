@@ -10,11 +10,12 @@ function Wand:new(parent)
     self.yv = 0
 
     self.cooldown = {timer = 0, time = 0.1}
-    self.playerOffset = 70
+    self.playerOffset = 60
+    self.pivotOffset = 1.4
 
     self.v = 0
-    self.stiffness = 400
-    self.damping = 20
+    self.stiffness = 320
+    self.damping = 25
     self.targetr = self.r
     
 end
@@ -54,7 +55,7 @@ function Wand:createProj()
 end
 
 function Wand:draw()
-    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,self.ox, self.oy)
+    love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r + (math.pi / 2),1,1,self.ox, self.oy * self.pivotOffset)
 
 end
 

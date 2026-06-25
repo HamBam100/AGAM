@@ -67,6 +67,30 @@ vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
 
 ]]
 
+local shader_code_4 = [[
+
+uniform vec2 gameSize;
+uniform vec2 windowSize;
+
+vec4 effect(vec4 color, Image image, vec2 uvs, vec2 screen_coords){
+    vec4 pixel = Texel(image, uvs);
+    float ppp =  windowSize.y / gameSize.y;
+
+    if (mod(screen_coords.y, ppp)  >  (ppp * 0.5))
+    { 
+    return pixel * color;
+    }
+
+    return vec4(pixel.r, pixel.g, pixel.b, pixel.a - 0.5);
+
+}
+
+]]
+
+
+
+
 flashShader = love.graphics.newShader(shader_code_1)
 tintPlayerShader = love.graphics.newShader(shader_code_2)
 tintShader = love.graphics.newShader(shader_code_3)
+crtShader = love.graphics.newShader(shader_code_4)

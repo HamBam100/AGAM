@@ -49,7 +49,7 @@ function Render.sortitems()
     for _, layer in ipairs(Render.layers) do
 
         if layer.sort then
-            table.sort(layer.objects, function(a, b) return a.y < b.y end)
+            table.sort(layer.objects, function(a, b) return a.y + a.oy < b.y + b.oy end)
         end
     end
     

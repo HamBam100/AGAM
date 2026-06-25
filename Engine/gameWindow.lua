@@ -1,5 +1,6 @@
 local gameWindow = {}
 local scale = 1
+local previousShader
 function gameWindow.load(w,h)
     gameWidth, gameHeight = w, h
 
@@ -47,15 +48,16 @@ function gameWindow.getMousePosition()
 end
 
 function gameWindow.start()
+    previousCanvas = love.graphics.getCanvas()
     love.graphics.setCanvas(gameCanvas)
     love.graphics.clear()
 
 end
 
 function gameWindow.finish()
-    love.graphics.setCanvas()
+    love.graphics.setCanvas(previousCanvas)
     love.graphics.draw(gameCanvas,gameWindow.translateX,gameWindow.translateY,0,gameWindow.scale,gameWindow.scale)
-    
+
 end
 
 return gameWindow

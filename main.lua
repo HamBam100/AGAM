@@ -58,6 +58,8 @@ function gameinit()
     local x,y = getSafeArea(16)
     spawn(Slime(x, y), updateables.enemies, "Game")
 
+    spawn(Gaia(), updateables.enemies, "Game")
+
 end
 
 function editorinit()
@@ -109,6 +111,11 @@ function love.update(dt)
         virtualMouseUpdate(localPlayer)
 
         if bindPressed(keybinds.space) then
+            local x,y = getSafeArea(16)
+            spawn(Slime(x, y), updateables.enemies, "Game")
+        end
+
+        if bindSinglePress(keybinds.plus) then
             local x,y = getSafeArea(16)
             spawn(Slime(x, y), updateables.enemies, "Game")
         end

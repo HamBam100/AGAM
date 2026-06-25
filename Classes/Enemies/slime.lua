@@ -134,6 +134,7 @@ function Slime:jump(dt)
 end
 
 function Slime:draw()
+    local previousShader =  love.graphics.getShader()
     if self.inv.cooldown > 0 then
         love.graphics.setShader(flashShader)
     end
@@ -144,7 +145,7 @@ function Slime:draw()
     -- end
     love.graphics.setColor(1,1,1,0.9)
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
-    love.graphics.setShader()
+    love.graphics.setShader(previousShader)
     love.graphics.setColor(1,1,1,1)
     if debug then
         drawHitbox(self)

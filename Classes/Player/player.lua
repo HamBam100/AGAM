@@ -58,12 +58,13 @@ end
 
 function Player:draw()
 
+    local previousShader =  love.graphics.getShader()
     love.graphics.setShader(tintPlayerShader)
     tintPlayerShader:send("targetColour", self.colour)
 
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r,1,1,self.ox,self.oy)
 
-    love.graphics.setShader()
+    love.graphics.setShader(previousShader)
 
     self.eyes:draw()
     self.wand:draw()

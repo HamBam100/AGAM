@@ -47,6 +47,21 @@ function Wand:update(dt)
         self.cooldown.timer = self.cooldown.timer - (1 * dt)
     end
 
+    if self.r ~= self.r then
+        self.r = 0
+        self.xv = 0
+        self.yv = 0
+
+        self.cooldown = {timer = 0, time = 0.1}
+        self.playerOffset = 60
+        self.pivotOffset = 1.4
+
+        self.v = 0
+        self.stiffness = 320
+        self.damping = 25
+        self.targetr = self.r
+    end
+
 end
 
 function Wand:createProj()

@@ -421,6 +421,7 @@ end
 
 -- Terrible nightmare evil nested if else statment
 function getCollisionType(a,b)
+    
     local foundCollisionType
     
     local aIsConcave = false
@@ -434,12 +435,7 @@ function getCollisionType(a,b)
 
     local aIsSat = not (aIsCircle or aIsRectangle) 
     local bIsSat = not (bIsCircle or bIsRectangle) 
-
-   
-    if aIsRectangle and bIsRectangle then
-        foundCollisionType = "Basic"
-
-    elseif aIsSat or bIsSat then
+    if aIsSat or bIsSat then
         if aIsSat then
             aIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(a)))
         end
@@ -448,6 +444,15 @@ function getCollisionType(a,b)
             bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(b)))
         end
 
+        print("is sat")
+    end
+   print(aIsSat)
+    print(bIsSat)
+    if aIsRectangle and bIsRectangle then
+        print("is rectangle")
+        foundCollisionType = "Basic"
+
+    
     elseif aIsCircle or bIsCircle then
         foundCollisionType = "Circle"
         if (aIsCircle and bIsRectangle) or (bIsCircle and aIsRectangle)   then
@@ -461,15 +466,17 @@ function getCollisionType(a,b)
         end
 
     elseif aIsConcave or bIsConcave then
+        print("is concave")
         if aIsConcave and bIsConcave then
             foundCollisionType = "SATConcaveConcave"
         else
             foundCollisionType = "SATConcaveConvex"
         end
     else
+        print("this running?")
         foundCollisionType = "SAT"
     end
-
+    print(foundCollisionType)
     return foundCollisionType
     
 end

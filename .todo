@@ -30,7 +30,43 @@ Game Machanics:
     Elements:
         ☐ Table of properties
         ✔ Colours @done(26-01-06 00:51)
+        ☐ What elements to include? What are their focuses?
+            ☐ Fire (AOE attacks eg: explostions, multihit(flamethrower))
+            ☐ Water
+
+            ☐ Plasma (Rapid fire, lots of projectiles. Also chain lightning)
+            ☐ Ice
+
+            ☐ Necromancy (Summoner class, focus on strengthening minions by killing. A secondary class to other attacks)
+            ☐ Life (Summoner class, focus on direct support of minions, send them health and boosts. Also able to heal other players)
+
+            ☐ Air ()
+            ☐ Earth ()
+
+            ☐ Posible ["slime"] ["health"]
+
     ☐ Spells
+        Fire
+            ☐ 
+        Water
+            ☐ 
+        Plasma
+            ☐ Time - Shoot a projectile, then time "parrys" to grow the projectiles power. (starstrike skylanders)
+                ☐ upgrade to have more projectiles out at once
+                ☐ upgrade to decrease parry cooldown
+                ☐ upgrade bounce projectiles between enemies before returning
+        Ice
+            ☐ 
+        Necromancy
+            ☐ 
+        Life
+            ☐ 
+        Air
+            ☐ Magnet - Absorb enemy projectiles into field, and shoot them back as one projectiles (Magneto marval rivals)
+        Earth
+            ☐ 
+        
+        
     ☐ Player health
     ☐ UI
     ☐ Bosses

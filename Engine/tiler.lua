@@ -9,7 +9,10 @@ function Tiler:new(mapfile)
         self.y = 0
             
         local file = love.filesystem.read(mapfile)
-        local loadedtilemap = Sir.loads(file)
+        local loadedtilemap = Lume.deserialize(file)
+        -- local loadedtilemap = Sir.loads(file)
+        local loadedEntitys = loadedtilemap.savedEntitys
+        loadedtilemap = loadedtilemap.savedTilemap
 
         local filemaxwidth = 1
         local filemaxheight = 1

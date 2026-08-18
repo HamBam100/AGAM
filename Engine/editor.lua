@@ -7,6 +7,7 @@ local currentfile = "walls.lua"
 local count = 0
 local panspeed = 800
 
+
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
 
@@ -82,7 +83,10 @@ function Editor:load(currentfile)
     self:createLayer(1)
     if love.filesystem.getInfo(currentfile) then
         local file = love.filesystem.read(currentfile)
-        local loadedtilemap = Sir.loads(file)
+        -- local loadedtilemap = Sir.loads(file)
+        local loadedtilemap = Lume.deserialize(file)
+        local loadedEntitys = loadedtilemap.savedEntitys
+        loadedtilemap = loadedtilemap.savedTilemap
 
 
         for i=1, #loadedtilemap do
@@ -100,6 +104,13 @@ function Editor:load(currentfile)
                     end
                 end
             end
+        end
+
+        for i=1, #loadedEntitys do
+            local loadedEntity = loadedEntitys[i]
+            print(Player)
+            local brib = PlaceableEntity(loadedEntity.x,loadedEntity.y,key[loadedEntity.label])
+            table.insert(self.entitys, brib)
         end
     end
 
@@ -147,17 +158,22 @@ function Editor:new()
     self.tileSelection = {x = 0, y = 0, mx = 0, my = 0}
     self.tiletype = self.tilesheet[1]
     self.currentLayer = 1
+    self.entitys = {}
+    key = {["Player"] = Player}
     
     self:load(currentfile)
     self.buttons = {}
     self.buttons.tilemap = {}
     self.buttons.entity = {}
     
-    entitys = {}
+    
     self:createFolders(self.buttons.tilemap)
 
-    local brib = PlaceableEntity(256,256,Player)
-    table.insert(entitys, brib)
+    if #self.entitys == 0 then
+        local brib = PlaceableEntity(256,256,Player)
+        table.insert(self.entitys, brib)
+    end
+    
 
 end
 
@@ -217,8 +233,8 @@ function Editor:update(dt)
     end
 
     if self.editorMode == "entity" then
-        for i = #entitys, 1, -1 do
-            entitys[i]:update(self.origin.x, self.origin.y, self.scale, i)
+        for i = #self.entitys, 1, -1 do
+            self.entitys[i]:update(self.origin.x, self.origin.y, self.scale, i)
         end
     end
 
@@ -298,8 +314,8 @@ function Editor:draw()
 
     love.graphics.rectangle("line", self.origin.x + 0 * self.scale, self.origin.y + 0 * self.scale, 1, 1)
 
-    for i = #entitys, 1, -1 do
-        entitys[i]:draw(self.origin.x, self.origin.y, self.scale)
+    for i = #self.entitys, 1, -1 do
+        self.entitys[i]:draw(self.origin.x, self.origin.y, self.scale)
     end
 
     local textoffset = 100
@@ -336,7 +352,8 @@ end
 
 function Editor:save()
     local savedTilemap = {}
-    for i = 1, #self.tilemap do 
+    local savedEntitys = {}
+    for _ = 1, #self.tilemap do 
         table.insert(savedTilemap, {})
     end
 
@@ -353,9 +370,16 @@ function Editor:save()
             end
         end
     end
-    local data = savedTilemap
+    print(#self.entitys)
+    for i = 1, #self.entitys do
+        local newdatastuff = {x = self.entitys[i].x, y = self.entitys[i].y, label = self.entitys[i].obj.label}
+        table.insert(savedEntitys, newdatastuff)
+    end
 
-    local serialized = Sir.dumps(data)
+    local data = {savedTilemap = savedTilemap, savedEntitys = savedEntitys}
+
+    -- local serialized = Sir.dumps(data)
+    local serialized = Lume.serialize(data)
     love.filesystem.write(currentfile, serialized)
 
 end

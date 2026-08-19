@@ -15,6 +15,7 @@ keybinds.plus = {"keybd:="}
 keybinds.one = {"keybd:1"}
 keybinds.two = {"keybd:2"}
 keybinds.debug = {"keybd:p"}
+keybinds.undo = {"keybd:z"}
 
 inputMode = "keyboard"
 

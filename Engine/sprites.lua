@@ -1,13 +1,27 @@
-Sprite = {
-    ["Slime"] = love.graphics.newImage("Sprites/Slime.png"),
-    ["Player"] = love.graphics.newImage("Sprites/Player.png"),
-    ["Wand"] = love.graphics.newImage("Sprites/Magic Staff.png"),
-    ["Eyes"] = love.graphics.newImage("Sprites/Player Eyes.png"),
-    ["Folder"] = love.graphics.newImage("Sprites/Folder.png"),
-    ["Cursor"] = love.graphics.newImage("Sprites/Cursor.png"),
-    ["Shield"] = love.graphics.newImage("Sprites/Shield.png"),
-    ["Gaia"] = love.graphics.newImage("Sprites/Gaia.png")
-}
+local assetDirectory = "Sprites/"
+allSpriteFiles = love.filesystem.getDirectoryItems(assetDirectory)
+
+Sprite = {}
+Sprite.spriteFileToName = {}
+-- usage e.g. print(Sprite.spriteFileToName[Sprite["Wand"]])
+Sprite.spriteNames = {}
+
+for _, value in ipairs(allSpriteFiles) do
+    if string.match(value, ".png") then
+        local spriteName = string.gsub(value, ".png", "")
+        
+        Sprite[spriteName] = love.graphics.newImage(assetDirectory .. value)
+        Sprite.spriteFileToName[Sprite[spriteName]] = spriteName
+        table.insert(Sprite.spriteNames, spriteName)
+    end
+    
+end
+
+for i, value in ipairs(Sprite.spriteNames) do
+    print(value)
+    
+end
+
 
 local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
 tilesetimage = love.graphics.newImage(tilesheetdir)

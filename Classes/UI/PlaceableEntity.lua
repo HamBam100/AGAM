@@ -64,7 +64,7 @@ function PlaceableEntity:update(originx, originy, scale, i)
 
         if bindPressed(keybinds.shootalt) then 
             print("removed")
-            table.remove(entitys, i)
+            table.remove(self.entitys, i)
         end
         
     elseif self.mousebutton and self.held then
@@ -74,8 +74,8 @@ function PlaceableEntity:update(originx, originy, scale, i)
     end
 
     if self.held then 
-        self.x = mouse_world_x + self.mox 
-        self.y = mouse_world_y + self.moy
+        self.x = math.floor(mouse_world_x + self.mox)
+        self.y = math.floor(mouse_world_y + self.moy)
     end
 
 end

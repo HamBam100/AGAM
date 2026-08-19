@@ -372,7 +372,7 @@ function Editor:save()
     end
     print(#self.entitys)
     for i = 1, #self.entitys do
-        local newdatastuff = {x = self.entitys[i].x, y = self.entitys[i].y, label = self.entitys[i].obj.label}
+        local newdatastuff = {x = self.entitys[i].x, y = self.entitys[i].y, label = Sprite.spriteFileToName[self.entitys[i].obj.sprite]}
         table.insert(savedEntitys, newdatastuff)
     end
 

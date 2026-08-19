@@ -13,7 +13,8 @@ function love.load()
 
     virtualMouseStart()
 
-    gameinit()
+    -- gameinit()
+    editorinit()
 
 end
 
@@ -58,7 +59,7 @@ function gameinit()
     local x,y = getSafeArea(16)
     spawn(Slime(x, y), updateables.enemies, "Game")
 
-    spawn(Gaia(), updateables.enemies, "Game")
+    -- spawn(Gaia(), updateables.enemies, "Game")
 
 end
 

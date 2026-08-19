@@ -444,12 +444,12 @@ function getCollisionType(a,b)
             bIsConcave = not love.math.isConvex(fromXY_XYToXYXY(updateVertices(b)))
         end
 
-        print("is sat")
+        -- print("is sat")
     end
-   print(aIsSat)
-    print(bIsSat)
+--    print(aIsSat)
+--     print(bIsSat)
     if aIsRectangle and bIsRectangle then
-        print("is rectangle")
+        -- print("is rectangle")
         foundCollisionType = "Basic"
 
     
@@ -466,17 +466,17 @@ function getCollisionType(a,b)
         end
 
     elseif aIsConcave or bIsConcave then
-        print("is concave")
+        -- print("is concave")
         if aIsConcave and bIsConcave then
             foundCollisionType = "SATConcaveConcave"
         else
             foundCollisionType = "SATConcaveConvex"
         end
     else
-        print("this running?")
+        -- print("this running?")
         foundCollisionType = "SAT"
     end
-    print(foundCollisionType)
+    -- print(foundCollisionType)
     return foundCollisionType
     
 end

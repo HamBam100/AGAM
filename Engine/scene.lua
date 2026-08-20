@@ -1,12 +1,38 @@
 local Scene = Object:extend()
 
 function Scene:new(file)
+    if level then
+        level:removed()
+        level = nil
+    end
+
     self.tilemap = Tiler(file)
     
     self.colliders = self.tilemap.colliders
     self.safeArea = self.tilemap.safeArea
     self.tilemap.colliders = nil
     self.tilemap.safeArea = nil
+
+    updateables = nil
+    updateables = {}
+    collectgarbage("collect")
+
+    updateables.players = createUpdateableContainer()
+    updateables.enemies = createUpdateableContainer()
+    updateables.projectiles = createUpdateableContainer()
+    updateables.mouse = createUpdateableContainer()
+
+    spawn(Player(256,256), updateables.players, "Game")
+    localPlayer = updateables.players[1]
+
+    spawn(Mouse(), updateables.mouse, "UI")
+
+    local x,y = getSafeArea(16, self.safeArea)
+    print(x..y)
+    spawn(Slime(x, y), updateables.enemies, "Game")
+
+    -- spawn(Gaia(), updateables.enemies, "Game")
+
 end
 
 function Scene:update()

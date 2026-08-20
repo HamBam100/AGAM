@@ -97,13 +97,19 @@ function spawn(class, array, layer)
 
 end
 
-function getSafeArea(offset)
+function getSafeArea(offset, safeArea)
+    local currentSafeArea
     if level and level.safeArea then
+        currentSafeArea = level.safeArea
+    else
+        currentSafeArea = safeArea
+    end
+    if currentSafeArea then
         local random = randomFloat(0,1,10)
         local cumlative = 0
         local preupdate = {}
         local selectedArea = {}
-        for _, area in ipairs(level.safeArea) do
+        for _, area in ipairs(currentSafeArea) do
             cumlative = cumlative + area.chance
             if cumlative > random then
                 selectedArea.hitbox = area

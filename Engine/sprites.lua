@@ -1,5 +1,5 @@
 local assetDirectory = "Sprites/"
-allSpriteFiles = love.filesystem.getDirectoryItems(assetDirectory)
+local allSpriteFiles = love.filesystem.getDirectoryItems(assetDirectory)
 
 Sprite = {}
 Sprite.spriteFileToName = {}

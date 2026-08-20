@@ -32,9 +32,9 @@ function Tiler:new(mapfile)
             end
         end
 
-        self.colliders = self:generateCollision(loadedtilemap, filemaxwidth, filemaxheight) or nil
+        self.colliders = self:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, true) or nil
         
-        self.safeArea = self:generateSafeArea(loadedtilemap, filemaxwidth, filemaxheight) or nil
+        self.safeArea = self:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, false) or nil
 
         filemaxwidth = filemaxwidth * tileWidth
         filemaxheight = filemaxheight * tileHeight
@@ -61,88 +61,10 @@ function Tiler:new(mapfile)
 
 end
 
-function Tiler:generateCollision(loadedtilemap, filemaxwidth, filemaxheight)
-    local tilemap = {} 
-    local createdcolliders = {}
-    for l=1, #loadedtilemap do 
-        tilemap[l] = {}    
-        for y = 1, filemaxheight do
-            tilemap[l] [y]= {}
-            for x = 1, filemaxwidth do
-                tilemap[l][y][x] = {id = nil, checked = false, collision = false}
-            end
-        end
-    end
-
-    for l=1, #loadedtilemap do
-        for i, tile in ipairs(loadedtilemap[l]) do
-            if tile.id then
-
-                local col = false
-                for j=1, #collisionmask do
-                    if tile.id == collisionmask[j] then
-                        col = true
-                        break
-                    end
-                end
-                tilemap[l][tile.y][tile.x] = {id = tile.id, checked = false, collision = col}
-            end
-        end
-    end
-
-    for l=1, #loadedtilemap do 
-        for y=1, filemaxheight do 
-            for x=1, filemaxwidth do 
-                local tile = tilemap[l][y][x]
-
-                if tile.collision and not tile.checked then
-                    local width = 0
-                    while x + width <= filemaxwidth
-                    and tilemap[l][y][x + width].collision
-                    and not tilemap[l][y][x + width].checked do
-                        width = width + 1
-
-                    end
-
-                    local canExtend = true
-                    local height = 0
-                    while canExtend
-                    and y + height <= filemaxheight do
-                        for i = 1, width do
-                            if not tilemap[l][y + height][x + i-1].collision
-                            or tilemap[l][y + height][x + i-1].checked then
-                                canExtend = false
-                                break
-                            end
-                        end
-                        if canExtend then
-                            height = height + 1
-                        end
-                    end
-
-                    for j=1, height do
-                        for k=1, width do
-                            tilemap[l][y - 1 + j][x - 1 + k].checked = true
-                        end
-                    end
-
-                    local collider = makeHitbox(xy((x - 1) * tileWidth, (y - 1) * tileHeight), xy((x - 1 + width) * tileWidth, (y - 1 + height) * tileHeight))
-
-                    table.insert(createdcolliders, collider)
-                end
-            end
-        end
-    end
-
-    return createdcolliders
-
-end
-
-function Tiler:generateSafeArea(loadedtilemap, filemaxwidth, filemaxheight)
+function Tiler:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, checkingFor)
     local tilemap = {} 
     local createdAreas = {}
     
-    tilemap = {}    
     for y = 1, filemaxheight do
         tilemap[y]= {}
         for x = 1, filemaxwidth do
@@ -178,51 +100,51 @@ function Tiler:generateSafeArea(loadedtilemap, filemaxwidth, filemaxheight)
         for x=1, filemaxwidth do 
             local tile = tilemap[y][x]
             skip = false
-            if not tile.collision and not tile.checked and tile.id then
-                if tilemap[y][x].collision then
+            if tile.collision == checkingFor and not tile.checked and tile.id then
+                if tilemap[y][x].collision == not checkingFor then
                     skip = true
                 end
                 
                 if skip == false then
-                local width = 0
-                while x + width <= filemaxwidth
-                and not tilemap[y][x + width].collision
-                and not tilemap[y][x + width].checked and tilemap[y][x + width].id do
-                    width = width + 1
+                    local width = 0
+                    while x + width <= filemaxwidth
+                    and tilemap[y][x + width].collision == checkingFor
+                    and not tilemap[y][x + width].checked and tilemap[y][x + width].id do
+                        width = width + 1
 
-                end
+                    end
 
-                local canExtend = true
-                local height = 0
-                while canExtend
-                and y + height <= filemaxheight do
-                    for i = 1, width do
-                        if tilemap[y + height][x + i-1].id then
-                            if tilemap[y + height][x + i-1].collision
-                            or tilemap[y + height][x + i-1].checked then
+                    local canExtend = true
+                    local height = 0
+                    while canExtend
+                    and y + height <= filemaxheight do
+                        for i = 1, width do
+                            if tilemap[y + height][x + i-1].id then
+                                if tilemap[y + height][x + i-1].collision == not checkingFor
+                                or tilemap[y + height][x + i-1].checked then
+                                    canExtend = false
+                                    break
+                                end
+                            else
                                 canExtend = false
                                 break
                             end
-                        else
-                            canExtend = false
-                            break
+                            
                         end
-                        
+                        if canExtend then
+                            height = height + 1
+                        end
                     end
-                    if canExtend then
-                        height = height + 1
-                    end
-                end
 
-                for j=1, height do
-                    for k=1, width do
-                        tilemap[y - 1 + j][x - 1 + k].checked = true
+                    for j=1, height do
+                        for k=1, width do
+                            tilemap[y - 1 + j][x - 1 + k].checked = true
+                        end
                     end
-                end
-                local area = makeHitbox(xy((x - 1) * tileWidth, (y - 1) * tileHeight), xy((x - 1 + width) * tileWidth, (y - 1 + height) * tileHeight))
 
-                area.area = width * height
-                table.insert(createdAreas, area)
+                    local area = makeHitbox(xy((x - 1) * tileWidth, (y - 1) * tileHeight), xy((x - 1 + width) * tileWidth, (y - 1 + height) * tileHeight))
+                    area.area = width * height
+                    table.insert(createdAreas, area)
                 end
             end
         end

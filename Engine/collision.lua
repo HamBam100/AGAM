@@ -569,7 +569,7 @@ function resolveBasic(a, b)
 end
 
 function resolveWallBasic(a)
-    if level.colliders then
+    if level and level.colliders then
         local wall = {}
         wall.x = 0
         wall.y = 0

@@ -13,8 +13,8 @@ function love.load()
 
     virtualMouseStart()
 
-    -- gameinit()
-    editorinit()
+    gameinit()
+    -- editorinit()
 
 end
 
@@ -29,37 +29,14 @@ function gameinit()
 
     state = "game"
     debug = true
-    updateables = nil
-    updateables = {}
     timers = {}
-
-    if level then
-        level:removed()
-        level = nil
-    end
-    collectgarbage("collect")
 
     if multiplayer then
         Networking.start()
     end
 
-    updateables.players = createUpdateableContainer()
-    updateables.enemies = createUpdateableContainer()
-    updateables.projectiles = createUpdateableContainer()
-    updateables.mouse = createUpdateableContainer()
-
     level = Scene("walls.lua")
     Render.addObjectToLayer("Background", level)
-
-    spawn(Player(256,256), updateables.players, "Game")
-    localPlayer = updateables.players[1]
-
-    spawn(Mouse(), updateables.mouse, "UI")
-
-    local x,y = getSafeArea(16)
-    spawn(Slime(x, y), updateables.enemies, "Game")
-
-    -- spawn(Gaia(), updateables.enemies, "Game")
 
 end
 

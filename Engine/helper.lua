@@ -97,12 +97,12 @@ function spawn(class, array, layer)
 
 end
 
-function getSafeArea(offset, safeArea)
+function getSafeArea(offset, safeAreaParam)
     local currentSafeArea
     if level and level.safeArea then
         currentSafeArea = level.safeArea
     else
-        currentSafeArea = safeArea
+        currentSafeArea = safeAreaParam
     end
     if currentSafeArea then
         local random = randomFloat(0,1,10)

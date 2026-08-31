@@ -2,9 +2,10 @@ alt-enter to create box, alt-d to make complete
 
 Urgent:
     ☐ merge tilemap layers collision
-    uid generator
-    raycaster
-    better tilemap collison generator
+    ☐ uid generator
+    ☐ raycaster
+    ☐ better tilemap collison generator
+    ☐ Make a easy converter so i can keep changing between BinSir and Lume
 
 
 General:
@@ -47,24 +48,24 @@ Game Machanics:
             ☐ Posible ["slime"] ["health"]
 
     ☐ Spells
-        Fire
+        Fire:
             ☐ 
-        Water
+        Water:
             ☐ 
-        Plasma
+        Plasma:
             ☐ Time - Shoot a projectile, then time "parrys" to grow the projectiles power. (starstrike skylanders)
                 ☐ upgrade to have more projectiles out at once
                 ☐ upgrade to decrease parry cooldown
                 ☐ upgrade bounce projectiles between enemies before returning
-        Ice
+        Ice:
             ☐ 
-        Necromancy
+        Necromancy:
             ☐ 
-        Life
+        Life:
             ☐ 
-        Air
+        Air:
             ☐ Magnet - Absorb enemy projectiles into field, and shoot them back as one projectiles (Magneto marval rivals)
-        Earth
+        Earth:
             ☐ 
         
         

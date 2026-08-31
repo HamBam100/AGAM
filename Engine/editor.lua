@@ -2,11 +2,10 @@ local Editor = Object:extend()
 local numberOfTiles = 21
 Editor.tilesheet = {}
 
-local currentfile = "walls.lua"
+local currentfile = levelFileName
 
 local count = 0
 local panspeed = 800
-
 
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
@@ -85,32 +84,34 @@ function Editor:load(currentfile)
         local file = love.filesystem.read(currentfile)
         -- local loadedtilemap = Sir.loads(file)
         local loadedtilemap = Lume.deserialize(file)
-        local loadedEntitys = loadedtilemap.savedEntitys
-        loadedtilemap = loadedtilemap.savedTilemap
+        if loadedtilemap then
+            if loadedtilemap.savedEntitys then
+                local loadedEntitys = loadedtilemap.savedEntitys
+                    for i=1, #loadedEntitys do
+                        local loadedEntity = loadedEntitys[i]
+                        print(Player)
+                        local brib = PlaceableEntity(loadedEntity.x,loadedEntity.y,key[loadedEntity.label])
+                        table.insert(self.entitys, brib)
+                    end
+                end
 
-
-        for i=1, #loadedtilemap do
-            self:createLayer(i)
-            self.currentLayer = i
-            if loadedtilemap and loadedtilemap[i] then
-                for j = #loadedtilemap[i], 1, -1 do
-                    local tile = loadedtilemap[i][j]
-                    if tile and tile.id then
-                        self.tiletype = self.tilesheet[tile.id]
-                        
-
-
-                        self:add(tile.x, tile.y)
+            if loadedtilemap.savedTilemap then
+                loadedtilemap = loadedtilemap.savedTilemap
+                
+                for i=1, #loadedtilemap do
+                    self:createLayer(i)
+                    self.currentLayer = i
+                    if loadedtilemap and loadedtilemap[i] then
+                        for j = #loadedtilemap[i], 1, -1 do
+                            local tile = loadedtilemap[i][j]
+                            if tile and tile.id then
+                                self.tiletype = self.tilesheet[tile.id]
+                                self:add(tile.x, tile.y)
+                            end
+                        end
                     end
                 end
             end
-        end
-
-        for i=1, #loadedEntitys do
-            local loadedEntity = loadedEntitys[i]
-            print(Player)
-            local brib = PlaceableEntity(loadedEntity.x,loadedEntity.y,key[loadedEntity.label])
-            table.insert(self.entitys, brib)
         end
     end
 

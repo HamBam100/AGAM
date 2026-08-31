@@ -3,6 +3,7 @@ function love.load()
     love.graphics.setLineStyle("rough")
 
     multiplayer = false
+    levelFileName = "walls.lua"
 
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
@@ -35,7 +36,7 @@ function gameinit()
         Networking.start()
     end
 
-    level = Scene("walls.lua")
+    level = Scene(levelFileName)
     Render.addObjectToLayer("Background", level)
 
 end
@@ -74,7 +75,8 @@ function editorinit()
 end
 
 function love.update(dt)
-
+    require("External.lovebird").update()
+    -- http://127.0.0.1:8000
     mousex, mousey = GameWindow.getMousePosition()
 
     for _, timer in ipairs(timers) do

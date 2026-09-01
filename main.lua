@@ -131,13 +131,25 @@ function love.draw()
         debugtext = {
             {name = "FPS: ", data = love.timer.getFPS()},
             {name = "Slime: ", data = #updateables.enemies},
-            {name = "State: ", data = state},
-            {name = "x: ", data = localPlayer.x},
-            {name = "y: ", data = localPlayer.y}    
+            {name = "State: ", data = state}
+             
         }
-        for i, text in ipairs(debugtext) do
-            love.graphics.print(text.name..text.data,10,i*11)
+
+        if localPlayer then
+            playerdebugtext = {{name = "x: ", data = localPlayer.x},
+            {name = "y: ", data = localPlayer.y}}
+
+            for _, text in ipairs(playerdebugtext) do
+                table.insert(debugtext, text)
+            end
         end
+        
+        if debugtext then
+            for i, text in ipairs(debugtext) do
+                love.graphics.print(text.name..text.data,10,i*11)
+            end
+        end
+        
 
     end
 

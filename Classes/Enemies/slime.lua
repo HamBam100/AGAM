@@ -101,10 +101,10 @@ function Slime:jump(dt)
             target.past = {}
             target.past.x = self.x
             target.past.y = self.y
-            target.x = target.x + (xv * self.range) / accuracy 
+            target.x = target.x + (xv * self.range) / accuracy
             target.y = target.y + (yv * self.range) / accuracy
             resolveWall(target)
-            if collide(self, localPlayer) then
+            if localPlayer and collide(self, localPlayer) then
                 break
             end
         end

@@ -85,13 +85,13 @@ function Editor:load(currentfile)
         -- local loadedtilemap = Sir.loads(file)
         local loadedtilemap = Lume.deserialize(file)
         if loadedtilemap then
-            if loadedtilemap.savedEntitys then
-                local loadedEntitys = loadedtilemap.savedEntitys
-                    for i=1, #loadedEntitys do
-                        local loadedEntity = loadedEntitys[i]
+            if loadedtilemap.savedEntities then
+                local loadedEntities = loadedtilemap.savedEntities
+                    for i=1, #loadedEntities do
+                        local loadedEntity = loadedEntities[i]
                         print(Player)
                         local brib = PlaceableEntity(loadedEntity.x,loadedEntity.y,key[loadedEntity.label])
-                        table.insert(self.entitys, brib)
+                        table.insert(self.entities, brib)
                     end
                 end
 
@@ -159,7 +159,7 @@ function Editor:new()
     self.tileSelection = {x = 0, y = 0, mx = 0, my = 0}
     self.tiletype = self.tilesheet[1]
     self.currentLayer = 1
-    self.entitys = {}
+    self.entities = {}
     key = {["Player"] = Player}
     
     self:load(currentfile)
@@ -170,9 +170,9 @@ function Editor:new()
     
     self:createFolders(self.buttons.tilemap)
 
-    if #self.entitys == 0 then
+    if #self.entities == 0 then
         local brib = PlaceableEntity(256,256,Player)
-        table.insert(self.entitys, brib)
+        table.insert(self.entities, brib)
     end
     
 
@@ -233,9 +233,12 @@ function Editor:update(dt)
         end
     end
 
+    for i = #self.entities, 1, -1 do
+        self.entities[i]:updatePosition(self.origin.x, self.origin.y, self.scale)
+    end
     if self.editorMode == "entity" then
-        for i = #self.entitys, 1, -1 do
-            self.entitys[i]:update(self.origin.x, self.origin.y, self.scale, i)
+        for i = #self.entities, 1, -1 do
+            self.entities[i]:update(self.origin.x, self.origin.y, self.scale, i, self.entities)
         end
     end
 
@@ -315,8 +318,8 @@ function Editor:draw()
 
     love.graphics.rectangle("line", self.origin.x + 0 * self.scale, self.origin.y + 0 * self.scale, 1, 1)
 
-    for i = #self.entitys, 1, -1 do
-        self.entitys[i]:draw(self.origin.x, self.origin.y, self.scale)
+    for i = #self.entities, 1, -1 do
+        self.entities[i]:draw(self.scale)
     end
 
     local textoffset = 100
@@ -353,7 +356,7 @@ end
 
 function Editor:save()
     local savedTilemap = {}
-    local savedEntitys = {}
+    local savedEntities = {}
     for _ = 1, #self.tilemap do 
         table.insert(savedTilemap, {})
     end
@@ -371,13 +374,13 @@ function Editor:save()
             end
         end
     end
-    print(#self.entitys)
-    for i = 1, #self.entitys do
-        local newdatastuff = {x = self.entitys[i].x, y = self.entitys[i].y, label = Sprite.spriteFileToName[self.entitys[i].obj.sprite]}
-        table.insert(savedEntitys, newdatastuff)
+    print(#self.entities)
+    for i = 1, #self.entities do
+        local newdatastuff = {x = self.entities[i].x, y = self.entities[i].y, label = Sprite.spriteFileToName[self.entities[i].obj.sprite]}
+        table.insert(savedEntities, newdatastuff)
     end
 
-    local data = {savedTilemap = savedTilemap, savedEntitys = savedEntitys}
+    local data = {savedTilemap = savedTilemap, savedEntities = savedEntities}
 
     -- local serialized = Sir.dumps(data)
     local serialized = Lume.serialize(data)

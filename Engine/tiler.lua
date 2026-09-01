@@ -56,8 +56,9 @@ function Tiler:new(mapfile)
             print("invalid file: " .. mapfile)
         end
         
-        if loadedtilemapdata.savedEntitys then
-            local loadedEntitys = loadedtilemapdata.savedEntitys
+        if loadedtilemapdata.savedEntities then
+            local loadedEntities = loadedtilemapdata.savedEntities
+            self.savedEntities = loadedEntities
         end
 
     else

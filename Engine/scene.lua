@@ -17,6 +17,7 @@ function Scene:new(file)
             self.safeArea = self.tilemap.safeArea
             self.tilemap.safeArea = nil
         end
+        
     end
 
     updateables = nil
@@ -28,8 +29,16 @@ function Scene:new(file)
     updateables.projectiles = createUpdateableContainer()
     updateables.mouse = createUpdateableContainer()
 
-    spawn(Player(256,256), updateables.players, "Game")
-    localPlayer = updateables.players[1]
+    if self.tilemap and self.tilemap.savedEntities then
+        for _, entity in ipairs(self.tilemap.savedEntities) do
+            if entity.label == "Player" then
+                spawn(Player(entity.x,entity.y), updateables.players, "Game")
+                localPlayer = updateables.players[1]
+            end
+        end
+    end
+
+    
 
     spawn(Mouse(), updateables.mouse, "UI")
 

@@ -6,11 +6,13 @@ function PlaceableEntity:new(x,y,obj)
     self.obj = obj(x,y)
     local width = self.obj.sprite:getWidth()
     local height = self.obj.sprite:getHeight()
+    self.ox = width / 2
+    self.oy = height / 2
     PlaceableEntity.super.new(self, x, y, width, height)
     
     self.scale = 0
-    self.drawx = 0 + (self.x * self.scale/ tileWidth) - self.scale
-    self.drawy = 0 + (self.y * self.scale/ tileHeight) - self.scale
+    self.scaledx = 0 + (self.x * self.scale/ tileWidth) - self.scale
+    self.scaledy = 0 + (self.y * self.scale/ tileHeight) - self.scale
     self.hover = false
     self.clicked = false
 
@@ -31,19 +33,29 @@ function PlaceableEntity:new(x,y,obj)
 
 end
 
-function PlaceableEntity:update(originx, originy, scale, i)
-    local drawx = originx + (self.x * scale/ tileWidth) - scale
-    local drawy = originy + (self.y * scale/ tileHeight) - scale
+function PlaceableEntity:updatePosition(originx, originy, scale)
+    self.scaledx = originx + (self.x * scale / tileWidth)
+    self.scaledy = originy + (self.y * scale / tileHeight)
+    print(scale)
+    self.scaledox = (self.ox * scale / tileWidth)
+    self.scaledoy = (self.oy * scale / tileHeight)
+    
+    self.scaledwidth = self.width * scale / tileWidth
+    self.scaledheight = self.height * scale / tileHeight
 
+end
+
+function PlaceableEntity:update(originx, originy, scale, i, entities)
     local previousClickState = self.clicked
     self.clicked = false
     self.mousebutton = bindPressed(keybinds.shoot)
 
     self.hover = false
-    
-    if mousex > drawx and mousex < drawx + self.width * scale / tileWidth and mousey > drawy and mousey < drawy + self.height * scale / tileHeight then
+    local x1 = self.scaledx - self.scaledox
+    local y1 = self.scaledy - self.scaledoy
+    if mousex > x1 and mousex < x1 + self.scaledwidth and mousey > y1 and mousey < y1 + self.scaledheight then
         print("mousex: "..mousex)
-        print("other: "..drawx + self.width * scale / tileWidth)
+        print("other: "..self.scaledx + self.scaledwidth)
         self.hover = true
         globalhover = true
         if self.mousebutton then
@@ -64,7 +76,7 @@ function PlaceableEntity:update(originx, originy, scale, i)
 
         if bindPressed(keybinds.shootalt) then 
             print("removed")
-            table.remove(self.entitys, i)
+            table.remove(entities, i)
         end
         
     elseif self.mousebutton and self.held then
@@ -80,15 +92,14 @@ function PlaceableEntity:update(originx, originy, scale, i)
 
 end
 
-function PlaceableEntity:draw(originx, originy, scale)
-    local drawx = originx + (self.x * scale/ tileWidth) - scale
-    local drawy = originy + (self.y * scale/ tileHeight) - scale
-
+function PlaceableEntity:draw(scale)
     love.graphics.setColor(self.backgroundColour)
-    love.graphics.rectangle("fill", drawx, drawy, self.width * scale / tileWidth, self.height * scale / tileHeight)
+    local x1 = self.scaledx - self.scaledox
+    local y1 = self.scaledy - self.scaledoy
+    love.graphics.rectangle("fill", x1, y1, self.scaledwidth, self.scaledheight)
 
     love.graphics.setColor(self.lineColour)
-    love.graphics.rectangle("line", drawx, drawy, self.width * scale / tileWidth, self.height * scale / tileHeight)
+    love.graphics.rectangle("line", x1, y1, self.scaledwidth, self.scaledheight)
 
     love.graphics.setColor(1,1,1)
 
@@ -97,7 +108,7 @@ function PlaceableEntity:draw(originx, originy, scale)
         tintShader:send("targetColour", self.hoverColour)
     end
 
-    love.graphics.draw(self.obj.sprite, math.floor(drawx), math.floor(drawy), 0, scale / tileWidth, scale / tileHeight)
+    love.graphics.draw(self.obj.sprite, math.floor(self.scaledx), math.floor(self.scaledy), 0, scale / tileWidth, scale / tileHeight, self.ox, self.oy)
     
     love.graphics.setShader()
 

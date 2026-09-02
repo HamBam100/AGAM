@@ -7,7 +7,7 @@
     require "Engine.helper"
     require "Engine.collision"
     require "Engine.shaders"
-    require "Engine.Updateables"
+    require "Engine.updateables"
     require "Engine.sprites"
     Editor = require "Engine.editor"
 

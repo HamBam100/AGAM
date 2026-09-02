@@ -354,20 +354,23 @@ end
 function updateVertices(obj)
     local vertices = {}
 
-    obj.x = obj.x or 0
-    obj.y = obj.y or 0
-    obj.ox = obj.ox or 0
-    obj.oy = obj.oy or 0
-    obj.r = obj.r or 0
+    if obj and obj.hitbox then
+        obj.x = obj.x or 0
+        obj.y = obj.y or 0
+        obj.ox = obj.ox or 0
+        obj.oy = obj.oy or 0
+        obj.r = obj.r or 0
 
-    for i=1, #obj.hitbox do
-        vertices[i] = {}
-        vertices[i].x = obj.hitbox[i].x + obj.x
-        vertices[i].y = obj.hitbox[i].y + obj.y
+        for i=1, #obj.hitbox do
+            vertices[i] = {}
+            vertices[i].x = obj.hitbox[i].x + obj.x
+            vertices[i].y = obj.hitbox[i].y + obj.y
+        end
+
+        vertices = rotateVertices(vertices, obj)
+
     end
-
-    vertices = rotateVertices(vertices, obj)
-
+    
     return vertices
 
 end

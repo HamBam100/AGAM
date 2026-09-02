@@ -83,8 +83,8 @@ function Editor:load(currentfile)
     self:createLayer(1)
     if love.filesystem.getInfo(currentfile) then
         local file = love.filesystem.read(currentfile)
-        -- local loadedtilemap = Sir.loads(file)
-        local loadedtilemap = Lume.deserialize(file)
+        local loadedtilemap = protectedFileLoad(file)
+
         if loadedtilemap then
             if loadedtilemap.savedEntities then
                 local loadedEntities = loadedtilemap.savedEntities

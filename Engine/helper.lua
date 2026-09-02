@@ -104,7 +104,7 @@ function getSafeArea(offset, safeAreaParam)
     else
         currentSafeArea = safeAreaParam
     end
-    if currentSafeArea then
+    if currentSafeArea and currentSafeArea.chance then
         local random = randomFloat(0,1,10)
         local cumlative = 0
         local preupdate = {}

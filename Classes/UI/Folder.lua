@@ -38,7 +38,7 @@ function Folder:update()
         GlobalMouseHover = true
     end
 
-    if bindPressed(Keybinds.shoot) then 
+    if InputHandling.bindPressed(InputHandling.Keybinds.shoot) then 
         self.clicked = true
     end
 

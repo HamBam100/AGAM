@@ -1,19 +1,17 @@
-require "Engine.requirments"
-
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
     love.graphics.setLineStyle("rough")
 
     Multiplayer = false
     levelFileName = "walls.lua"
-
+    require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
     font:setFilter("nearest", "nearest")
     love.graphics.setFont(font)
 
     GameWindow.load(640, 360)
 
-    virtualMouseStart()
+    InputHandling.virtualMouseStart()
 
     gameinit()
     -- editorinit()
@@ -89,19 +87,19 @@ function love.update(dt)
             Networking.update()
         end
 
-        virtualMouseUpdate(ClientPlayer)
+        InputHandling.virtualMouseUpdate(ClientPlayer)
 
-        if bindPressed(Keybinds.space) then
+        if InputHandling.bindPressed(InputHandling.Keybinds.space) then
             local x,y = getSafeArea(16)
             spawn(Slime(x, y), Updateables.enemies, "Game")
         end
 
-        if bindSinglePress(Keybinds.plus) then
+        if InputHandling.bindSinglePress(InputHandling.Keybinds.plus) then
             local x,y = getSafeArea(16)
             spawn(Slime(x, y), Updateables.enemies, "Game")
         end
 
-        if bindSinglePress(Keybinds.DebugMode) then
+        if InputHandling.bindSinglePress(InputHandling.Keybinds.DebugMode) then
             DebugMode = not DebugMode
         end
 
@@ -137,7 +135,7 @@ function love.draw()
         }
 
         if ClientPlayer then
-            playerdebugtext = {{name = "x: ", data = ClientPlayer.x},
+            local playerdebugtext = {{name = "x: ", data = ClientPlayer.x},
             {name = "y: ", data = ClientPlayer.y}}
 
             for _, text in ipairs(playerdebugtext) do

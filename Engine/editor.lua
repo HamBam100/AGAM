@@ -90,7 +90,6 @@ function Editor:load(currentfile)
                 local loadedEntities = loadedtilemap.savedEntities
                     for i=1, #loadedEntities do
                         local loadedEntity = loadedEntities[i]
-                        print(Player)
                         local brib = PlaceableEntity(loadedEntity.x,loadedEntity.y,key[loadedEntity.label])
                         table.insert(self.entities, brib)
                     end
@@ -181,10 +180,10 @@ end
 
 
 function Editor:update(dt)
-    if bindPressed(Keybinds.one) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.one) then
         self.editorMode = "tile"
     end
-    if bindPressed(Keybinds.two) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.two) then
         self.editorMode = "entity"
     end
 
@@ -224,11 +223,11 @@ function Editor:update(dt)
         end
 
         if GlobalMouseHover == false then
-            if bindPressed(Keybinds.shoot) then
+            if InputHandling.bindPressed(InputHandling.Keybinds.shoot) then
                 self:add(self.tileSelection.x, self.tileSelection.y)
             end
 
-            if bindPressed(Keybinds.shootalt) then
+            if InputHandling.bindPressed(InputHandling.Keybinds.shootalt) then
                 self:remove(self.tileSelection.x, self.tileSelection.y)
             end
         end
@@ -243,32 +242,32 @@ function Editor:update(dt)
         end
     end
 
-    if bindPressed(Keybinds.space) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.space) then
         self.scale = TILE_WIDTH
 
         self.origin.x = MouseX - self.tileSelection.mx * self.scale
         self.origin.y = MouseY - self.tileSelection.my * self.scale
     end
 
-    if bindPressed(Keybinds.right) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.right) then
         self.origin.x = self.origin.x - panspeed * dt
     end
 
-    if bindPressed(Keybinds.left) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.left) then
         self.origin.x = self.origin.x + panspeed * dt
     end
 
-    if bindPressed(Keybinds.down) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.down) then
         self.origin.y = self.origin.y - panspeed * dt
     end
-    if bindPressed(Keybinds.up) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.up) then
         self.origin.y = self.origin.y + panspeed * dt
     end
-    if bindSinglePress(Keybinds.save) then
+    if InputHandling.bindSinglePress(InputHandling.Keybinds.save) then
         self:save()
     end
 
-    if bindPressed(Keybinds.scrollup) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.scrollup) then
         if self.scale < 256 then
             self.scale = self.scale + 4
 
@@ -277,7 +276,7 @@ function Editor:update(dt)
         end
     end
 
-    if bindPressed(Keybinds.scrolldown) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.scrolldown) then
         if self.scale > 4 then
             self.scale = self.scale - 4
 
@@ -286,9 +285,8 @@ function Editor:update(dt)
         end
     end
 
-    if bindSinglePress(Keybinds.minus) then
+    if InputHandling.bindSinglePress(InputHandling.Keybinds.minus) then
         if self.currentLayer > 1 then
-            print(countArray(self.tilemap[self.currentLayer]))
             if countArray(self.tilemap[self.currentLayer])==0 then
 
                 table.remove(self.tilemap, self.currentLayer)
@@ -297,7 +295,7 @@ function Editor:update(dt)
         end
     end
 
-    if bindSinglePress(Keybinds.plus) then
+    if InputHandling.bindSinglePress(InputHandling.Keybinds.plus) then
         self.currentLayer = self.currentLayer + 1
         if self.currentLayer > #self.tilemap then
             self:createLayer(self.currentLayer)
@@ -375,7 +373,7 @@ function Editor:save()
             end
         end
     end
-    print(#self.entities)
+
     for i = 1, #self.entities do
         local newdatastuff = {x = self.entities[i].x, y = self.entities[i].y, label = SPRITE.spriteFileToName[self.entities[i].obj.sprite]}
         table.insert(savedEntities, newdatastuff)

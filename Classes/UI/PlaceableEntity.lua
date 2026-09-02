@@ -36,7 +36,7 @@ end
 function PlaceableEntity:updatePosition(originx, originy, scale)
     self.scaledx = originx + (self.x * scale / TILE_WIDTH)
     self.scaledy = originy + (self.y * scale / TILE_HEIGHT)
-    print(scale)
+
     self.scaledox = (self.ox * scale / TILE_WIDTH)
     self.scaledoy = (self.oy * scale / TILE_HEIGHT)
     
@@ -48,7 +48,7 @@ end
 function PlaceableEntity:update(originx, originy, scale, i, entities)
     local previousClickState = self.clicked
     self.clicked = false
-    self.mousebutton = bindPressed(Keybinds.shoot)
+    self.mousebutton = InputHandling.bindPressed(InputHandling.Keybinds.shoot)
 
     local x1 = self.scaledx - self.scaledox
     local y1 = self.scaledy - self.scaledoy
@@ -57,8 +57,8 @@ function PlaceableEntity:update(originx, originy, scale, i, entities)
     local mouse_world_y = (MouseY + scale - originy) * (TILE_HEIGHT / scale)
 
     if not GlobalMouseGrab and (MouseX > x1 and MouseX < x1 + self.scaledwidth and MouseY > y1 and MouseY < y1 + self.scaledheight) then
-        print("MouseX: "..MouseX)
-        print("other: "..self.scaledx + self.scaledwidth)
+        -- print("MouseX: "..MouseX)
+        -- print("other: "..self.scaledx + self.scaledwidth)
         self.hover = true
         GlobalMouseHover = true
         if self.mousebutton then
@@ -75,7 +75,7 @@ function PlaceableEntity:update(originx, originy, scale, i, entities)
     end
 
     if self.hover then
-        if bindPressed(Keybinds.shootalt) then 
+        if InputHandling.bindPressed(InputHandling.Keybinds.shootalt) then 
             print("removed")
             table.remove(entities, i)
         end
@@ -92,6 +92,7 @@ function PlaceableEntity:update(originx, originy, scale, i, entities)
         self.x = math.floor(mouse_world_x + self.mox)
         self.y = math.floor(mouse_world_y + self.moy)
         self.hover = true
+        GlobalMouseHover = true
     end
 
 end

@@ -9,6 +9,7 @@
     require "Engine.shaders"
     require "Engine.Updateables"
     require "Engine.sprites"
+    Editor = require "Engine.editor"
 
     Timer = require "Engine.timer"
     Timing = require "Engine.timing"
@@ -19,7 +20,7 @@
     Scene = require "Engine.scene"
     Layer = require "Engine.layers"
     Render = require "Engine.render"
-    Keybinds = require "Engine.Keybinds"
+    InputHandling = require "Engine.inputHandling"
     GameWindow = require "Engine.gameWindow"
     Particle = require "Engine.ParticalSystem.particle"
     AttachedEmitter = require "Engine.ParticalSystem.attachedEmitter"

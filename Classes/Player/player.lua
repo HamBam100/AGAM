@@ -30,16 +30,16 @@ function Player:update(dt)
     self.past.x = self.x
     self.past.y = self.y
 
-    if bindPressed(Keybinds.up) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.up) then
         self.yv = self.yv - (self.speed * dt)
     end
-    if bindPressed(Keybinds.down) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.down) then
         self.yv = self.yv + (self.speed * dt)
     end
-    if bindPressed(Keybinds.left) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.left) then
         self.xv = self.xv - (self.speed * dt)
     end
-    if bindPressed(Keybinds.right) then
+    if InputHandling.bindPressed(InputHandling.Keybinds.right) then
         self.xv = self.xv + (self.speed * dt)
     end
 

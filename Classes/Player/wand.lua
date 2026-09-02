@@ -38,7 +38,7 @@ function Wand:update(dt)
     self.r, self.v = springDamper(self.r, self.v, self.r + difference, 0, self.stiffness, self.damping, dt)
     self.r = self.r % (math.pi * 2)
 
-    if bindPressed(Keybinds.shoot) and self.cooldown.timer <= 0 then
+    if InputHandling.bindPressed(InputHandling.Keybinds.shoot) and self.cooldown.timer <= 0 then
         self:createProj()
         self.cooldown.timer = self.cooldown.time
     end

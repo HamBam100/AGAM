@@ -1,7 +1,7 @@
 local assetDirectory = "Sprites/"
 local allSpriteFiles = love.filesystem.getDirectoryItems(assetDirectory)
 
-local SPRITE = {}
+SPRITE = {}
 SPRITE.spriteFileToName = {}
 -- usage e.g. print(SPRITE.spriteFileToName[SPRITE["Wand"]])
 SPRITE.spriteNames = {}

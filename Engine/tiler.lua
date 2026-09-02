@@ -1,5 +1,3 @@
-Editor = require "Engine.editor"
-
 local Tiler = Object:extend()
 
 function Tiler:new(mapfile)

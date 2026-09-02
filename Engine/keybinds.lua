@@ -1,28 +1,28 @@
-keybinds = {}
+Keybinds = {}
 
-keybinds.up = {"keybd:w", "keybd:up", "gamepad:dpup", "analog:lefty:up"}
-keybinds.down = {"keybd:s", "keybd:down", "gamepad:dpdown", "analog:lefty:down"}
-keybinds.left = {"keybd:a", "keybd:left", "gamepad:dpleft", "analog:leftx:left"}
-keybinds.right = {"keybd:d", "keybd:right", "gamepad:dpright", "analog:leftx:right"}
-keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
-keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
-keybinds.save = {"keybd:e"}
-keybinds.space = {"keybd:space", "gamepad:a"}
-keybinds.scrollup = {"wheel:up"}
-keybinds.scrolldown = {"wheel:down"}
-keybinds.minus = {"keybd:-"}
-keybinds.plus = {"keybd:="}
-keybinds.one = {"keybd:1"}
-keybinds.two = {"keybd:2"}
-keybinds.debug = {"keybd:p"}
-keybinds.undo = {"keybd:z"}
+Keybinds.up = {"keybd:w", "keybd:up", "gamepad:dpup", "analog:lefty:up"}
+Keybinds.down = {"keybd:s", "keybd:down", "gamepad:dpdown", "analog:lefty:down"}
+Keybinds.left = {"keybd:a", "keybd:left", "gamepad:dpleft", "analog:leftx:left"}
+Keybinds.right = {"keybd:d", "keybd:right", "gamepad:dpright", "analog:leftx:right"}
+Keybinds.shoot = {"mouse:1", "gamepad:x", "analog:triggerright:down"}
+Keybinds.shootalt = {"mouse:2", "gamepad:y", "analog:triggerleft:down"}
+Keybinds.save = {"keybd:e"}
+Keybinds.space = {"keybd:space", "gamepad:a"}
+Keybinds.scrollup = {"MouseWheel:up"}
+Keybinds.scrolldown = {"MouseWheel:down"}
+Keybinds.minus = {"keybd:-"}
+Keybinds.plus = {"keybd:="}
+Keybinds.one = {"keybd:1"}
+Keybinds.two = {"keybd:2"}
+Keybinds.DebugMode = {"keybd:p"}
+Keybinds.undo = {"keybd:z"}
 
-inputMode = "keyboard"
+InputMode = "keyboard"
 
-wheel = {up = false, down = false}
+MouseWheel = {up = false, down = false}
 
 function bindPressed(bind)
-    keyIsDown = false
+    local keyIsDown = false
     bind.held = false
     
     for i=1,#bind,1 do
@@ -35,19 +35,19 @@ function bindPressed(bind)
             local button = tonumber(inputType)
 
             if love.mouse.isDown(button) then
-                inputMode = "keyboard"
+                InputMode = "keyboard"
                 keyIsDown = true
                 break
             end
         end
 
-        if bindType == "wheel:" then
+        if bindType == "MouseWheel:" then
             
             local direction = inputType
 
-            if wheel[direction] then
-                wheel = {up = false, down = false}
-                inputMode = "keyboard"
+            if MouseWheel[direction] then
+                MouseWheel = {up = false, down = false}
+                InputMode = "keyboard"
                 keyIsDown = true
                 break
             end
@@ -58,7 +58,7 @@ function bindPressed(bind)
             local button = inputType
             
             if love.keyboard.isDown(button) then
-                inputMode = "keyboard"
+                InputMode = "keyboard"
                 keyIsDown = true
                 break
             end
@@ -71,7 +71,7 @@ function bindPressed(bind)
                 local button = string.sub(bind[i], 9, -1)
                 
                 if joyStick:isGamepadDown(button) then
-                    inputMode = "gamepad"
+                    InputMode = "gamepad"
                     keyIsDown = true
                     break
                 end
@@ -140,7 +140,7 @@ function virtualMouseStart()
 end
 
 function virtualMouseUpdate(obj)
-    if joyStick and inputMode == "gamepad" then
+    if joyStick and InputMode == "gamepad" then
         obj = obj or {x=0,y=0}
         local axisx = joyStick:getGamepadAxis("rightx")
         local axisy = joyStick:getGamepadAxis("righty")
@@ -150,8 +150,8 @@ function virtualMouseUpdate(obj)
 
         end
 
-        mousex = obj.x + axisx * 100
-        mousey = obj.y + axisy * 100
+        MouseX = obj.x + axisx * 100
+        MouseY = obj.y + axisy * 100
 
         previousAxisx = axisx
         previousAxisy = axisy
@@ -162,12 +162,12 @@ end
 
 function love.wheelmoved(x, y)
     if y > 0 then
-        wheel.up = true
+        MouseWheel.up = true
         return
     end
 
     if y < 0 then
-        wheel.down = true
+        MouseWheel.down = true
         return
     end
 
@@ -175,16 +175,16 @@ end
 
 function love.joystickadded(detectedJoyStick)
     joyStick = detectedJoyStick
-    inputMode = "gamepad"
+    InputMode = "gamepad"
     print("added")
 
 end
 
 function love.joystickremoved(detectedJoyStick)
     joyStick = nil
-    inputMode = "keyboard"
+    InputMode = "keyboard"
     print("removed")
 
 end
 
-return keybinds
+return Keybinds

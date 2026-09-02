@@ -1,5 +1,5 @@
 local Timer = Object:extend()
---e.g. table.insert(timers, Timer(5, function() print("timer done") end))
+--e.g. table.insert(Timers, Timer(5, function() print("timer done") end))
 function Timer:new(time, func)
     self.time = time
     self.counter = self.time
@@ -19,9 +19,9 @@ end
 function Timer:finish()
     self.func()
 
-    for i, current in ipairs(timers) do
+    for i, current in ipairs(Timers) do
        if current == self then
-        table.remove(timers, i)
+        table.remove(Timers, i)
         return
        end
     end

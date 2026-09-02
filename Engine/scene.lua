@@ -1,9 +1,9 @@
 local Scene = Object:extend()
 
 function Scene:new(file)
-    if level then
-        level:removed()
-        level = nil
+    if Level then
+        Level:removed()
+        Level = nil
     end
 
     self.tilemap = Tiler(file)
@@ -20,34 +20,34 @@ function Scene:new(file)
         
     end
 
-    updateables = nil
-    updateables = {}
+    Updateables = nil
+    Updateables = {}
     collectgarbage("collect")
 
-    updateables.players = createUpdateableContainer()
-    updateables.enemies = createUpdateableContainer()
-    updateables.projectiles = createUpdateableContainer()
-    updateables.mouse = createUpdateableContainer()
+    Updateables.players = createUpdateableContainer()
+    Updateables.enemies = createUpdateableContainer()
+    Updateables.projectiles = createUpdateableContainer()
+    Updateables.mouse = createUpdateableContainer()
 
     if self.tilemap and self.tilemap.savedEntities then
         for _, entity in ipairs(self.tilemap.savedEntities) do
             if entity.label == "Player" then
-                spawn(Player(entity.x,entity.y), updateables.players, "Game")
-                localPlayer = updateables.players[1]
+                spawn(Player(entity.x,entity.y), Updateables.players, "Game")
+                ClientPlayer = Updateables.players[1]
             end
         end
     end
 
     
 
-    spawn(Mouse(), updateables.mouse, "UI")
+    spawn(Mouse(), Updateables.mouse, "UI")
 
     if self.safeArea then
         local x,y = getSafeArea(16, self.safeArea)
         print(x..y)
-        spawn(Slime(x, y), updateables.enemies, "Game")
+        spawn(Slime(x, y), Updateables.enemies, "Game")
     end
-    -- spawn(Gaia(), updateables.enemies, "Game")
+    -- spawn(Gaia(), Updateables.enemies, "Game")
 
 end
 
@@ -58,7 +58,7 @@ end
 function Scene:draw()
     if self.tilemap then
         self.tilemap:draw()
-        if debug then
+        if DebugMode then
             love.graphics.setColor(0.9,0.5,0.7,0.4)
             if self.colliders then
                 for i, box in ipairs(self.colliders) do

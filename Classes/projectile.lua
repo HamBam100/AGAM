@@ -15,10 +15,10 @@ function Projectile:new(i)
     self.oy = 0
     self.r = 0
     self.radius = 5
-    self.collisionType = colTypes.circle
+    self.collisionType = COLLISION_TYPES.circle
     
     self.speed = 350
-    if multiplayer then
+    if Multiplayer then
         Networking.addToSendQueue({type = "projectilePacket", packet = {x = self.x, y = self.y, xv = self.xv, yv = self.yv}})
     end
 
@@ -30,10 +30,10 @@ function Projectile:update(dt)
     
     
     if self.x > gameWidth or self.x < 0 or self.y > gameHeight or self.y < 0 then
-        poof(self, updateables.projectiles, "Projectiles")
+        poof(self, Updateables.projectiles, "Projectiles")
         return
     elseif touchingWall(self) then
-        poof(self, updateables.projectiles, "Projectiles")
+        poof(self, Updateables.projectiles, "Projectiles")
         return
     end
 

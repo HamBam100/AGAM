@@ -1,7 +1,7 @@
 local Enemy = Body2d:extend()
 
 function Enemy:new(x, y, sprite)
-    sprite = sprite or Sprite["Slime"]
+    sprite = sprite or SPRITE["Slime"]
     Enemy.super.new(self,x,y,sprite)
 
     self.xv = 0
@@ -26,9 +26,9 @@ function Enemy:update(dt)
         self.inv.cooldown = self.inv.cooldown - (1 * dt)
     end
 
-    local closestPlayer =  {x=mousex,y=mousey} --or updateables.players[1]
+    local closestPlayer =  {x=MouseX,y=MouseY} --or Updateables.players[1]
     local smallestDistance = getDistance(self, closestPlayer)
-    for i, currentPlayer in ipairs(updateables.players) do
+    for i, currentPlayer in ipairs(Updateables.players) do
         if getDistance(self, currentPlayer) < smallestDistance then
             closestPlayer = currentPlayer
             smallestDistance = getDistance(self, currentPlayer)
@@ -51,11 +51,11 @@ function Enemy:update(dt)
 
     resolveWall(self)
     
-    for j, p in ipairs(updateables.projectiles) do
+    for j, p in ipairs(Updateables.projectiles) do
         if collide(self,p) then
             -- self.hp = self.hp - 1
             self.inv.cooldown = self.inv.duration
-            poof(self, updateables.enemies, "Game")
+            poof(self, Updateables.enemies, "Game")
             return
         end
     end
@@ -70,7 +70,7 @@ function Enemy:draw()
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1,1,self.ox, self.oy)
     love.graphics.setShader()
     love.graphics.setColor(1,1,1,1)
-    if debug then
+    if DebugMode then
         drawHitbox(self)
         love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
     end

@@ -1,4 +1,4 @@
-UIElement = require "Classes.UI.UIElement"
+local UIElement = require "Classes.UI.UIElement"
 
 local Button = UIElement:extend()
 
@@ -11,7 +11,7 @@ function Button:new(x,y,width,height,func,sprite,version)
 
     self.r = 0
 
-    self.hoverColour = colour.grey
+    self.hoverColour = COLOUR_PRESET.grey
     self.lineColour = {1,1,1}
     self.backgroundColour = {}
     
@@ -30,12 +30,12 @@ function Button:update()
     self.hover = false
     
 
-    if mousex > self.x and mousex < self.x + self.width and mousey > self.y and mousey < self.y + self.height then
+    if MouseX > self.x and MouseX < self.x + self.width and MouseY > self.y and MouseY < self.y + self.height then
         self.hover = true
-        globalhover = true
+        GlobalMouseHover = true
     end
 
-    if bindPressed(keybinds.shoot) then 
+    if bindPressed(Keybinds.shoot) then 
         self.clicked = true
     end
 
@@ -59,7 +59,7 @@ function Button:draw()
     end
 
     if self.version == "tilemap" then
-        love.graphics.draw(tilesetimage,self.sprite,self.x, self.y)
+        love.graphics.draw(TILESET_IMAGE,self.sprite,self.x, self.y)
     else
         love.graphics.draw(self.sprite,self.x, self.y)
     end

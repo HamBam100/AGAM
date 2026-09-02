@@ -2,7 +2,7 @@ local Eyes = Body2d:extend()
 
 function Eyes:new(parent)
     -- Provides object with the variables of player
-    Eyes.super.new(self,64,64,Sprite["Eyes"])
+    Eyes.super.new(self,64,64,SPRITE["Eyes"])
     self.parent = parent
     self.xv = 0
     self.yv = 0
@@ -18,7 +18,7 @@ function Eyes:update()
     self.y = self.parent.y
 
     -- Offset eyes to point towards mouse
-    local rotation = math.atan2(mousey - self.y, mousex - self.x) 
+    local rotation = math.atan2(MouseY - self.y, MouseX - self.x) 
     self.xv = math.cos(rotation) * self.playerOffset
     self.yv = math.sin(rotation) * self.playerOffset
     self.x = math.floor(self.x + self.xv)

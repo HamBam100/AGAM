@@ -14,8 +14,8 @@ function updateableContainer:remove(obj)
     if fail then
         print("failed to remove object, in 'updateableContainer:remove(obj)'")
         print(self)
-        print(updateables.projectiles)
-        print(#updateables.projectiles)
+        print(Updateables.projectiles)
+        print(#Updateables.projectiles)
     end
     
 end
@@ -27,4 +27,4 @@ function createUpdateableContainer()
     
 end
 
-updateables = {}
+Updateables = {}

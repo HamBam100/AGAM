@@ -10,7 +10,7 @@ function AttachedEmitter:new(type, parent, speed)
     self.delay = 0.1 -- ten times a second
     self.counter = 0
 
-    self.partType = {r = self.r, speed = speed,  colour = {colour.red, colour.grey}}
+    self.partType = {r = self.r, speed = speed,  COLOUR_PRESET = {COLOUR_PRESET.red, COLOUR_PRESET.grey}}
 
 end
 

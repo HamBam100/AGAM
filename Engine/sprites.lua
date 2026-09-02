@@ -1,51 +1,51 @@
 local assetDirectory = "Sprites/"
 local allSpriteFiles = love.filesystem.getDirectoryItems(assetDirectory)
 
-Sprite = {}
-Sprite.spriteFileToName = {}
--- usage e.g. print(Sprite.spriteFileToName[Sprite["Wand"]])
-Sprite.spriteNames = {}
+local SPRITE = {}
+SPRITE.spriteFileToName = {}
+-- usage e.g. print(SPRITE.spriteFileToName[SPRITE["Wand"]])
+SPRITE.spriteNames = {}
 
 for _, value in ipairs(allSpriteFiles) do
     if string.match(value, ".png") then
         local spriteName = string.gsub(value, ".png", "")
         
-        Sprite[spriteName] = love.graphics.newImage(assetDirectory .. value)
-        Sprite.spriteFileToName[Sprite[spriteName]] = spriteName
-        table.insert(Sprite.spriteNames, spriteName)
+        SPRITE[spriteName] = love.graphics.newImage(assetDirectory .. value)
+        SPRITE.spriteFileToName[SPRITE[spriteName]] = spriteName
+        table.insert(SPRITE.spriteNames, spriteName)
     end
     
 end
 
-for i, value in ipairs(Sprite.spriteNames) do
-    print(value)
-    
-end
-
+-- for i, value in ipairs(SPRITE.spriteNames) do
+--     print(value)
+-- end
 
 local tilesheetdir = "Sprites/Tilemap/tilesheet.png"
-tilesetimage = love.graphics.newImage(tilesheetdir)
+TILESET_IMAGE = love.graphics.newImage(tilesheetdir)
 
-tilesetimagewidth = tilesetimage:getWidth()
-tilesetimageheight = tilesetimage:getHeight()
-tileset = {}
+local tilesetImageWidth = TILESET_IMAGE:getWidth()
+local tilesetImageHeight = TILESET_IMAGE:getHeight()
+TILESET = {}
 
-local tilesetwidth = 12
-local tilesetheight = 2
-tileWidth = 32
-tileHeight = 32
+TILE_WIDTH = 32
+TILE_HEIGHT = 32
+
+local tilesetwidth = tilesetImageWidth / TILE_WIDTH
+local tilesetheight = tilesetImageHeight / TILE_HEIGHT
+
 
 for i=0,tilesetheight - 1 do
     for j=0,tilesetwidth - 1 do
         local col = false
-        table.insert(tileset, love.graphics.newQuad(
-            j * (tileWidth),
-            i * (tileHeight),
-            tileWidth,
-            tileHeight,
-            tilesetimagewidth,
-            tilesetimageheight))
+        table.insert(TILESET, love.graphics.newQuad(
+            j * (TILE_WIDTH),
+            i * (TILE_HEIGHT),
+            TILE_WIDTH,
+            TILE_HEIGHT,
+            tilesetImageWidth,
+            tilesetImageHeight))
     end
 end
 
-collisionmask = {2,3,8,9,10,11,12,13,14,15,16,17,18,19,21}
+COLLISION_MASK = {2,3,8,9,10,11,12,13,14,15,16,17,18,19,21}

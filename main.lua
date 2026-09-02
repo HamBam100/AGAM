@@ -1,11 +1,12 @@
+require "Engine.requirments"
+
 function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
     love.graphics.setLineStyle("rough")
 
-    multiplayer = false
+    Multiplayer = false
     levelFileName = "walls.lua"
 
-    require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
     font:setFilter("nearest", "nearest")
     love.graphics.setFont(font)
@@ -28,21 +29,21 @@ function gameinit()
     Render.createLayer("Projectiles") -- 3
     Render.createLayer("UI") -- 4
 
-    state = "game"
-    debug = true
-    timers = {}
+    State = "game"
+    DebugMode = true
+    Timers = {}
 
-    if multiplayer then
+    if Multiplayer then
         Networking.start()
     end
 
-    level = Scene(levelFileName)
-    Render.addObjectToLayer("Background", level)
+    Level = Scene(levelFileName)
+    Render.addObjectToLayer("Background", Level)
 
 end
 
 function editorinit()
-    if multiplayer then
+    if Multiplayer then
         Networking.quit()
     end
 
@@ -55,65 +56,65 @@ function editorinit()
     Render.createLayer("Projectiles") -- 3
     Render.createLayer("UI") -- 4
 
-    state = "editor"
-    debug = false
+    State = "editor"
+    DebugMode = false
 
-    updateables = nil
-    updateables = {}
-    timers = {}
+    Updateables = nil
+    Updateables = {}
+    Timers = {}
 
-    if level then
-        level:removed()
-        level = nil
+    if Level then
+        Level:removed()
+        Level = nil
     end
     collectgarbage("collect")
 
-    updateables.ui = createUpdateableContainer()
+    Updateables.ui = createUpdateableContainer()
 
-    spawn(Editor(), updateables.ui, "UI")
+    spawn(Editor(), Updateables.ui, "UI")
 
 end
 
 function love.update(dt)
     require("External.lovebird").update()
     -- http://127.0.0.1:8000
-    mousex, mousey = GameWindow.getMousePosition()
+    MouseX, MouseY = GameWindow.getMousePosition()
 
-    for _, timer in ipairs(timers) do
+    for _, timer in ipairs(Timers) do
         timer:update(dt)
     end
     --Scene:update(dt)
-    if state == "game" then
-        if multiplayer then
+    if State == "game" then
+        if Multiplayer then
             Networking.update()
         end
 
-        virtualMouseUpdate(localPlayer)
+        virtualMouseUpdate(ClientPlayer)
 
-        if bindPressed(keybinds.space) then
+        if bindPressed(Keybinds.space) then
             local x,y = getSafeArea(16)
-            spawn(Slime(x, y), updateables.enemies, "Game")
+            spawn(Slime(x, y), Updateables.enemies, "Game")
         end
 
-        if bindSinglePress(keybinds.plus) then
+        if bindSinglePress(Keybinds.plus) then
             local x,y = getSafeArea(16)
-            spawn(Slime(x, y), updateables.enemies, "Game")
+            spawn(Slime(x, y), Updateables.enemies, "Game")
         end
 
-        if bindSinglePress(keybinds.debug) then
-            debug = not debug
+        if bindSinglePress(Keybinds.DebugMode) then
+            DebugMode = not DebugMode
         end
 
-        for _, update in pairs(updateables) do
+        for _, update in pairs(Updateables) do
             update:update(dt)
         end
 
         Render.sortitems()
     end
 
-    if state == "editor" then
+    if State == "editor" then
 
-        for _, update in pairs(updateables) do
+        for _, update in pairs(Updateables) do
             update:update(dt)
         end
 
@@ -123,21 +124,21 @@ end
 
 function love.draw()
     GameWindow.start()
-    if state == "game" then
+    if State == "game" then
 
-        level:draw()
+        Level:draw()
         Render.drawLayers()
 
-        debugtext = {
+        local debugtext = {
             {name = "FPS: ", data = love.timer.getFPS()},
-            {name = "Slime: ", data = #updateables.enemies},
-            {name = "State: ", data = state}
+            {name = "Slime: ", data = #Updateables.enemies},
+            {name = "State: ", data = State}
              
         }
 
-        if localPlayer then
-            playerdebugtext = {{name = "x: ", data = localPlayer.x},
-            {name = "y: ", data = localPlayer.y}}
+        if ClientPlayer then
+            playerdebugtext = {{name = "x: ", data = ClientPlayer.x},
+            {name = "y: ", data = ClientPlayer.y}}
 
             for _, text in ipairs(playerdebugtext) do
                 table.insert(debugtext, text)
@@ -153,7 +154,7 @@ function love.draw()
 
     end
 
-    if state == "editor" then
+    if State == "editor" then
 
         Render.drawLayers()
 
@@ -172,7 +173,7 @@ function love.keypressed(k)
         love.window.setFullscreen(not love.window.getFullscreen())
     end
     if k == "i" then
-        debug = not debug
+        DebugMode = not DebugMode
     end
 
     if k == "[" then
@@ -188,7 +189,7 @@ function love.keypressed(k)
     end
 
     if k == "u" then
-        if multiplayer then
+        if Multiplayer then
             Networking.addToSendQueue({type = "closePacket", packet = {}})
             Networking.update()
 
@@ -203,7 +204,7 @@ function love.keypressed(k)
 end
 
 function love.quit()
-    if multiplayer then
+    if Multiplayer then
         Networking.addToSendQueue({type = "closePacket", packet = {}})
         Networking.update()
 

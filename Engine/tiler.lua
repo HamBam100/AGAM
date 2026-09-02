@@ -36,8 +36,8 @@ function Tiler:new(mapfile)
             
             self.safeArea = self:generateAreas(loadedTilemap, filemaxwidth, filemaxheight, false) or nil
 
-            filemaxwidth = filemaxwidth * tileWidth
-            filemaxheight = filemaxheight * tileHeight
+            filemaxwidth = filemaxwidth * TILE_WIDTH
+            filemaxheight = filemaxheight * TILE_HEIGHT
 
             self.canvas = love.graphics.newCanvas(filemaxwidth,filemaxheight)
             love.graphics.setCanvas(self.canvas)
@@ -46,13 +46,13 @@ function Tiler:new(mapfile)
                 if loadedTilemap and loadedTilemap[i] then
                     for _, tile in ipairs(loadedTilemap[i]) do
                         if tile.id then
-                            love.graphics.draw(tilesetimage, tileset[tile.id], (tile.x * tileWidth) - tileWidth, (tile.y * tileHeight) - tileHeight)
+                            love.graphics.draw(TILESET_IMAGE, TILESET[tile.id], (tile.x * TILE_WIDTH) - TILE_WIDTH, (tile.y * TILE_HEIGHT) - TILE_HEIGHT)
                         end
                     end
                 end
             end
         else
-            self.canvas = love.graphics.newCanvas(tileWidth,tileHeight)
+            self.canvas = love.graphics.newCanvas(TILE_WIDTH,TILE_HEIGHT)
             print("invalid file: " .. mapfile)
         end
         
@@ -62,7 +62,7 @@ function Tiler:new(mapfile)
         end
 
     else
-        self.canvas = love.graphics.newCanvas(tileWidth,tileHeight)
+        self.canvas = love.graphics.newCanvas(TILE_WIDTH,TILE_HEIGHT)
         print("invalid file: " .. mapfile)
     end
         
@@ -87,8 +87,8 @@ function Tiler:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, checkin
             if tile.id then
 
                 local col = false
-                for j=1, #collisionmask do
-                    if tile.id == collisionmask[j] then
+                for j=1, #COLLISION_MASK do
+                    if tile.id == COLLISION_MASK[j] then
                         col = true
                         break
                     end
@@ -151,7 +151,7 @@ function Tiler:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, checkin
                         end
                     end
 
-                    local area = makeHitbox(xy((x - 1) * tileWidth, (y - 1) * tileHeight), xy((x - 1 + width) * tileWidth, (y - 1 + height) * tileHeight))
+                    local area = makeHitbox(xy((x - 1) * TILE_WIDTH, (y - 1) * TILE_HEIGHT), xy((x - 1 + width) * TILE_WIDTH, (y - 1 + height) * TILE_HEIGHT))
                     area.area = width * height
                     table.insert(createdAreas, area)
                 end

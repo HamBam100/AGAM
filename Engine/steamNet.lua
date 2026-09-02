@@ -18,10 +18,10 @@ local method_unreliable
 local method_unreliableQuick
 
 function Networking.start()
-    multiplayer = true
+    Multiplayer = true
 
-    updateables.remotePlayers = createUpdateableContainer()
-    updateables.remoteProjectiles = createUpdateableContainer()
+    Updateables.remotePlayers = createUpdateableContainer()
+    Updateables.remoteProjectiles = createUpdateableContainer()
 
     method_reliable = Steam.networkingSockets.flags.Send_Reliable
     method_unreliable = Steam.networkingSockets.flags.Send_Unreliable
@@ -47,16 +47,16 @@ function Steam.friends.onGameRichPresenceJoinRequested(data)
 end
 
 function Steam.networkingSockets.onConnectionChanged(data)
-    local state = data.state
+    local State = data.State
 	local conn = data.connection
 
-    if state == "Connecting" then
+    if State == "Connecting" then
         print("Connecting...")
         if server then
             Steam.networkingSockets.acceptConnection(conn)
             Steam.networkingSockets.setConnectionPollGroup(conn, pollGroup)
         end
-    elseif state == "Connected" then
+    elseif State == "Connected" then
         if not server then
             print("Connected to server " .. conn)
             connectionID = conn
@@ -64,15 +64,15 @@ function Steam.networkingSockets.onConnectionChanged(data)
             print("Client Connected " .. conn)
             table.insert(clients, conn)
         end
-    elseif state == "ClosedByPeer" then
+    elseif State == "ClosedByPeer" then
         print("client ".. conn .. " left")
         Steam.networkingSockets.closeConnection(conn)
-    elseif state == "ProblemDetectedLocally" then
+    elseif State == "ProblemDetectedLocally" then
         print("oopsy, local problem")
         Steam.networkingSockets.closeConnection(conn)
 
-        for i, player in ipairs(updateables.remotePlayers) do
-            poof(player, updateables.remotePlayers, "Game")
+        for i, player in ipairs(Updateables.remotePlayers) do
+            poof(player, Updateables.remotePlayers, "Game")
             print("deleted ".. player.steamID)
         end
 
@@ -152,7 +152,7 @@ function Server.update()
             local playermessage = {conn = client, msg = selfserialized, flag = method_reliable}
             table.insert(sendmessages, playermessage)
 
-            for _, player in ipairs(updateables.remotePlayers) do
+            for _, player in ipairs(Updateables.remotePlayers) do
                 local plrtosend = player
                 if plrtosend.steamID ~= conIDtoSteamID[client] then
                     local sendingData = {type = "playerPacket", id = plrtosend.steamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
@@ -205,8 +205,8 @@ function Server.update()
 end
 
 function Networking.update()
-    -- Incase Networking is updated when not in multiplayer, skip the update
-    if not multiplayer then
+    -- Incase Networking is updated when not in Multiplayer, skip the update
+    if not Multiplayer then
         return
     end
     Steam.runCallbacks()
@@ -221,9 +221,9 @@ function Networking.update()
     for i=#pendingSpawns, 1,-1 do
         local data = pendingSpawns[i]
         if data.spawnType == "player" then
-            spawn(RemotePlayer(data.id), updateables.remotePlayers, "Game")
+            spawn(RemotePlayer(data.id), Updateables.remotePlayers, "Game")
         elseif data.spawnType =="projectile" then
-            spawn(RemoteProjectile(data.packet), updateables.remoteProjectiles, "Projectiles")
+            spawn(RemoteProjectile(data.packet), Updateables.remoteProjectiles, "Projectiles")
         end
     end
     if #pendingSpawns>0 then
@@ -234,7 +234,7 @@ function Networking.update()
 end
 
 function Networking.playerSend()
-    local plrtosend = localPlayer
+    local plrtosend = ClientPlayer
     local sendingData = {type = "playerPacket", id = mySteamID, packet = {r = plrtosend.wand.r, x = plrtosend.x, y = plrtosend.y, xv = plrtosend.xv, yv = plrtosend.yv}}
     local serialized = Sir.dumps(sendingData)
     return serialized
@@ -247,7 +247,7 @@ function Networking.playerUpdate(data)
     end
     
     local playerExists = false
-    for i, player in ipairs(updateables.remotePlayers) do
+    for i, player in ipairs(Updateables.remotePlayers) do
         if player.steamID == data.id then
             player:serverUpdate(data.packet)
             playerExists = true
@@ -292,14 +292,14 @@ function Networking.closeConnection(data)
     end
     local playerExists = false
     local playerToRemove
-    for i, player in ipairs(updateables.remotePlayers) do
+    for i, player in ipairs(Updateables.remotePlayers) do
         if tostring(player.steamID) == tostring(data.id) then
             playerToRemove = player
             playerExists = true
         end
     end
     if playerExists == true then
-        poof(playerToRemove, updateables.remotePlayers, "Game")
+        poof(playerToRemove, Updateables.remotePlayers, "Game")
         print("deleted ".. playerToRemove.steamID)
     end
 end
@@ -313,7 +313,7 @@ function Networking.addToSendQueue(data)
 end
 
 function Networking.quit()
-    multiplayer = false
+    Multiplayer = false
 
 end
 

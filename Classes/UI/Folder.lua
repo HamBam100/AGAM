@@ -1,9 +1,9 @@
-UIElement = require "Classes.UI.UIElement"
+local UIElement = require "Classes.UI.UIElement"
 
 local Folder = UIElement:extend()
 
 function Folder:new(x,y,name,elements)
-    self.sprite = Sprite["Folder"]
+    self.sprite = SPRITE["Folder"]
     Folder.super.new(self, x, y, self.sprite:getWidth(), self.sprite:getHeight())
     self.type = "folder"
     self.hover = false
@@ -13,7 +13,7 @@ function Folder:new(x,y,name,elements)
 
     self.open = false
 
-    self.hoverColour = colour.grey
+    self.hoverColour = COLOUR_PRESET.grey
     self.lineColour = {1,1,1}
     self.backgroundColour = {}
     
@@ -33,12 +33,12 @@ function Folder:update()
     self.clicked = false
     self.hover = false
     
-    if mousex > self.x and mousex < self.x + self.width and mousey > self.y and mousey < self.y + self.height then
+    if MouseX > self.x and MouseX < self.x + self.width and MouseY > self.y and MouseY < self.y + self.height then
         self.hover = true
-        globalhover = true
+        GlobalMouseHover = true
     end
 
-    if bindPressed(keybinds.shoot) then 
+    if bindPressed(Keybinds.shoot) then 
         self.clicked = true
     end
 
@@ -91,7 +91,7 @@ function Folder:draw()
 end
 
 function Folder:insertElement(elemt)
-    elemt.x = tileWidth * #self.elements
+    elemt.x = TILE_WIDTH * #self.elements
     table.insert(self.elements, elemt)
 end
 
@@ -104,7 +104,7 @@ function Folder:removeElement(elemt)
     end
 
     for i, element in pairs(self.elements) do
-        element.x = tileWidth * (i - 1)
+        element.x = TILE_WIDTH * (i - 1)
     end
 
 end

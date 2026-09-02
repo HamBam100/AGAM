@@ -4,7 +4,7 @@ function Wand:new(parent)
     -- Provides object with the variables of player
     self.parent = parent
 
-    Wand.super.new(self,parent.x,parent.y,Sprite["Wand"])
+    Wand.super.new(self,parent.x,parent.y,SPRITE["Wand"])
 
     self.xv = 0
     self.yv = 0
@@ -26,7 +26,7 @@ function Wand:update(dt)
     self.y = p.y
     
     -- Point and offset wand towards mouse
-    self.targetr = math.atan2(mousey - self.y, mousex - self.x) 
+    self.targetr = math.atan2(MouseY - self.y, MouseX - self.x) 
     self.xv = math.floor(math.cos(self.targetr) * self.playerOffset)
     self.yv = math.floor(math.sin(self.targetr) * self.playerOffset)
     self.x = math.floor(self.x + self.xv)
@@ -38,7 +38,7 @@ function Wand:update(dt)
     self.r, self.v = springDamper(self.r, self.v, self.r + difference, 0, self.stiffness, self.damping, dt)
     self.r = self.r % (math.pi * 2)
 
-    if bindPressed(keybinds.shoot) and self.cooldown.timer <= 0 then
+    if bindPressed(Keybinds.shoot) and self.cooldown.timer <= 0 then
         self:createProj()
         self.cooldown.timer = self.cooldown.time
     end
@@ -65,7 +65,7 @@ function Wand:update(dt)
 end
 
 function Wand:createProj()
-    spawn(Projectile(self), updateables.projectiles, "Projectiles")
+    spawn(Projectile(self), Updateables.projectiles, "Projectiles")
 
 end
 

@@ -1,4 +1,4 @@
-UIElement = require "Classes.UI.UIElement"
+local UIElement = require "Classes.UI.UIElement"
 
 local PlaceableEntity = UIElement:extend()
 
@@ -11,8 +11,8 @@ function PlaceableEntity:new(x,y,obj)
     PlaceableEntity.super.new(self, x, y, width, height)
     
     self.scale = 0
-    self.scaledx = 0 + (self.x * self.scale/ tileWidth) - self.scale
-    self.scaledy = 0 + (self.y * self.scale/ tileHeight) - self.scale
+    self.scaledx = 0 + (self.x * self.scale/ TILE_WIDTH) - self.scale
+    self.scaledy = 0 + (self.y * self.scale/ TILE_HEIGHT) - self.scale
     self.hover = false
     self.clicked = false
 
@@ -23,7 +23,7 @@ function PlaceableEntity:new(x,y,obj)
 
     self.r = 0
 
-    self.hoverColour = colour.grey
+    self.hoverColour = COLOUR_PRESET.grey
     self.lineColour = {1,1,1}
     self.backgroundColour = {}
     
@@ -34,60 +34,64 @@ function PlaceableEntity:new(x,y,obj)
 end
 
 function PlaceableEntity:updatePosition(originx, originy, scale)
-    self.scaledx = originx + (self.x * scale / tileWidth)
-    self.scaledy = originy + (self.y * scale / tileHeight)
+    self.scaledx = originx + (self.x * scale / TILE_WIDTH)
+    self.scaledy = originy + (self.y * scale / TILE_HEIGHT)
     print(scale)
-    self.scaledox = (self.ox * scale / tileWidth)
-    self.scaledoy = (self.oy * scale / tileHeight)
+    self.scaledox = (self.ox * scale / TILE_WIDTH)
+    self.scaledoy = (self.oy * scale / TILE_HEIGHT)
     
-    self.scaledwidth = self.width * scale / tileWidth
-    self.scaledheight = self.height * scale / tileHeight
+    self.scaledwidth = self.width * scale / TILE_WIDTH
+    self.scaledheight = self.height * scale / TILE_HEIGHT
 
 end
 
 function PlaceableEntity:update(originx, originy, scale, i, entities)
     local previousClickState = self.clicked
     self.clicked = false
-    self.mousebutton = bindPressed(keybinds.shoot)
+    self.mousebutton = bindPressed(Keybinds.shoot)
 
-    self.hover = false
     local x1 = self.scaledx - self.scaledox
     local y1 = self.scaledy - self.scaledoy
-    if mousex > x1 and mousex < x1 + self.scaledwidth and mousey > y1 and mousey < y1 + self.scaledheight then
-        print("mousex: "..mousex)
+
+    local mouse_world_x = (MouseX + scale - originx) * (TILE_WIDTH / scale)
+    local mouse_world_y = (MouseY + scale - originy) * (TILE_HEIGHT / scale)
+
+    if not GlobalMouseGrab and (MouseX > x1 and MouseX < x1 + self.scaledwidth and MouseY > y1 and MouseY < y1 + self.scaledheight) then
+        print("MouseX: "..MouseX)
         print("other: "..self.scaledx + self.scaledwidth)
         self.hover = true
-        globalhover = true
+        GlobalMouseHover = true
         if self.mousebutton then
-            self.clicked = true
             self.held = true
+            GlobalMouseGrab = true
+            if not self.previousClickState then
+                
+                self.mox = (self.x - mouse_world_x)
+                self.moy = (self.y - mouse_world_y)
+            end
         end
+    else
+        self.hover = false
     end
 
-    local mouse_world_x = (mousex + scale - originx) * (tileWidth / scale)
-    local mouse_world_y = (mousey + scale - originy) * (tileHeight / scale)
-
     if self.hover then
-        
-        if previousClickState == false then
-            self.mox = (self.x - mouse_world_x)
-            self.moy = (self.y - mouse_world_y)
-        end
-
-        if bindPressed(keybinds.shootalt) then 
+        if bindPressed(Keybinds.shootalt) then 
             print("removed")
             table.remove(entities, i)
         end
+    end
         
-    elseif self.mousebutton and self.held then
-        self.held = true
-    else
+    if not self.mousebutton and self.held then
         self.held = false
+        self.hover = false
+        GlobalMouseGrab = false
+        GlobalMouseHover = false
     end
 
     if self.held then 
         self.x = math.floor(mouse_world_x + self.mox)
         self.y = math.floor(mouse_world_y + self.moy)
+        self.hover = true
     end
 
 end
@@ -108,7 +112,7 @@ function PlaceableEntity:draw(scale)
         tintShader:send("targetColour", self.hoverColour)
     end
 
-    love.graphics.draw(self.obj.sprite, math.floor(self.scaledx), math.floor(self.scaledy), 0, scale / tileWidth, scale / tileHeight, self.ox, self.oy)
+    love.graphics.draw(self.obj.sprite, math.floor(self.scaledx), math.floor(self.scaledy), 0, scale / TILE_WIDTH, scale / TILE_HEIGHT, self.ox, self.oy)
     
     love.graphics.setShader()
 

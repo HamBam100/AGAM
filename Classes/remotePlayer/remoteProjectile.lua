@@ -11,7 +11,7 @@ function RProjectile:new(packet)
     self.oy = 0
     self.r = 0
     self.radius = 5
-    self.collisionType = colTypes.circle
+    self.collisionType = COLLISION_TYPES.circle
     
     self.speed = 350
 end
@@ -21,11 +21,11 @@ function RProjectile:update(dt)
     self.y = self.y + (self.yv * self.speed * dt)
     
     if self.x > gameWidth or self.x < 0 or self.y > gameHeight or self.y < 0 then
-        poof(self, updateables.remoteProjectiles, "Projectiles")
+        poof(self, Updateables.remoteProjectiles, "Projectiles")
     end 
 
     if touchingWall(self) then
-        poof(self, updateables.remoteProjectiles, "Projectiles")
+        poof(self, Updateables.remoteProjectiles, "Projectiles")
     end
 
 end

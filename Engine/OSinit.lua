@@ -14,7 +14,7 @@ end
 
 
 
-if multiplayer then
+if Multiplayer then
     Steam = require "luasteam"
     Steam.init()
 end

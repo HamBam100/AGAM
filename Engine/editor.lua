@@ -6,6 +6,7 @@ local currentfile = levelFileName
 
 local count = 0
 local panspeed = 800
+GlobalMouseGrab = false
 
 function Editor:createLayer(i)
     self.tilemap[i] = {}    
@@ -16,12 +17,12 @@ function Editor:createButtonList(start,stop,offset)
     local list = {}
     local count = 1
     for i=start, stop do 
-        local button = Button(tileWidth * (count - 1), offset, tileWidth, tileHeight, 
+        local button = Button(TILE_WIDTH * (count - 1), offset, TILE_WIDTH, TILE_HEIGHT, 
             function()
                 random = false
                 self.tiletype = self.tilesheet[i]
             end, 
-            tileset[self.tilesheet[i].id], "tilemap"
+            TILESET[self.tilesheet[i].id], "tilemap"
         )
 
         table.insert(list, button)
@@ -55,20 +56,20 @@ function Editor:createFolders(where)
     }
 
     for i, entry in ipairs(entries) do
-        local buttons = self:createButtonList(entry.start,entry.stop,tileHeight)
-        local newFolder = Folder(i * tileWidth - tileWidth,0,entry.name,buttons)
+        local buttons = self:createButtonList(entry.start,entry.stop,TILE_HEIGHT)
+        local newFolder = Folder(i * TILE_WIDTH - TILE_WIDTH,0,entry.name,buttons)
         table.insert(where, newFolder)
     end
 
-    local newbutton = Button(tileWidth * 8, tileHeight, tileWidth, tileHeight, 
+    local newbutton = Button(TILE_WIDTH * 8, TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 
         function()
             random = false
             self.tiletype = self.tilesheet[21]
         end, 
-        tileset[21], "tilemap"
+        TILESET[21], "tilemap"
     )
     self:insertIntoFolder("Walls", newbutton)
-    local newbutton = Button(tileWidth * 8, tileHeight, tileWidth, tileHeight, 
+    local newbutton = Button(TILE_WIDTH * 8, TILE_HEIGHT, TILE_WIDTH, TILE_HEIGHT, 
         function() random = true end, 
         love.graphics.newImage("Sprites/Tilemap/rndtile.png")
     )
@@ -155,7 +156,7 @@ function Editor:new()
     self.origin = {}
     self.origin.x = 0
     self.origin.y = 0
-    self.scale = tileWidth
+    self.scale = TILE_WIDTH
     self.tileSelection = {x = 0, y = 0, mx = 0, my = 0}
     self.tiletype = self.tilesheet[1]
     self.currentLayer = 1
@@ -180,10 +181,10 @@ end
 
 
 function Editor:update(dt)
-    if bindPressed(keybinds.one) then
+    if bindPressed(Keybinds.one) then
         self.editorMode = "tile"
     end
-    if bindPressed(keybinds.two) then
+    if bindPressed(Keybinds.two) then
         self.editorMode = "entity"
     end
 
@@ -191,16 +192,16 @@ function Editor:update(dt)
         self.tiletype = self.tilesheet[love.math.random(4,7)]
     end
 
-    truemousex = mousex - self.origin.x
-    truemousey = mousey - self.origin.y
+    truemousex = MouseX - self.origin.x
+    truemousey = MouseY - self.origin.y
 
-    self.tileSelection.mx = (mousex - self.origin.x) / self.scale
-    self.tileSelection.my = (mousey - self.origin.y) / self.scale
+    self.tileSelection.mx = (MouseX - self.origin.x) / self.scale
+    self.tileSelection.my = (MouseY - self.origin.y) / self.scale
 
     self.tileSelection.x = round((self.tileSelection.mx) + 0.5)
     self.tileSelection.y = round((self.tileSelection.my) + 0.5)
 
-    globalhover = false
+    GlobalMouseHover = false
     if self.editorMode == "tile" then
         local changedButton = nil
         for i, button in ipairs(self.buttons.tilemap) do
@@ -222,12 +223,12 @@ function Editor:update(dt)
             end
         end
 
-        if globalhover == false then
-            if bindPressed(keybinds.shoot) then
+        if GlobalMouseHover == false then
+            if bindPressed(Keybinds.shoot) then
                 self:add(self.tileSelection.x, self.tileSelection.y)
             end
 
-            if bindPressed(keybinds.shootalt) then
+            if bindPressed(Keybinds.shootalt) then
                 self:remove(self.tileSelection.x, self.tileSelection.y)
             end
         end
@@ -242,50 +243,50 @@ function Editor:update(dt)
         end
     end
 
-    if bindPressed(keybinds.space) then
-        self.scale = tileWidth
+    if bindPressed(Keybinds.space) then
+        self.scale = TILE_WIDTH
 
-        self.origin.x = mousex - self.tileSelection.mx * self.scale
-        self.origin.y = mousey - self.tileSelection.my * self.scale
+        self.origin.x = MouseX - self.tileSelection.mx * self.scale
+        self.origin.y = MouseY - self.tileSelection.my * self.scale
     end
 
-    if bindPressed(keybinds.right) then
+    if bindPressed(Keybinds.right) then
         self.origin.x = self.origin.x - panspeed * dt
     end
 
-    if bindPressed(keybinds.left) then
+    if bindPressed(Keybinds.left) then
         self.origin.x = self.origin.x + panspeed * dt
     end
 
-    if bindPressed(keybinds.down) then
+    if bindPressed(Keybinds.down) then
         self.origin.y = self.origin.y - panspeed * dt
     end
-    if bindPressed(keybinds.up) then
+    if bindPressed(Keybinds.up) then
         self.origin.y = self.origin.y + panspeed * dt
     end
-    if bindSinglePress(keybinds.save) then
+    if bindSinglePress(Keybinds.save) then
         self:save()
     end
 
-    if bindPressed(keybinds.scrollup) then
+    if bindPressed(Keybinds.scrollup) then
         if self.scale < 256 then
             self.scale = self.scale + 4
 
-            self.origin.x = mousex - self.tileSelection.mx * self.scale
-            self.origin.y = mousey - self.tileSelection.my * self.scale
+            self.origin.x = MouseX - self.tileSelection.mx * self.scale
+            self.origin.y = MouseY - self.tileSelection.my * self.scale
         end
     end
 
-    if bindPressed(keybinds.scrolldown) then
+    if bindPressed(Keybinds.scrolldown) then
         if self.scale > 4 then
             self.scale = self.scale - 4
 
-            self.origin.x = mousex - self.tileSelection.mx * self.scale
-            self.origin.y = mousey - self.tileSelection.my * self.scale
+            self.origin.x = MouseX - self.tileSelection.mx * self.scale
+            self.origin.y = MouseY - self.tileSelection.my * self.scale
         end
     end
 
-    if bindSinglePress(keybinds.minus) then
+    if bindSinglePress(Keybinds.minus) then
         if self.currentLayer > 1 then
             print(countArray(self.tilemap[self.currentLayer]))
             if countArray(self.tilemap[self.currentLayer])==0 then
@@ -296,7 +297,7 @@ function Editor:update(dt)
         end
     end
 
-    if bindSinglePress(keybinds.plus) then
+    if bindSinglePress(Keybinds.plus) then
         self.currentLayer = self.currentLayer + 1
         if self.currentLayer > #self.tilemap then
             self:createLayer(self.currentLayer)
@@ -310,7 +311,7 @@ function Editor:draw()
         for y, row in pairs(layer) do
             for x, currentTile in pairs(row) do
                 if currentTile and currentTile.id then
-                    love.graphics.draw(tilesetimage, tileset[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / tileWidth, self.scale / tileHeight)
+                    love.graphics.draw(TILESET_IMAGE, TILESET[currentTile.id], self.origin.x + (x * self.scale) - self.scale, self.origin.y + (y * self.scale) - self.scale, 0, self.scale / TILE_WIDTH, self.scale / TILE_HEIGHT)
                 end
             end
         end
@@ -334,9 +335,9 @@ function Editor:draw()
 
     love.graphics.print("FPS: "..love.timer.getFPS(),0,220 + textoffset)
 
-    love.graphics.print("Hover: "..tostring(globalhover),0,240 + textoffset)
+    love.graphics.print("Hover: "..tostring(GlobalMouseHover),0,240 + textoffset)
 
-    if not globalhover then
+    if not GlobalMouseHover then
         love.graphics.rectangle("line", self.origin.x + (self.tileSelection.x - 1) * self.scale, self.origin.y + (self.tileSelection.y - 1) * self.scale, self.scale, self.scale)
     end
 
@@ -376,7 +377,7 @@ function Editor:save()
     end
     print(#self.entities)
     for i = 1, #self.entities do
-        local newdatastuff = {x = self.entities[i].x, y = self.entities[i].y, label = Sprite.spriteFileToName[self.entities[i].obj.sprite]}
+        local newdatastuff = {x = self.entities[i].x, y = self.entities[i].y, label = SPRITE.spriteFileToName[self.entities[i].obj.sprite]}
         table.insert(savedEntities, newdatastuff)
     end
 

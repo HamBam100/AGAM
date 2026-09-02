@@ -1,4 +1,4 @@
-colTypes = {rectangle = "rectangle", circle = "circle", sat = "sat"}
+COLLISION_TYPES = {rectangle = "rectangle", circle = "circle", sat = "sat"}
 
 local collisionMethods = {}
 
@@ -14,7 +14,7 @@ collisionMethods["Basic"] = function(a,b)
 end
 
 collisionMethods["BasicBoxCircle"] = function(a,b)
-    if a.collisionType == colTypes.circle then
+    if a.collisionType == COLLISION_TYPES.circle then
         return collisionMethods["BasicBoxCircle"](b,a)
     end
 
@@ -72,7 +72,7 @@ collisionMethods["SAT"] = function(a,b)
 end
 
 collisionMethods["SATBoxCircle"] = function(a,b)
-    if a.collisionType == colTypes.circle then
+    if a.collisionType == COLLISION_TYPES.circle then
         return collisionMethods["SATBoxCircle"](b,a)
     end
     local polygonA = makePolygon(a)
@@ -131,7 +131,7 @@ collisionMethods["SATConcaveCircle"] = function(a,b)
     local theCircle
     local theConcave
 
-    if a.collisionType == colTypes.circle then
+    if a.collisionType == COLLISION_TYPES.circle then
         theCircle = a
         theConcave = b
     else
@@ -427,11 +427,11 @@ function getCollisionType(a,b)
     local aIsConcave = false
     local bIsConcave = false
 
-    local aIsCircle = a.collisionType == colTypes.circle
-    local bIsCircle = b.collisionType == colTypes.circle
+    local aIsCircle = a.collisionType == COLLISION_TYPES.circle
+    local bIsCircle = b.collisionType == COLLISION_TYPES.circle
 
-    local aIsRectangle = a.collisionType == colTypes.rectangle and a.r == 0
-    local bIsRectangle = b.collisionType == colTypes.rectangle and b.r == 0
+    local aIsRectangle = a.collisionType == COLLISION_TYPES.rectangle and a.r == 0
+    local bIsRectangle = b.collisionType == COLLISION_TYPES.rectangle and b.r == 0
 
     local aIsSat = not (aIsCircle or aIsRectangle) 
     local bIsSat = not (bIsCircle or bIsRectangle) 
@@ -523,15 +523,15 @@ function wasHori(a, b)
 end
 
 function touchingWall(a)
-    if level.colliders then
-        for i=1, #level.colliders do
+    if Level.colliders then
+        for i=1, #Level.colliders do
             local wall = {}
 
-            wall.hitbox = level.colliders[i]
+            wall.hitbox = Level.colliders[i]
             wall.x = 0
             wall.y = 0
             wall.r = 0
-            wall.collisionType = colTypes.rectangle
+            wall.collisionType = COLLISION_TYPES.rectangle
             if collide(wall,a) then
                 return true
             end
@@ -569,14 +569,14 @@ function resolveBasic(a, b)
 end
 
 function resolveWallBasic(a)
-    if level and level.colliders then
+    if Level and Level.colliders then
         local wall = {}
         wall.x = 0
         wall.y = 0
         wall.r = 0
-        wall.collisionType = colTypes.rectangle
-        for i=1, #level.colliders do
-            wall.hitbox = level.colliders[i]
+        wall.collisionType = COLLISION_TYPES.rectangle
+        for i=1, #Level.colliders do
+            wall.hitbox = Level.colliders[i]
 
             resolveBasic(a, wall)
         end
@@ -596,15 +596,15 @@ function resolveSAT(a, b)
 end
 
 function resolveWallSAT(a)
-    if level.colliders then
-        for i=1, #level.colliders do
+    if Level.colliders then
+        for i=1, #Level.colliders do
 
             local wall = {}
-            wall.hitbox = level.colliders[i]
+            wall.hitbox = Level.colliders[i]
             wall.x = 0
             wall.y = 0
             wall.r = 0
-            wall.collisionType = colTypes.rectangle
+            wall.collisionType = COLLISION_TYPES.rectangle
 
             resolveSAT(a, wall)
 
@@ -615,9 +615,9 @@ end
 function resolveWall(a)
     local IsConcave = false
 
-    local IsCircle = a.collisionType == colTypes.circle
+    local IsCircle = a.collisionType == COLLISION_TYPES.circle
 
-    local IsRectangle = a.collisionType == colTypes.rectangle and a.r == 0
+    local IsRectangle = a.collisionType == COLLISION_TYPES.rectangle and a.r == 0
 
     local IsSat = not (IsCircle or IsRectangle) 
 
@@ -635,15 +635,15 @@ function resolveWall(a)
                 local concavePoly = {x = a.x, y = a.y, r = a.r, hitbox = polygon, collisionType = a.collisionType, ox = a.ox, oy = a.oy}
 
 
-                if level.colliders then
-                    for i=1, #level.colliders do
+                if Level.colliders then
+                    for i=1, #Level.colliders do
 
                         local wall = {}
-                        wall.hitbox = level.colliders[i]
+                        wall.hitbox = Level.colliders[i]
                         wall.x = 0
                         wall.y = 0
                         wall.r = 0
-                        wall.collisionType = colTypes.rectangle
+                        wall.collisionType = COLLISION_TYPES.rectangle
 
                         if collide(concavePoly, wall) then
                             local mtv = SATmtv(concavePoly, wall)

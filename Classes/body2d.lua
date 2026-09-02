@@ -8,12 +8,12 @@ function Body2d:new(x, y, sprite, r)
     self.past.x = self.x
     self.past.y = self.y
     
-    self.sprite = sprite or Sprite["Slime"]
+    self.sprite = sprite or SPRITE["Slime"]
     self.ox = math.floor(self.sprite:getWidth() / 2)
     self.oy = math.floor(self.sprite:getHeight() / 2)
 
     self.r = r or 0
-    self.collisionType = colTypes.rectangle
+    self.collisionType = COLLISION_TYPES.rectangle
     
 end
 

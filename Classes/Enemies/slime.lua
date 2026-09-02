@@ -1,7 +1,7 @@
 local Slime = Enemy:extend()
 
 function Slime:new(x, y)
-    Slime.super.new(self,x,y,Sprite["Slime"])
+    Slime.super.new(self,x,y,SPRITE["Slime"])
 
     self.timingEnabled = true
     self.timing = Timing({
@@ -34,7 +34,7 @@ function Slime:update(dt)
     self.past.y = self.y
 
     if self.hp <= 0 then
-        poof(self, updateables.enemies, "Game")
+        poof(self, Updateables.enemies, "Game")
         return
     end
 
@@ -53,7 +53,7 @@ function Slime:update(dt)
     end
 
     if self.inv.cooldown <= 0 then
-        for _, p in ipairs(updateables.projectiles) do
+        for _, p in ipairs(Updateables.projectiles) do
             if collide(self, p) then
                 self.hp = self.hp - 1
                 self.inv.cooldown = self.inv.duration
@@ -71,9 +71,9 @@ end
 
 function Slime:jump(dt)
     if self.jumpingStart then
-        local closestPlayer =  {x=mousex,y=mousey} --or localPlayer
+        local closestPlayer =  {x=MouseX,y=MouseY} --or ClientPlayer
         local smallestDistance = getDistance(self, closestPlayer)
-        for i, currentPlayer in ipairs(updateables.players) do
+        for i, currentPlayer in ipairs(Updateables.players) do
             if getDistance(self, currentPlayer) < smallestDistance then
                 closestPlayer = currentPlayer
                 smallestDistance = getDistance(self, currentPlayer)
@@ -104,7 +104,7 @@ function Slime:jump(dt)
             target.x = target.x + (xv * self.range) / accuracy
             target.y = target.y + (yv * self.range) / accuracy
             resolveWall(target)
-            if localPlayer and collide(self, localPlayer) then
+            if ClientPlayer and collide(self, ClientPlayer) then
                 break
             end
         end
@@ -141,13 +141,13 @@ function Slime:draw()
 
     -- if not self.jumping and self.jumpTimer.cooldown > 0 then
     --     love.graphics.setShader(tintShader)
-    --     tintShader:send("targetColour", colour.white)
+    --     tintShader:send("targetColour", COLOUR_PRESET.white)
     -- end
     love.graphics.setColor(1,1,1,0.9)
     love.graphics.draw(self.sprite,math.floor(self.x),math.floor(self.y),self.r, 1, self.anim.current, self.ox, self.oy)
     love.graphics.setShader(previousShader)
     love.graphics.setColor(1,1,1,1)
-    if debug then
+    if DebugMode then
         drawHitbox(self)
         -- love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
         if self.target then

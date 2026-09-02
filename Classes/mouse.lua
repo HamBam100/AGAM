@@ -1,7 +1,7 @@
 local Mouse = Object:extend()
 
 function Mouse:new()
-    self.sprite = Sprite["Cursor"]
+    self.sprite = SPRITE["Cursor"]
     self.x = 0
     self.y = 0
     self.ox = math.floor(self.sprite:getWidth() / 2)
@@ -10,8 +10,8 @@ function Mouse:new()
 end
 
 function Mouse:update()
-    self.x = mousex
-    self.y = mousey
+    self.x = MouseX
+    self.y = MouseY
 
 end
 

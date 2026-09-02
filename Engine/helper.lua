@@ -99,8 +99,8 @@ end
 
 function getSafeArea(offset, safeAreaParam)
     local currentSafeArea
-    if level and level.safeArea then
-        currentSafeArea = level.safeArea
+    if Level and Level.safeArea then
+        currentSafeArea = Level.safeArea
     else
         currentSafeArea = safeAreaParam
     end
@@ -120,7 +120,7 @@ function getSafeArea(offset, safeAreaParam)
         selectedArea.x = 0
         selectedArea.y = 0
         selectedArea.r = 0
-        selectedArea.collisionType = colTypes.rectangle
+        selectedArea.collisionType = COLLISION_TYPES.rectangle
         
         selectedArea = boxTox1x2y1y2(selectedArea)
         randomx=love.math.random(selectedArea.x1,selectedArea.x2)
@@ -150,24 +150,24 @@ function torgb(clr)
 
 end
 
-colour = {}
-colour.white = {255, 255, 255}
-colour.grey = {190, 190, 190}
-colour.red = {151, 44, 62}
-colour.aqua = {26, 237, 191}
-colour.purple = {106, 70, 184}
-colour.brown = {184, 118, 83}
-colour.green = {75,242,33}
-colour.blue = {0,130,221}
+COLOUR_PRESET = {}
+COLOUR_PRESET.white = {255, 255, 255}
+COLOUR_PRESET.grey = {190, 190, 190}
+COLOUR_PRESET.red = {151, 44, 62}
+COLOUR_PRESET.aqua = {26, 237, 191}
+COLOUR_PRESET.purple = {106, 70, 184}
+COLOUR_PRESET.brown = {184, 118, 83}
+COLOUR_PRESET.green = {75,242,33}
+COLOUR_PRESET.blue = {0,130,221}
 
 elements = {
-    ["fire"] = colour.red,
-    ["water"] = colour.aqua,
-    ["earth"] = colour.brown,
-    ["slime"] = colour.green,
-    ["air"] = colour.white,
-    ["health"] = colour.purple,
-    ["plasma"] = colour.blue
+    ["fire"] = COLOUR_PRESET.red,
+    ["water"] = COLOUR_PRESET.aqua,
+    ["earth"] = COLOUR_PRESET.brown,
+    ["slime"] = COLOUR_PRESET.green,
+    ["air"] = COLOUR_PRESET.white,
+    ["health"] = COLOUR_PRESET.purple,
+    ["plasma"] = COLOUR_PRESET.blue
 }
 
 function mix(clr1, clr2)

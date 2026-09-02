@@ -7,19 +7,19 @@
     require "Engine.helper"
     require "Engine.collision"
     require "Engine.shaders"
-    require "Engine.updateables"
+    require "Engine.Updateables"
     require "Engine.sprites"
 
     Timer = require "Engine.timer"
     Timing = require "Engine.timing"
-    if multiplayer then
+    if Multiplayer then
         Networking = require "Engine.steamNet"
     end
     Tiler = require "Engine.tiler"
     Scene = require "Engine.scene"
     Layer = require "Engine.layers"
     Render = require "Engine.render"
-    Keybinds = require "Engine.keybinds"
+    Keybinds = require "Engine.Keybinds"
     GameWindow = require "Engine.gameWindow"
     Particle = require "Engine.ParticalSystem.particle"
     AttachedEmitter = require "Engine.ParticalSystem.attachedEmitter"

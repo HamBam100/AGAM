@@ -4,7 +4,7 @@ function protectedFileLoad(file)
     local loadedFileData
     local success
     success, loadedFileData = pcall(function () local FileData = Lume.deserialize(file) return FileData end)
-    if not loadedFileData then
+    if not success then
         success, loadedFileData = pcall(function () local FileData = Sir.loads(file) return FileData end)
     end
 

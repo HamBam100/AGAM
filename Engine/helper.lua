@@ -104,7 +104,7 @@ function getSafeArea(offset, safeAreaParam)
     else
         currentSafeArea = safeAreaParam
     end
-    if currentSafeArea and currentSafeArea.chance then
+    if currentSafeArea then
         local random = randomFloat(0,1,10)
         local cumlative = 0
         local preupdate = {}
@@ -121,8 +121,12 @@ function getSafeArea(offset, safeAreaParam)
         selectedArea.y = 0
         selectedArea.r = 0
         selectedArea.collisionType = COLLISION_TYPES.rectangle
+        if selectedArea.hitbox then
+            selectedArea = boxTox1x2y1y2(selectedArea)
+        else
+            return 0, 0
+        end
         
-        selectedArea = boxTox1x2y1y2(selectedArea)
         randomx=love.math.random(selectedArea.x1,selectedArea.x2)
         randomy=love.math.random(selectedArea.y1,selectedArea.y2)
         if randomx > selectedArea.x2 - offset then 

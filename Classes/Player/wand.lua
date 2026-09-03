@@ -52,7 +52,6 @@ function Wand:update(dt)
         self.xv = 0
         self.yv = 0
 
-        self.cooldown = {timer = 0, time = 0.1}
         self.playerOffset = 60
         self.pivotOffset = 1.4
 

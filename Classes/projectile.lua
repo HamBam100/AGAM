@@ -1,5 +1,7 @@
 local Projectile = Object:extend()
 
+local Collision = Collision
+
 function Projectile:new(i)
     local rotation = radtodeg(i.r) + love.math.random(-3,3)
     rotation = degtorad(rotation)
@@ -32,7 +34,7 @@ function Projectile:update(dt)
     if self.x > gameWidth or self.x < 0 or self.y > gameHeight or self.y < 0 then
         poof(self, Updateables.projectiles, "Projectiles")
         return
-    elseif touchingWall(self) then
+    elseif Collision.touchingWall(self) then
         poof(self, Updateables.projectiles, "Projectiles")
         return
     end

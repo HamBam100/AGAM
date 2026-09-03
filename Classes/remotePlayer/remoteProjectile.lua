@@ -1,5 +1,7 @@
 local RProjectile = Object:extend()
 
+local Collision = Collision
+
 --Need to change further to be created from a projectile packet
 function RProjectile:new(packet)
 
@@ -24,7 +26,7 @@ function RProjectile:update(dt)
         poof(self, Updateables.remoteProjectiles, "Projectiles")
     end 
 
-    if touchingWall(self) then
+    if Collision.touchingWall(self) then
         poof(self, Updateables.remoteProjectiles, "Projectiles")
     end
 

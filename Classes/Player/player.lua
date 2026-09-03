@@ -9,7 +9,7 @@ function Player:new(x,y)
     self.speed = 180
     
     self.COLOUR_PRESET = mix(elements["plasma"], elements["earth"])
-    self.hitbox = makeHitbox(xy(0, 0), xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
+    self.hitbox = Collision.makeHitbox(Collision.xy(0, 0), Collision.xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
     -- self.hitbox = makeHitpoly({xy(50,0), xy(62,35), xy(100,35), xy(69,57), xy(81,95), xy(50,73), xy(19,95), xy(31,57), xy(0,35), xy(38,35)},self)
     -- self.collisionType="sat"
     self.eyes = Eyes(self)
@@ -24,6 +24,10 @@ function Player:new(x,y)
 end
 
 function Player:update(dt)
+    local InputHandling = InputHandling
+    local collide = Collision.collide
+
+
     self.xv = 0
     self.yv = 0
 
@@ -46,7 +50,7 @@ function Player:update(dt)
     self.x = self.x + self.xv
     self.y = self.y + self.yv
 
-    resolveWall(self)
+    Collision.resolveWall(self)
 
     self.wand:update(dt)
     self.eyes:update()
@@ -76,7 +80,7 @@ function Player:draw()
     
     if DebugMode then
         printcoords(self.x,self.y,-25,TILE_HEIGHT,1)
-        drawHitbox(self)
+        Collision.drawHitbox(self)
 
     end
 

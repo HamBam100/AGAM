@@ -20,7 +20,7 @@ function Slime:new(x, y)
     self.range = 60
     self.hp = 4
 
-    resolveWall(self)
+    Collision.resolveWall(self)
     self.anim = {}
     self.anim.start = 1
     self.anim.stop = 0.5
@@ -29,6 +29,7 @@ function Slime:new(x, y)
 end
 
 function Slime:update(dt)
+    local collide = Collision.collide
 
     self.past.x = self.x
     self.past.y = self.y
@@ -64,13 +65,20 @@ function Slime:update(dt)
     end
 
     if not self.jumping then
-        resolveWall(self)
+        Collision.resolveWall(self)
     end
     
 end
 
 function Slime:jump(dt)
+    local getDistance = getDistance
+
     if self.jumpingStart then
+        local xy = Collision.xy
+        local collide = Collision.collide
+        local resolveWall = Collision.resolveWall
+        local makeHitbox = Collision.makeHitbox
+
         local closestPlayer =  {x=MouseX,y=MouseY} --or ClientPlayer
         local smallestDistance = getDistance(self, closestPlayer)
         for i, currentPlayer in ipairs(Updateables.players) do
@@ -93,14 +101,14 @@ function Slime:jump(dt)
         target.collisionType = self.collisionType
         
 
-        local accuracy = 5
+        local accuracy = 2
 
         target.x = self.x
         target.y = self.y
         for i = 1, accuracy do 
             target.past = {}
-            target.past.x = self.x
-            target.past.y = self.y
+            target.past.x = target.x
+            target.past.y = target.y
             target.x = target.x + (xv * self.range) / accuracy
             target.y = target.y + (yv * self.range) / accuracy
             resolveWall(target)
@@ -148,7 +156,7 @@ function Slime:draw()
     love.graphics.setShader(previousShader)
     love.graphics.setColor(1,1,1,1)
     if DebugMode then
-        drawHitbox(self)
+        Collision.drawHitbox(self)
         -- love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
         if self.target then
             love.graphics.circle("line",self.target.x,self.target.y, 5)

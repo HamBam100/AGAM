@@ -1,5 +1,7 @@
 local Enemy = Body2d:extend()
 
+local Collision = Collision
+
 function Enemy:new(x, y, sprite)
     sprite = sprite or SPRITE["Slime"]
     Enemy.super.new(self,x,y,sprite)
@@ -10,14 +12,18 @@ function Enemy:new(x, y, sprite)
     self.speed = 70
     self.hp = 1
     self.inv = {cooldown = 0, duration = 0.1}
-    self.hitbox = makeHitbox(xy(0, 0), xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
+    self.hitbox = Collision.makeHitbox(Collision.xy(0, 0), Collision.xy(self.sprite:getWidth(), self.sprite:getHeight()), self)
     -- self.r = degtorad(45)
 
 end
 
 function Enemy:update(dt)
+    local getDistance = getDistance
+    local collide = Collision.collide
+
     self.xv = 0
     self.yv = 0
+    
 
     self.past.x = self.x
     self.past.y = self.y
@@ -25,6 +31,7 @@ function Enemy:update(dt)
     if self.inv.cooldown > 0 then
         self.inv.cooldown = self.inv.cooldown - (1 * dt)
     end
+
 
     local closestPlayer =  {x=MouseX,y=MouseY} --or Updateables.players[1]
     local smallestDistance = getDistance(self, closestPlayer)
@@ -49,7 +56,7 @@ function Enemy:update(dt)
     self.x = self.x + (self.xv * self.speed * dt)
     self.y = self.y + (self.yv * self.speed * dt)
 
-    resolveWall(self)
+    Collision.resolveWall(self)
     
     for j, p in ipairs(Updateables.projectiles) do
         if collide(self,p) then
@@ -71,7 +78,7 @@ function Enemy:draw()
     love.graphics.setShader()
     love.graphics.setColor(1,1,1,1)
     if DebugMode then
-        drawHitbox(self)
+        Collision.drawHitbox(self)
         love.graphics.print("xv: "..round(self.xv,1).." yv: "..round(self.yv,1),self.x+-25,self.y+64)
     end
 

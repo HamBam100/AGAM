@@ -5,10 +5,10 @@
 
 -- Engine components
     require "Engine.helper"
-    require "Engine.collision"
     require "Engine.shaders"
     require "Engine.updateables"
     require "Engine.sprites"
+    Collision = require "Engine.collision"
     Editor = require "Engine.editor"
 
     Timer = require "Engine.timer"

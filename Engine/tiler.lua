@@ -1,5 +1,7 @@
 local Tiler = Object:extend()
 
+local Collision = Collision
+
 function protectedFileLoad(file)
     local loadedFileData
     local success
@@ -163,7 +165,7 @@ function Tiler:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, checkin
                         end
                     end
 
-                    local area = makeHitbox(xy((x - 1) * TILE_WIDTH, (y - 1) * TILE_HEIGHT), xy((x - 1 + width) * TILE_WIDTH, (y - 1 + height) * TILE_HEIGHT))
+                    local area = Collision.makeHitbox(Collision.xy((x - 1) * TILE_WIDTH, (y - 1) * TILE_HEIGHT), Collision.xy((x - 1 + width) * TILE_WIDTH, (y - 1 + height) * TILE_HEIGHT))
                     area.area = width * height
                     table.insert(createdAreas, area)
                 end

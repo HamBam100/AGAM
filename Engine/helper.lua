@@ -97,58 +97,6 @@ function spawn(class, array, layer)
 
 end
 
-function getSafeArea(offset, safeAreaParam)
-    local currentSafeArea
-    if Level and Level.safeArea then
-        currentSafeArea = Level.safeArea
-    else
-        currentSafeArea = safeAreaParam
-    end
-    if currentSafeArea then
-        local random = randomFloat(0,1,10)
-        local cumlative = 0
-        local preupdate = {}
-        local selectedArea = {}
-        for _, area in ipairs(currentSafeArea) do
-            cumlative = cumlative + area.chance
-            if cumlative > random then
-                selectedArea.hitbox = area
-                break
-            end
-        end
-
-        selectedArea.x = 0
-        selectedArea.y = 0
-        selectedArea.r = 0
-        selectedArea.collisionType = COLLISION_TYPES.rectangle
-        if selectedArea.hitbox then
-            selectedArea = boxTox1x2y1y2(selectedArea)
-        else
-            return 0, 0
-        end
-        
-        randomx=love.math.random(selectedArea.x1,selectedArea.x2)
-        randomy=love.math.random(selectedArea.y1,selectedArea.y2)
-        if randomx > selectedArea.x2 - offset then 
-            randomx = randomx - offset
-        end
-        if randomx < selectedArea.x1 + offset then 
-            randomx = randomx + offset
-        end
-        if randomy > selectedArea.y2 - offset then 
-            randomy = randomy - offset
-        end
-        if randomy > selectedArea.y1 + offset then 
-            randomy = randomy + offset
-        end
-
-        return randomx, randomy
-    else
-        return 0, 0
-    end
-    
-end
-
 function torgb(clr)
     return clr / 255
 

@@ -90,13 +90,13 @@ function love.update(dt)
         InputHandling.virtualMouseUpdate(ClientPlayer)
 
         if InputHandling.bindPressed(InputHandling.Keybinds.space) then
-            local x,y = getSafeArea(16)
+            local x,y = Collision.getSafeArea(16)
             spawn(Slime(x, y), Updateables.enemies, "Game")
         end
 
         if InputHandling.bindSinglePress(InputHandling.Keybinds.plus) then
-            local x,y = getSafeArea(16)
-            spawn(Slime(x, y), Updateables.enemies, "Game")
+            local x,y = Collision.getSafeArea(16)
+            spawn(Fish(x, y), Updateables.enemies, "Game")
         end
 
         if InputHandling.bindSinglePress(InputHandling.Keybinds.DebugMode) then

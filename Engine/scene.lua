@@ -43,7 +43,7 @@ function Scene:new(file)
     spawn(Mouse(), Updateables.mouse, "UI")
 
     if self.safeArea then
-        local x,y = getSafeArea(16, self.safeArea)
+        local x,y = Collision.getSafeArea(16, self.safeArea)
         spawn(Slime(x, y), Updateables.enemies, "Game")
     end
     -- spawn(Gaia(), Updateables.enemies, "Game")

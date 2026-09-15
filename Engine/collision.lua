@@ -762,7 +762,7 @@ function Collision.SATmtv(objA, objB) --https://web.archive.org/web/202404231925
     return {x = smallest.x * overlap, y = smallest.y * overlap}
 end
 
-function getSafeArea(offset, safeAreaParam)
+function Collision.getSafeArea(offset, safeAreaParam)
     local currentSafeArea
     if Level and Level.safeArea then
         currentSafeArea = Level.safeArea

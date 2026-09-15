@@ -36,6 +36,7 @@
     --Enemy componets
         Enemy = require "Classes.Enemies.enemy"
         Slime = require "Classes.Enemies.slime"
+        Fish = require "Classes.Enemies.fish"
         Gaia = require "Classes.Enemies.gaia"
 
     Projectile = require "Classes.projectile"

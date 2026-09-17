@@ -40,6 +40,7 @@ function Networking.start()
 end
 
 function Steam.friends.onGameRichPresenceJoinRequested(data)
+    print("trying to connect")
 	Steam.networkingSockets.connectP2P(Steam.extra.parseUint64(data.connect), 0)
 	
 	Steam.friends.setRichPresence("connect", data.connect)
@@ -47,16 +48,17 @@ function Steam.friends.onGameRichPresenceJoinRequested(data)
 end
 
 function Steam.networkingSockets.onConnectionChanged(data)
-    local State = data.State
+    print("Something is happening")
+    local connection_State = data.state
 	local conn = data.connection
 
-    if State == "Connecting" then
+    if connection_State == "Connecting" then
         print("Connecting...")
         if server then
             Steam.networkingSockets.acceptConnection(conn)
             Steam.networkingSockets.setConnectionPollGroup(conn, pollGroup)
         end
-    elseif State == "Connected" then
+    elseif connection_State == "Connected" then
         if not server then
             print("Connected to server " .. conn)
             connectionID = conn
@@ -64,10 +66,10 @@ function Steam.networkingSockets.onConnectionChanged(data)
             print("Client Connected " .. conn)
             table.insert(clients, conn)
         end
-    elseif State == "ClosedByPeer" then
+    elseif connection_State == "ClosedByPeer" then
         print("client ".. conn .. " left")
         Steam.networkingSockets.closeConnection(conn)
-    elseif State == "ProblemDetectedLocally" then
+    elseif connection_State == "ProblemDetectedLocally" then
         print("oopsy, local problem")
         Steam.networkingSockets.closeConnection(conn)
 
@@ -86,6 +88,12 @@ function Steam.networkingSockets.onConnectionChanged(data)
         local pendingSpawns = {}
         local pendingSends = {}
         Networking.start()
+    else
+        print("Something really screwed up" .. conn)
+        if server then
+            Steam.networkingSockets.acceptConnection(conn)
+            Steam.networkingSockets.setConnectionPollGroup(conn, pollGroup)
+        end
     end
 
 end
@@ -125,12 +133,17 @@ function Client.update()
         if messages then
             for _, data in ipairs(messages) do
                 local deserData = Sir.loads(data)
-                if deserData.type == "playerPacket" then
-                    Networking.playerUpdate(deserData)
-                elseif deserData.type == "projectilePacket" then
-                    Networking.projectileCreate(deserData)
-                elseif deserData.type == "closePacket" then
-                    Networking.closeConnection(deserData)
+                if deserData and deserData.type then
+                    if deserData.type == "playerPacket" then
+                        Networking.playerUpdate(deserData)
+                    elseif deserData.type == "projectilePacket" then
+                        Networking.projectileCreate(deserData)
+                    elseif deserData.type == "closePacket" then
+                        Networking.closeConnection(deserData)
+                    elseif deserData.type == "levelPacket" then
+                        Level = Scene(deserData.msg, "notNormal")
+                        
+                    end
                 end
                 
             end
@@ -186,15 +199,17 @@ function Server.update()
         if messages then
             for _, data in ipairs(messages) do
                 local deserData = Sir.loads(data.msg)
-                if deserData.type == "playerPacket" then
-                    if conIDtoSteamID[data.conn] == nil then
-                        conIDtoSteamID[data.conn] = deserData.id
+                if deserData and deserData.type then
+                    if deserData.type == "playerPacket" then
+                        if conIDtoSteamID[data.conn] == nil then
+                            conIDtoSteamID[data.conn] = deserData.id
+                        end
+                        Networking.playerUpdate(deserData)
+                    elseif deserData.type == "projectilePacket" then
+                        Networking.projectileCreate(deserData)
+                    elseif deserData.type == "closePacket" then
+                        Networking.closeConnection(deserData)
                     end
-                    Networking.playerUpdate(deserData)
-                elseif deserData.type == "projectilePacket" then
-                    Networking.projectileCreate(deserData)
-                elseif deserData.type == "closePacket" then
-                    Networking.closeConnection(deserData)
                 end
             end
         end

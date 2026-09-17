@@ -14,65 +14,23 @@ function protectedFileLoad(file)
 
 end
 
-function Tiler:new(mapfile)
+function Tiler:new(mapfile, mode)
     if love.filesystem.getInfo(mapfile) then
 
         self.x = 0
         self.y = 0
-            
-        local file = love.filesystem.read(mapfile)
-        local loadedtilemapdata = protectedFileLoad(file)
-
-        if loadedtilemapdata then
-            if loadedtilemapdata.savedTilemap then
-                local loadedTilemap = loadedtilemapdata.savedTilemap
-
-                local filemaxwidth = 1
-                local filemaxheight = 1
-                
-                for i=1, #loadedTilemap do
-                    if loadedTilemap and loadedTilemap[i] then
-                        for _, tile in ipairs(loadedTilemap[i]) do
-                            if tile.x > filemaxwidth then
-                                filemaxwidth = tile.x
-                            end
-
-                            if tile.y > filemaxheight then
-                                filemaxheight = tile.y
-                            end
-                        end
-                    end
-                end
-
-                self.colliders = self:generateAreas(loadedTilemap, filemaxwidth, filemaxheight, true) or nil
-                
-                self.safeArea = self:generateAreas(loadedTilemap, filemaxwidth, filemaxheight, false) or nil
-
-                filemaxwidth = filemaxwidth * TILE_WIDTH
-                filemaxheight = filemaxheight * TILE_HEIGHT
-
-                self.canvas = love.graphics.newCanvas(filemaxwidth,filemaxheight)
-                love.graphics.setCanvas(self.canvas)
-
-                for i=1, #loadedTilemap do
-                    if loadedTilemap and loadedTilemap[i] then
-                        for _, tile in ipairs(loadedTilemap[i]) do
-                            if tile.id then
-                                love.graphics.draw(TILESET_IMAGE, TILESET[tile.id], (tile.x * TILE_WIDTH) - TILE_WIDTH, (tile.y * TILE_HEIGHT) - TILE_HEIGHT)
-                            end
-                        end
-                    end
-                end
-            else
-                self.canvas = love.graphics.newCanvas(TILE_WIDTH,TILE_HEIGHT)
-                print("invalid file: " .. mapfile)
-            end
-            
-            if loadedtilemapdata.savedEntities then
-                local loadedEntities = loadedtilemapdata.savedEntities
-                self.savedEntities = loadedEntities
-            end
+        
+        local file
+        if mode == "fileLoad" then
+            file = love.filesystem.read(mapfile)
+        else
+            file = mapfile
         end
+        
+
+        local loadedtilemapdata = protectedFileLoad(file)
+        Tiler:generateGameData(loadedtilemapdata)
+        
         
 
     else
@@ -81,6 +39,62 @@ function Tiler:new(mapfile)
     end
         
     love.graphics.setCanvas()
+
+end
+
+function Tiler:generateGameData(loadedtilemapdata)
+    if loadedtilemapdata then
+        if loadedtilemapdata.savedTilemap then
+            local loadedTilemap = loadedtilemapdata.savedTilemap
+
+            local filemaxwidth = 1
+            local filemaxheight = 1
+            
+            for i=1, #loadedTilemap do
+                if loadedTilemap and loadedTilemap[i] then
+                    for _, tile in ipairs(loadedTilemap[i]) do
+                        if tile.x > filemaxwidth then
+                            filemaxwidth = tile.x
+                        end
+
+                        if tile.y > filemaxheight then
+                            filemaxheight = tile.y
+                        end
+                    end
+                end
+            end
+
+            self.colliders = self:generateAreas(loadedTilemap, filemaxwidth, filemaxheight, true) or nil
+            
+            self.safeArea = self:generateAreas(loadedTilemap, filemaxwidth, filemaxheight, false) or nil
+
+            filemaxwidth = filemaxwidth * TILE_WIDTH
+            filemaxheight = filemaxheight * TILE_HEIGHT
+
+            self.canvas = love.graphics.newCanvas(filemaxwidth,filemaxheight)
+            love.graphics.setCanvas(self.canvas)
+
+            for i=1, #loadedTilemap do
+                if loadedTilemap and loadedTilemap[i] then
+                    for _, tile in ipairs(loadedTilemap[i]) do
+                        if tile.id then
+                            love.graphics.draw(TILESET_IMAGE, TILESET[tile.id], (tile.x * TILE_WIDTH) - TILE_WIDTH, (tile.y * TILE_HEIGHT) - TILE_HEIGHT)
+                        end
+                    end
+                end
+            end
+        else
+            self.canvas = love.graphics.newCanvas(TILE_WIDTH,TILE_HEIGHT)
+            print("invalid file: ")
+        end
+        
+        if loadedtilemapdata.savedEntities then
+            local loadedEntities = loadedtilemapdata.savedEntities
+            self.savedEntities = loadedEntities
+        end
+    end
+
+    return self
 
 end
 

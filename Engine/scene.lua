@@ -1,12 +1,13 @@
 local Scene = Object:extend()
 
-function Scene:new(file)
+function Scene:new(file, mode)
+    mode = mode or "fileLoad"
     if Level then
         Level:removed()
         Level = nil
     end
 
-    self.tilemap = Tiler(file)
+    self.tilemap = Tiler(file, mode)
 
     if self.tilemap then
         if self.tilemap.colliders then
@@ -28,6 +29,13 @@ function Scene:new(file)
     Updateables.enemies = createUpdateableContainer()
     Updateables.projectiles = createUpdateableContainer()
     Updateables.mouse = createUpdateableContainer()
+
+    if Multiplayer then
+        Networking.start()
+        if love.filesystem.getInfo(levelFileName) then
+            Networking.addToSendQueue({type = "levelPacket", packet = {love.filesystem.read(mapfile)}})
+        end
+    end
 
     if self.tilemap and self.tilemap.savedEntities then
         for _, entity in ipairs(self.tilemap.savedEntities) do

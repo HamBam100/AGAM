@@ -2,7 +2,8 @@ function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
     love.graphics.setLineStyle("rough")
 
-    Multiplayer = false
+    -- local socket = require "socket"
+    Multiplayer = true
     levelFileName = "walls.lua"
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
@@ -30,12 +31,9 @@ function gameinit()
     State = "game"
     DebugMode = true
     Timers = {}
-
-    if Multiplayer then
-        Networking.start()
-    end
-
+    
     Level = Scene(levelFileName)
+    
     Render.addObjectToLayer("Background", Level)
 
 end

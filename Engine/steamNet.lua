@@ -2,7 +2,7 @@ require "Engine.OSinit"
 
 local Networking = {}
 
-local server = false
+local server = true
 local connectionID
 local pollGroup
 local clients
@@ -141,7 +141,7 @@ function Client.update()
                     elseif deserData.type == "closePacket" then
                         Networking.closeConnection(deserData)
                     elseif deserData.type == "levelPacket" then
-                        Level = Scene(deserData.msg, "notNormal")
+                        Level = Scene(deserData.packet, "notNormal")
                         
                     end
                 end

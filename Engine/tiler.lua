@@ -15,24 +15,27 @@ function protectedFileLoad(file)
 end
 
 function Tiler:new(mapfile, mode)
-    if love.filesystem.getInfo(mapfile) then
-
+    local file
+    if mode ~= "fileLoad" then
+        file = mapfile
+        print(file)
+    end
+        
+    if file then
         self.x = 0
         self.y = 0
         
-        local file
-        if mode == "fileLoad" then
-            file = love.filesystem.read(mapfile)
-        else
-            file = mapfile
-        end
-        
-
         local loadedtilemapdata = protectedFileLoad(file)
         Tiler:generateGameData(loadedtilemapdata)
         
+    elseif love.filesystem.getInfo(mapfile) then
+        self.x = 0
+        self.y = 0
         
-
+        file = love.filesystem.read(mapfile)
+        
+        local loadedtilemapdata = protectedFileLoad(file)
+        Tiler:generateGameData(loadedtilemapdata)
     else
         self.canvas = love.graphics.newCanvas(TILE_WIDTH,TILE_HEIGHT)
         print("invalid file: " .. mapfile)

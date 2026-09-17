@@ -33,7 +33,7 @@ function Scene:new(file, mode)
     if Multiplayer then
         Networking.start()
         if love.filesystem.getInfo(levelFileName) then
-            Networking.addToSendQueue({type = "levelPacket", packet = {love.filesystem.read(mapfile)}})
+            Networking.addToSendQueue({type = "levelPacket", packet = {love.filesystem.read(levelFileName)}})
         end
     end
 

@@ -4,7 +4,7 @@ function love.load()
 
     -- local socket = require "socket"
     Multiplayer = true
-    levelFileName = "walls.lua"
+    defaultLevelFileName = "walls.lua"
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
     font:setFilter("nearest", "nearest")
@@ -19,7 +19,8 @@ function love.load()
 
 end
 
-function gameinit()
+function gameinit(levelFile)
+    local levelFile = levelFile or defaultLevelFileName
     Render.reset()
     love.mouse.setVisible(false)
 
@@ -32,7 +33,7 @@ function gameinit()
     DebugMode = true
     Timers = {}
     
-    Level = Scene(levelFileName)
+    Level = Scene(levelFile)
     
     Render.addObjectToLayer("Background", Level)
 

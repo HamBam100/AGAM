@@ -14,11 +14,10 @@ function protectedFileLoad(file)
 
 end
 
-function Tiler:new(mapfile, mode)
+function Tiler:new(mapfile)
     local file
-    if mode ~= "fileLoad" then
-        file = mapfile
-        print(file)
+    if type(mapfile) == "table" then
+        file = mapfile[1]
     end
         
     if file then
@@ -206,6 +205,9 @@ function Tiler:generateAreas(loadedtilemap, filemaxwidth, filemaxheight, checkin
 end
 
 function Tiler:draw(xpos,ypos)
+    if not self.canvas then
+        return
+    end
     xpos = xpos or 0
     ypos = ypos or 0
     love.graphics.draw(self.canvas,xpos,ypos)

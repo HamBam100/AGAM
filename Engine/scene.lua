@@ -1,13 +1,12 @@
 local Scene = Object:extend()
 
-function Scene:new(file, mode)
-    mode = mode or "fileLoad"
+function Scene:new(file)
     if Level then
         Level:removed()
         Level = nil
     end
 
-    self.tilemap = Tiler(file, mode)
+    self.tilemap = Tiler(file)
 
     if self.tilemap then
         if self.tilemap.colliders then
@@ -32,8 +31,8 @@ function Scene:new(file, mode)
 
     if Multiplayer then
         Networking.start()
-        if love.filesystem.getInfo(levelFileName) then
-            Networking.addToSendQueue({type = "levelPacket", packet = {love.filesystem.read(levelFileName)}})
+        if love.filesystem.getInfo(defaultLevelFileName) then
+            Networking.addToSendQueue({type = "levelPacket", packet = {love.filesystem.read(defaultLevelFileName)}})
         end
     end
 
@@ -89,6 +88,7 @@ end
 
 function Scene:removed()
     self.colliders = nil
+    self.safeArea = nil
     if self.tilemap then 
         self.tilemap:removed()
     end

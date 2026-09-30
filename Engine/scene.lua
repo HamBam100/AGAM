@@ -30,9 +30,9 @@ function Scene:new(file)
     Updateables.mouse = createUpdateableContainer()
 
     if Multiplayer then
-        Networking.start()
+        Networking:load()
         if love.filesystem.getInfo(defaultLevelFileName) then
-            Networking.addToSendQueue({type = "levelPacket", packet = {love.filesystem.read(defaultLevelFileName)}})
+            Networking.addToSendQueue({type = "levelPacket", packet = {protectedFileLoad(love.filesystem.read(defaultLevelFileName))}})
         end
     end
 

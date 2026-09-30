@@ -83,7 +83,7 @@ function love.update(dt)
     --Scene:update(dt)
     if State == "game" then
         if Multiplayer then
-            Networking.update()
+            Networking:update(dt)
         end
 
         InputHandling.virtualMouseUpdate(ClientPlayer)
@@ -188,7 +188,7 @@ function love.keypressed(k)
     if k == "u" then
         if Multiplayer then
             Networking.addToSendQueue({type = "closePacket", packet = {}})
-            Networking.update()
+            Networking:update(1)
 
             Networking.quit()
         end
@@ -203,7 +203,7 @@ end
 function love.quit()
     if Multiplayer then
         Networking.addToSendQueue({type = "closePacket", packet = {}})
-        Networking.update()
+        Networking:update(1)
 
         Networking.quit()
     end

@@ -4,7 +4,7 @@ local address, port = "localhost", 55555
 local entity
 local updateRate = 0.1
 local t
-
+isServer = true
 local SocketNetworking =  {}
 
 function SocketNetworking:load()

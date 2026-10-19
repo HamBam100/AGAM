@@ -36,11 +36,13 @@ function Scene:new(file)
         end
     end
 
-    if self.tilemap and self.tilemap.savedEntities then
-        for _, entity in ipairs(self.tilemap.savedEntities) do
-            if entity.label == "Player" then
-                spawn(Player(entity.x,entity.y), Updateables.players, "Game")
-                ClientPlayer = Updateables.players[1]
+    if not isServer then
+        if self.tilemap and self.tilemap.savedEntities then
+            for _, entity in ipairs(self.tilemap.savedEntities) do
+                if entity.label == "Player" then
+                    spawn(Player(entity.x,entity.y), Updateables.players, "Game")
+                    ClientPlayer = Updateables.players[1]
+                end
             end
         end
     end

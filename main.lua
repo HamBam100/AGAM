@@ -30,7 +30,7 @@ function gameinit(levelFile)
     Render.createLayer("UI") -- 4
 
     State = "game"
-    DebugMode = true
+    DebugMode = false
     Timers = {}
     
     Level = Scene(levelFile)

@@ -14,7 +14,11 @@
     Timer = require "Engine.timer"
     Timing = require "Engine.timing"
     if Multiplayer then
-        Networking = require "Engine.socketClient"
+        if isServer then
+            Networking = require "Engine.socketServer"
+        else
+            Networking = require "Engine.socketClient"
+        end
     end
     Tiler = require "Engine.tiler"
     Scene = require "Engine.scene"

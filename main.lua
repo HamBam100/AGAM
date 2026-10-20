@@ -2,8 +2,8 @@ function love.load()
     love.graphics.setDefaultFilter("nearest","nearest")
     love.graphics.setLineStyle("rough")
 
-    -- local socket = require "socket"
     Multiplayer = true
+    isServer = true -- set to false on client
     defaultLevelFileName = "walls.lua"
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")

@@ -74,9 +74,6 @@ end
 
 function SocketNetworking.playerUpdate(data)
     local ent, typ, sir = data:match("^(%S*) (%S*) (.*)")
-    if ent == entity then
-        return
-    end
     
     local playerExists = false
     for k, v in ipairs(SocketNetworking.players) do

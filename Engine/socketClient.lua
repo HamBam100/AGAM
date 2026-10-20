@@ -1,9 +1,9 @@
 local socket = require("socket")
 
-local address, port = "localhost", 55555
+local address, port = "10.89.9.74", 55555
 local entity
 local updateRate = 0.1
-local t
+local t = 0
 
 local pendingSpawns = {}
 -- local pendingSends = {}
@@ -16,7 +16,7 @@ function SocketNetworking:load()
     udp:setpeername(address, port)
     math.randomseed(os.time()) 
 	entity = tostring(math.random(99999))
-    print(string.format("%s %s %f %f", entity, 'move', 10, -6))
+    -- print(string.format("%s %s %f %f", entity, 'move', 10, -6))
 
     -- local msg = string.format("%s %s %s", entity, "testPacket", "hello")
     -- ent, typ, sir = msg:match("^(%S*) (%S*) (%S*)")
@@ -94,19 +94,21 @@ function SocketNetworking:update(dt)
 end
 
 function SocketNetworking.addToSendQueue(item)
-    local type = item.type
-    local packet = item.packet
-    local data = Sir.dumps(packet)
+    -- local type = item.type
+    -- local packet = item.packet
+    -- local data = Sir.dumps(packet)
 
-    print(entity .. " " .. type .. " " .. data)
-    local msg = string.format("%s %s %s", entity, type, data)
+    -- print(entity .. " " .. type .. " " .. data)
+    -- local msg = string.format("%s %s %s", entity, type, data)
 
-    udp:send(msg)
-
+    -- udp:send(msg)
+    return
 end
 
 function SocketNetworking.playerSend(data)
-    local item = {type = entity, packet = "playerPacket", data = data}
+    local playerdata = {data = {r = data.wand.r, x = data.x, y = data.y, xv = data.xv, yv = data.yv}}
+    local item = {type = entity, packet = "playerPacket", data = Sir.dumps(playerdata)}
+    print(item.type .. item.packet .. item.data)
     SocketNetworking.addToSendQueue(item)
     
 end

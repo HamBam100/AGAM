@@ -3,7 +3,7 @@ function love.load()
     love.graphics.setLineStyle("rough")
 
     Multiplayer = true
-    isServer = true -- set to false on client
+    isServer = false -- set to false on client
     defaultLevelFileName = "walls.lua"
     require "Engine.requirments"
     local font = love.graphics.newFont(11, "mono")
@@ -36,6 +36,7 @@ function gameinit(levelFile)
     Level = Scene(levelFile)
     
     Render.addObjectToLayer("Background", Level)
+    Networking:load()
 
 end
 

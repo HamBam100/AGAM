@@ -63,9 +63,11 @@ function SocketNetworking:update(dt)
             print("player doesnt exist")
         end
     end
+
     for _, item in ipairs(pendingSends) do
         
     end
+    
     socket.sleep(0.01)
 
 end
@@ -80,14 +82,13 @@ function SocketNetworking.playerUpdate(data)
     for k, v in ipairs(SocketNetworking.players) do
         if k == ent then
             playerExists = true
-            SocketNetworking.players[ent] = {typ = "playerPacket", sir = sir}
-            return
         end
         
     end
     if playerExists == false then
-        SocketNetworking.players[ent] = {typ = "playerPacket", sir = sir}
+        --SEND LEVEL PACKET HERE--
     end
+    SocketNetworking.players[ent] = {typ = "playerPacket", sir = sir}
 end
 
 

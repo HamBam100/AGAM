@@ -2,7 +2,7 @@ local socket = require("socket")
 
 local address, port = "localhost", 55555
 local entity
-local updateRate = 0.5
+local updateRate = 0.1
 local t
 local clients = {}
 -- local pendingSpawns = {}
@@ -59,7 +59,7 @@ function SocketNetworking:update(dt)
         for key, value in pairs(SocketNetworking.players) do
             if k ~= key then
                 local currentPlayer = value
-                print(string.format("%s %s %s", key, "playerPacket", currentPlayer.sir) .. v.ip .. v.port)
+                -- print(string.format("%s %s %s", key, "playerPacket", currentPlayer.sir) .. v.ip .. v.port)
                 udp:sendto(string.format("%s %s %s", key, "playerPacket", currentPlayer.sir), v.ip,  v.port)
             end
         end

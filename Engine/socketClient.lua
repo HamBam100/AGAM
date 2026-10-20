@@ -23,6 +23,7 @@ function SocketNetworking:load()
     -- print(ent)
     -- print(typ)
     -- print(sir)
+    print("My id is " .. entity)
     t = 0
 end
 
@@ -41,9 +42,9 @@ function SocketNetworking:update(dt)
             if data then
                 print("data " .. data)
                 local ent, typ, sir = data:match("^(%S*) (%S*) (%S*)")
-                print(ent)
-                print(typ)
-                print(sir)
+                -- print(ent)
+                -- print(typ)
+                -- print(sir)
                 local packet
 
                 if typ then
@@ -100,13 +101,13 @@ function SocketNetworking.addToSendQueue(item)
 
     -- print(entity .. " " .. type .. " " .. data)
     local msg = string.format("%s %s %s", entity, type, data)
-    print(msg)
+    -- print(msg)
     udp:send(msg)
     -- return
 end
 
 function SocketNetworking.playerSend(data)
-    local playerdata = {data = {r = data.wand.r, x = data.x, y = data.y, xv = data.xv, yv = data.yv}}
+    local playerdata = {r = data.wand.r, x = data.x, y = data.y, xv = data.xv, yv = data.yv}
     local item = {entity = entity, type = "playerPacket", data = playerdata}
     SocketNetworking.addToSendQueue(item)
     
@@ -114,6 +115,7 @@ end
 
 function SocketNetworking.playerUpdate(data)
     local ent, typ, sir = data:match("^(%S*) (%S*) (%S*)")
+    print(sir)
     local packet = Lume.deserialize(sir)
     if ent == entity then
         return

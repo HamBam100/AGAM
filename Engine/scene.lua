@@ -25,6 +25,7 @@ function Scene:new(file)
     collectgarbage("collect")
 
     Updateables.players = createUpdateableContainer()
+    Updateables.remotePlayers = createUpdateableContainer()
     Updateables.enemies = createUpdateableContainer()
     Updateables.projectiles = createUpdateableContainer()
     Updateables.mouse = createUpdateableContainer()

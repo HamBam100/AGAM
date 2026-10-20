@@ -2,7 +2,7 @@ local socket = require("socket")
 
 local address, port = "localhost", 55555
 local entity
-local updateRate = 0.1
+local updateRate = 0.5
 local t
 local clients = {}
 -- local pendingSpawns = {}
@@ -36,7 +36,7 @@ function SocketNetworking:update(dt)
     if data then
 		--print(data .. " Data line")
 		ent, typ, sir = data:match("^(%S*) (%S*) (.*)")
-		print("ent " .. ent .. " typ " .. typ .. " sir " .. sir)
+		-- print("ent " .. ent .. " typ " .. typ .. " sir " .. sir)
         if not clients[ent] then
             clients[ent] = {ip = msg_or_ip, port = port_or_nil}
         end
@@ -57,12 +57,10 @@ function SocketNetworking:update(dt)
 
     for k, v in pairs(clients) do
         for key, value in pairs(SocketNetworking.players) do
-            if k == key then
-
-            else
+            if k ~= key then
                 local currentPlayer = value
-                print(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir))
-                udp:sendto(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir), v.ip,  v.port)
+                print(string.format("%s %s %s", key, "playerPacket", currentPlayer.sir) .. v.ip .. v.port)
+                udp:sendto(string.format("%s %s %s", key, "playerPacket", currentPlayer.sir), v.ip,  v.port)
             end
         end
 
@@ -92,7 +90,7 @@ function SocketNetworking.playerUpdate(data)
     if playerExists == false then
         --SEND LEVEL PACKET HERE--
     end
-    print(ent .. "playerupdate line")
+    -- print(ent .. "playerupdate line")
     SocketNetworking.players[ent] = {typ = typ, sir = sir}
 end
 
@@ -110,7 +108,7 @@ function SocketNetworking.addToSendQueue(item)
     local packet = item.packet
     local data = Sir.dumps(packet)
 
-    print(entity .. " " .. type .. " " .. data)
+    -- print(entity .. " " .. type .. " " .. data)
     local msg = string.format("%s %s %s", entity, type, data)
 
     -- udp:send(msg)

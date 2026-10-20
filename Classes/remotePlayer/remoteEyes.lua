@@ -20,7 +20,10 @@ end
 
 --self:serverUpdate(wandPacket)
 function REyes:serverUpdate(playerPacket)
-    self.r = playerPacket.r
+    if playerPacket.r then
+        self.r = playerPacket.r
+    end
+    
     
 end
 

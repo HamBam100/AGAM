@@ -16,8 +16,8 @@ function RPlayer:new(ID)
 end
 
 function RPlayer:update(dt)
-    self.x = self.x + self.xv
-    self.y = self.y + self.yv
+    -- self.x = self.x + self.xv
+    -- self.y = self.y + self.yv
 
     self.wand:update()
     self.eyes:update()
@@ -26,11 +26,14 @@ end
 
 --self:serverUpdate(playerPacket)
 function RPlayer:serverUpdate(playerPacket)
-    self.xv = playerPacket.xv / 10
-    self.yv = playerPacket.yv / 10
+    -- self.xv = playerPacket.xv / 10
+    -- self.yv = playerPacket.yv / 10
 
-    self.x = playerPacket.x
-    self.y = playerPacket.y
+    if playerPacket.x and playerPacket.y then
+        self.x = playerPacket.x
+        self.y = playerPacket.y
+    end
+    
 
     self.wand:serverUpdate(playerPacket)
     self.eyes:serverUpdate(playerPacket)

@@ -108,7 +108,7 @@ function SocketNetworking.addToSendQueue(item)
     print(entity .. " " .. type .. " " .. data)
     local msg = string.format("%s %s %s", entity, type, data)
 
-    udp:send(msg)
+    -- udp:send(msg)
 
 end
 

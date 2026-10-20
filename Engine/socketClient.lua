@@ -39,6 +39,7 @@ function SocketNetworking:update(dt)
             data, msg = udp:receive()
 
             if data then
+                print("data " .. data)
                 local ent, typ, sir = data:match("^(%S*) (%S*) (%S*)")
                 print(ent)
                 print(typ)

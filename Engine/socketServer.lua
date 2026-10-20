@@ -56,14 +56,16 @@ function SocketNetworking:update(dt)
     end
 
     for k, v in pairs(clients) do
-        if SocketNetworking.players[k] then
-            local currentPlayer = SocketNetworking.players[k]
-        
-            print(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir))
-            udp:sendto(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir), v.ip,  v.port)
-        else
-            --print(k)
+        for key, value in pairs(SocketNetworking.players) do
+            if k == key then
+
+            else
+                local currentPlayer = value
+                print(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir))
+                udp:sendto(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir), v.ip,  v.port)
+            end
         end
+
     end
     --for k, v in pairs(SocketNetworking.players) do
 	--	print(k .. v)
@@ -91,7 +93,7 @@ function SocketNetworking.playerUpdate(data)
         --SEND LEVEL PACKET HERE--
     end
     print(ent .. "playerupdate line")
-    SocketNetworking.players[ent] = {typ = "playerPacket", sir = sir}
+    SocketNetworking.players[ent] = {typ = typ, sir = sir}
 end
 
 

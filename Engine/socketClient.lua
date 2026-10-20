@@ -79,7 +79,7 @@ function SocketNetworking:update(dt)
         -- if #pendingSends > 0 then
         --     for _, item in ipairs(pendingSends) do
         --         local sendingData = {type = item.type, id = item.id, packet = item.packet}
-        --         local serialized = Sir.dumps(sendingData)
+        --         local serialized = Lume.serialize(sendingData)
 
         --         local msg = string.format("%s %s %s", entity, item.type, serialized)
         --         udp:send(msg)
@@ -94,28 +94,26 @@ function SocketNetworking:update(dt)
 end
 
 function SocketNetworking.addToSendQueue(item)
-    -- local type = item.type
-    -- local packet = item.packet
-    -- local data = Sir.dumps(packet)
+    local type = item.type
+    local data = Lume.serialize(item.data)
 
     -- print(entity .. " " .. type .. " " .. data)
-    -- local msg = string.format("%s %s %s", entity, type, data)
-
-    -- udp:send(msg)
-    return
+    local msg = string.format("%s %s %s", entity, type, data)
+    print(msg)
+    udp:send(msg)
+    -- return
 end
 
 function SocketNetworking.playerSend(data)
     local playerdata = {data = {r = data.wand.r, x = data.x, y = data.y, xv = data.xv, yv = data.yv}}
-    local item = {type = entity, packet = "playerPacket", data = Sir.dumps(playerdata)}
-    print(item.type .. item.packet .. item.data)
+    local item = {entity = entity, type = "playerPacket", data = playerdata}
     SocketNetworking.addToSendQueue(item)
     
 end
 
 function SocketNetworking.playerUpdate(data)
     local ent, typ, sir = data:match("^(%S*) (%S*) (%S*)")
-    local packet = Sir.dumps(sir)
+    local packet = Lume.deserialize(sir)
     if ent == entity then
         return
     end

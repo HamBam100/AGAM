@@ -17,7 +17,7 @@ function SocketNetworking:load()
     udp:setsockname('*', 55555)
     math.randomseed(os.time()) 
 	entity = tostring(math.random(99999))
-    print(string.format("%s %s %f %f", entity, 'move', 10, -6))
+    -- print(string.format("%s %s %f %f", entity, 'move', 10, -6))
 
     -- local msg = string.format("%s %s %s", entity, "testPacket", "hello")
     -- ent, typ, sir = msg:match("^(%S*) (%S*) (%S*)")
@@ -28,13 +28,15 @@ function SocketNetworking:load()
 end
 
 function SocketNetworking:update(dt)
+
     local data, msg_or_ip, port_or_nil
     local ent, typ, sir
     
     data, msg_or_ip, port_or_nil = udp:receivefrom()
     if data then
-		
+		--print(data .. " Data line")
 		ent, typ, sir = data:match("^(%S*) (%S*) (.*)")
+		print("ent " .. ent .. " typ " .. typ .. " sir " .. sir)
         if not clients[ent] then
             clients[ent] = {ip = msg_or_ip, port = port_or_nil}
         end
@@ -57,12 +59,15 @@ function SocketNetworking:update(dt)
         if SocketNetworking.players[k] then
             local currentPlayer = SocketNetworking.players[k]
         
-            print(string.format("%s %s %d %d", k, "playerPacket", currentPlayer.sir))
-            udp:sendto(string.format("%s %s %d %d", k, "playerPacket", currentPlayer.sir), v.ip,  v.port)
+            print(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir))
+            udp:sendto(string.format("%s %s %s", k, "playerPacket", currentPlayer.sir), v.ip,  v.port)
         else
-            print("player doesnt exist")
+            --print(k)
         end
     end
+    --for k, v in pairs(SocketNetworking.players) do
+	--	print(k .. v)
+    --end
 
     for _, item in ipairs(pendingSends) do
         
@@ -85,6 +90,7 @@ function SocketNetworking.playerUpdate(data)
     if playerExists == false then
         --SEND LEVEL PACKET HERE--
     end
+    print(ent .. "playerupdate line")
     SocketNetworking.players[ent] = {typ = "playerPacket", sir = sir}
 end
 

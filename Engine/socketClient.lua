@@ -6,7 +6,7 @@ local updateRate = 0.1
 local t
 
 local pendingSpawns = {}
-local pendingSends = {}
+-- local pendingSends = {}
 
 local SocketNetworking =  {}
 
@@ -29,6 +29,10 @@ end
 function SocketNetworking:update(dt)
     t = t + dt
     if t > updateRate then
+        if ClientPlayer then
+            SocketNetworking.playerSend(ClientPlayer)
+        end
+        
         t = t - updateRate
 
         repeat
@@ -47,9 +51,9 @@ function SocketNetworking:update(dt)
                     elseif typ == "projectilePacket" then
 
                     elseif typ == "playerPacket" then
-                        Networking.playerUpdate(data)
+                        SocketNetworking.playerUpdate(data)
                     elseif typ == "levelPacket" then
-
+                        gameinit({sir})
                     end
                 end
             end
@@ -72,17 +76,17 @@ function SocketNetworking:update(dt)
             collectgarbage("collect")
         end
 
-        if #pendingSends > 0 then
-            for _, item in ipairs(pendingSends) do
-                local sendingData = {type = item.type, id = item.id, packet = item.packet}
-                local serialized = Sir.dumps(sendingData)
+        -- if #pendingSends > 0 then
+        --     for _, item in ipairs(pendingSends) do
+        --         local sendingData = {type = item.type, id = item.id, packet = item.packet}
+        --         local serialized = Sir.dumps(sendingData)
 
-                local msg = string.format("%s %s %s", entity, item.type, serialized)
-                udp:send(msg)
-            end
-            pendingSends = {}
-            collectgarbage("collect")
-        end
+        --         local msg = string.format("%s %s %s", entity, item.type, serialized)
+        --         udp:send(msg)
+        --     end
+        --     pendingSends = {}
+        --     collectgarbage("collect")
+        -- end
 
         
     end
@@ -102,7 +106,9 @@ function SocketNetworking.addToSendQueue(item)
 end
 
 function SocketNetworking.playerSend(data)
-    ClientPlayer = 
+    local item = {type = entity, packet = "playerPacket", data = data}
+    SocketNetworking.addToSendQueue(item)
+    
 end
 
 function SocketNetworking.playerUpdate(data)

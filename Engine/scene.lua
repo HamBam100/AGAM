@@ -30,19 +30,19 @@ function Scene:new(file)
     Updateables.mouse = createUpdateableContainer()
 
     if Multiplayer then
-        Networking:load()
-        if love.filesystem.getInfo(defaultLevelFileName) then
-            Networking.addToSendQueue({type = "levelPacket", packet = {protectedFileLoad(love.filesystem.read(defaultLevelFileName))}})
-        end
-    end
-
-    if not isServer then
-        if self.tilemap and self.tilemap.savedEntities then
-            for _, entity in ipairs(self.tilemap.savedEntities) do
-                if entity.label == "Player" then
-                    spawn(Player(entity.x,entity.y), Updateables.players, "Game")
-                    ClientPlayer = Updateables.players[1]
+        if not isServer then
+            if self.tilemap and self.tilemap.savedEntities then
+                for _, entity in ipairs(self.tilemap.savedEntities) do
+                    if entity.label == "Player" then
+                        spawn(Player(entity.x,entity.y), Updateables.players, "Game")
+                        ClientPlayer = Updateables.players[1]
+                    end
                 end
+            end
+        else
+            Networking:load()
+            if love.filesystem.getInfo(defaultLevelFileName) then
+                Networking.addToSendQueue({type = "levelPacket", packet = {protectedFileLoad(love.filesystem.read(defaultLevelFileName))}})
             end
         end
     end

@@ -17,7 +17,7 @@ end
 function Tiler:new(mapfile)
     local file
     if type(mapfile) == "table" then
-        file = mapfile[1]
+        file = mapfile[1] --Expects the sirialized data
     end
         
     if file then
